@@ -6,11 +6,12 @@
 int main() {
 
     // Create or open the database file "logs.db"
-    LogDB logDB("logs.db");
+    Database logDB("test.db");
 
     // Create the logs table
-    logDB.createTable();
-    std::cout << "Table created successfully." << std::endl;
+    logDB.createLogsTable();
+    // Create the boards table
+    logDB.createBoardsTable();
 
     return 0;
 }
