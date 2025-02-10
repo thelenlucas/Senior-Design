@@ -1,0 +1,25 @@
+@startuml Context
+
+!include <C4/C4_Context.puml>
+!$ICONURL = "https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons"
+!include $ICONURL/common.puml
+
+!include $ICONURL/govicons/file_excel.puml
+!include $ICONURL/devicons2/qt_original.puml
+!include $ICONURL/devicons/html5.puml
+
+Person(inv, "Inventory Manger", "Handles inflow and outflow of raw materials")
+Person(sawyer, "Sawyer", "Creates Products from raw materials")
+Person(sales, "Sales Manager", "Lists products from inventory for sale")
+
+System(ww, "Woodworks", "Inventory Management Software", $sprite=qt_original)
+System_Ext(sheet, "Spreadsheet", "Legacy Inventory Management System", $sprite=file_excel)
+System_Ext(page, "Display", "Webpage or other system (poster, etc.)", $sprite=html5)
+
+Rel(inv, ww, "Adds new logs, scraps useless logs")
+Rel(sawyer, ww, "Creates products from cutlists")
+Rel(sales, ww, "Puts items in inventory up for sale")
+Rel(ww, page, "Generates page", "HTML")
+Rel_R(sheet, ww, "Imports data from spreadsheet", "xlsx")
+
+@enduml
