@@ -28,12 +28,13 @@ System_Boundary(ww, "Woodworks") {
 System_Ext(sheet, "Spreadsheet", "Legacy Inventory Management System", $sprite=file_excel)
 System_Ext(page, "Display", "Webpage or other system (poster, etc.)", $sprite=html5)
 
-
 Rel(inv, logs, "Uses")
 Rel(sawyer, cutlist, "Uses")
 Rel(sales, gen, "Uses")
 
 Rel_L(logs, sheet, "Gets legacy data from", "xlsx")
 Rel(gen, page, "Generates", "HTML")
+
+SHOW_LEGEND()
 
 @enduml

@@ -22,4 +22,6 @@ Rel(sales, ww, "Puts items in inventory up for sale")
 Rel(ww, page, "Generates page", "HTML")
 Rel_R(sheet, ww, "Imports data from spreadsheet", "xlsx")
 
+SHOW_LEGEND()
+
 @enduml
