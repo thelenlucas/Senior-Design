@@ -1,0 +1,39 @@
+@startuml Container
+
+!include <C4/C4_Context.puml>
+!include <C4/C4_Container.puml>
+!$ICONURL = "https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons"
+!include $ICONURL/common.puml
+
+!include $ICONURL/govicons/file_excel.puml
+!include $ICONURL/devicons2/qt_original.puml
+!include $ICONURL/devicons/html5.puml
+!include $ICONURL/devicons2/sqlite.puml
+
+Person(inv, "Inventory Manger", "Handles inflow and outflow of raw materials")
+Person(sawyer, "Sawyer", "Creates Products from raw materials")
+Person(sales, "Sales Manager", "Lists products from inventory for sale")
+
+System_Boundary(ww, "Woodworks") {
+    Container(logs, "Inventory Management Window", "QT5", $sprite=qt_original)
+    Container(cutlist, "Cutlist Window", "QT5", $sprite=qt_original)
+    Container(gen, "Generation Page", "QT5", $sprite=qt_original)
+    Container(db, "Inventory Database", "SQLite3", $sprite=sqlite)
+
+    Rel(logs, db, "Writes changes in inventory", "SQL")
+    BiRel(cutlist, db, "Reads/Write Orders", "SQL")
+    Rel(gen, db, "Reads products in inventory", "SQL")
+}
+
+System_Ext(sheet, "Spreadsheet", "Legacy Inventory Management System", $sprite=file_excel)
+System_Ext(page, "Display", "Webpage or other system (poster, etc.)", $sprite=html5)
+
+
+Rel(inv, logs, "Uses")
+Rel(sawyer, cutlist, "Uses")
+Rel(sales, gen, "Uses")
+
+Rel_L(logs, sheet, "Gets legacy data from", "xlsx")
+Rel(gen, page, "Generates", "HTML")
+
+@enduml
