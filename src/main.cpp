@@ -4,37 +4,34 @@
 #include "db.hpp"
 #include <SQLiteCpp/SQLiteCpp.h>
 #include <vector>
+#include "logs.hpp"
 #include "types.hpp"
 
-// CREATE TABLE logs(
-// id integer primary key autoincrement,
-// species varchar not null,
-// len_in int not null,
-// diameter_in int not null,
-// cost_cents_log int not null,
-// quality varchar);
+using namespace std;
 
 int main() {
     Database db = Database();
 
-    // Some example logs
-    // Log log1 = Log(1, "Pine", 10, 5, 100, "Good", "A-1");
-    // Log log2 = Log(2, "Oak", 15, 6, 200, "Bad", "A-2");
-    // Log log3 = Log(3, "Maple", 20, 7, 300, "Good", "C-3");
-    // db.insertLog(log1);
-    // db.insertLog(log2);
-    // db.insertLog(log3);
+    // Create a log, disconnected from a database
+    /*Log::Log(int id,
+        std::string species,
+        uint count, uint len_quarters,
+        uint diameter_quarters,
+        uint cost_cents_quarters,
+        uint quality,
+        std::string location = "",
+        std::string notes = "",
+        std::optional<Database*> db = std::nullopt
+    ) */
+    Log log = Log(0, "Oak", 1, 4, 4, 100, 5, "A-1");
 
-    std::vector<Log> logs = db.allLogs();
+    // Insert it into the database
+    db.insertLog(log);
 
+    // Print out all logs
+    vector<Log> logs = db.allLogs();
+    cout << "| ID | Species | Count |" << endl;
     for (Log log : logs) {
-        std::cout << "ID: " << log.getId() << std::endl;
-        std::cout << "Species: " << log.getSpecies() << std::endl;
-        std::cout << "Length (in): " << log.getLenIn() << std::endl;
-        std::cout << "Diameter (in): " << log.getDiameterIn() << std::endl;
-        std::cout << "Cost (cents): " << log.getCostCentsLog() << std::endl;
-        std::cout << "Quality: " << log.getQuality() << std::endl;
-        std::cout << "Location: " << log.getLocation() << std::endl;
-        std::cout << std::endl;
+        cout << "| " << log.getId() << " | " << log.getSpecies() << " | " << log.getCount() << " |" << endl;
     }
 }
