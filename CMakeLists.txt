@@ -4,8 +4,8 @@ project(LogDBProject)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Add the sqlite-amalgamation subdirectory.
-add_subdirectory(sqlite-amalgamation)
+# Add the SQLitecpp dir
+add_subdirectory(${CMAKE_SOURCE_DIR}/SQLiteCpp)
 
 # Create the executable from source files.
 add_executable(logdb src/main.cpp)
@@ -19,4 +19,10 @@ target_include_directories(logdb PRIVATE
 )
 
 # Link against the sqlite3 library created in the sqlite-amalgamation subdirectory.
-target_link_libraries(logdb PRIVATE sqlite3)
+target_link_libraries(
+    logdb
+    SQLiteCpp
+    sqlite3
+    pthread
+    dl
+)
