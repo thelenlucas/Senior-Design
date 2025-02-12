@@ -5,6 +5,14 @@ project(LogDBProject)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Enable automoc, autouic, and autorcc
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+# QT5
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/SQLiteCpp)
 
 # Specify the source files for the executable.
@@ -20,4 +28,4 @@ add_executable(logdb ${SOURCES})
 # Specify the include directories.
 target_include_directories(logdb PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
-target_link_libraries(logdb PRIVATE SQLiteCpp)
+target_link_libraries(logdb PRIVATE SQLiteCpp Qt5::Widgets)

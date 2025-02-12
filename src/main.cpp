@@ -7,9 +7,19 @@
 #include "logs.hpp"
 #include "types.hpp"
 
+#include <QApplication>
+#include <QPushButton>
+
 using namespace std;
 
-int main() {
+int main(int argc, char* argv[]) {
+    QApplication app(argc, argv);
+
+    // Button with label
+    QPushButton button("Hello world!");
+    button.resize(200, 100);
+    button.show();
+
     Database db = Database();
 
     // Create a log, disconnected from a database
@@ -34,4 +44,6 @@ int main() {
     for (Log log : logs) {
         cout << "| " << log.getId() << " | " << log.getSpecies() << " | " << log.getCount() << " |" << endl;
     }
+
+    return app.exec();
 }
