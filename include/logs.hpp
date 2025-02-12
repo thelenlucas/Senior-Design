@@ -1,9 +1,11 @@
-#ifndef TYPES_HPP
-#define TYPES_HPP
+#ifndef LOGS_HPP
+#define LOGS_HPP
 
+#include <cstdint>
 #include <string>
 #include <stdexcept>
 #include <optional>
+
 #include "db.hpp"
 
 #define LOGS_LOGGING true
@@ -32,11 +34,11 @@ class Log {
 private:
     int id;
     std::string species;
-    uint count;
-    uint len_quarters;
-    uint diameter_quarters;
-    uint cost_cents_quarters;
-    uint quality;
+    std::uint32_t count;
+    std::uint32_t len_quarters;
+    std::uint32_t diameter_quarters;
+    std::uint32_t cost_cents_quarters;
+    std::uint32_t quality;
     std::string location;
     std::string notes;
 
@@ -46,11 +48,11 @@ private:
 public:
     Log(int id,
         std::string species,
-        uint count,
-        uint len_quarters,
-        uint diameter_quarters,
-        uint cost_cents_quarters,
-        uint quality,
+        std::uint32_t count,
+        std::uint32_t len_quarters,
+        std::uint32_t diameter_quarters,
+        std::uint32_t cost_cents_quarters,
+        std::uint32_t quality,
         std::string location = "",
         std::string notes = "",
         std::optional<Database*> db = std::nullopt
@@ -59,11 +61,11 @@ public:
     // Getters
     int getId() {return id;}
     std::string getSpecies() {return species;}
-    uint getCount() {return count;}
-    uint getLenQuarters() {return len_quarters;}
-    uint getDiameterQuarters() {return diameter_quarters;}
-    uint getCostCentsQuarters() {return cost_cents_quarters;}
-    uint getQuality() {return quality;}
+    std::uint32_t getCount() {return count;}
+    std::uint32_t getLenQuarters() {return len_quarters;}
+    std::uint32_t getDiameterQuarters() {return diameter_quarters;}
+    std::uint32_t getCostCentsQuarters() {return cost_cents_quarters;}
+    std::uint32_t getQuality() {return quality;}
     std::string getLocation() {return location;}
     std::string getNotes() {return notes;}
     std::optional<Database*> getDatabase() {return db;}
@@ -87,4 +89,4 @@ public:
     void update();
 };
 
-#endif // TYPES_HPP
+#endif // LOGS_HPP

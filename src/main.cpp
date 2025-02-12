@@ -1,15 +1,22 @@
-#include <sqlite3.h>
+#include <qapplication.h>
+#include <qwidget.h>
 #include <string>
 #include <iostream>
-#include "db.hpp"
-#include <SQLiteCpp/SQLiteCpp.h>
 #include <vector>
+
+#include <sqlite3.h>
+#include <SQLiteCpp/SQLiteCpp.h>
+
+#include <QApplication>
+#include <QWidget>
+
+#include "db.hpp"
 #include "logs.hpp"
-#include "types.hpp"
+#include "main_window.hpp"
 
-using namespace std;
+using std::cout, std::endl, std::vector;
 
-int main() {
+int main(int argc, char** argv) {
     Database db = Database();
 
     // Create a log, disconnected from a database
@@ -34,4 +41,10 @@ int main() {
     for (Log log : logs) {
         cout << "| " << log.getId() << " | " << log.getSpecies() << " | " << log.getCount() << " |" << endl;
     }
+
+    QApplication logdb_application(argc, argv);
+    MainWindow logdb_main_window;
+
+    logdb_main_window.show();
+    return logdb_application.exec();
 }

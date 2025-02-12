@@ -1,3 +1,5 @@
+.cache
+.cache/*
 .vscode
 .vscode/*
 build/*

@@ -2,12 +2,12 @@
 #define DATABASE_H
 
 #include <SQLiteCpp/SQLiteCpp.h>
+#include <cstdint>
 #include <vector>
-#include "logs.hpp"
 #include <iostream>
 #include <optional>
 
-using namespace std;
+#include "types.hpp"
 
 #define DATABASE_FILE "test.db"
 #define LOGS_TABLE "logs"
@@ -15,6 +15,8 @@ using namespace std;
 #define DB_LOGGING true
 
 class Log;
+
+using std::cout, std::endl, std::optional, std::vector;
 
 class Database {
 private:
@@ -40,13 +42,13 @@ public:
     }
 
     // Gets a singular log from the database, given an ID
-    Log getLog(uint id);
+    Log getLog(std::uint32_t id);
 
     // Finds a log that matches the given log
-    std::optional<Log> findLog(Log log);
+    optional<Log> findLog(Log log);
 
     // Gets all logs from the database
-    std::vector<Log> allLogs();
+    vector<Log> allLogs();
 
     // Puts a new log into the database, returns the log that
     // this log insertion refers to, could be new or an updated
@@ -54,13 +56,13 @@ public:
     Log insertLog(Log log);
 
     // Adds multiple logs to the database
-    void insertLogs(std::vector<Log> logs);
+    void insertLogs(vector<Log> logs);
 
     // Updates a log in the database
     void updateLog(Log log);
 
     // Updates multiple logs in the database
-    void updateLogs(std::vector<Log> logs);
+    void updateLogs(vector<Log> logs);
 
     // Deletes a log from the database
     void deleteLog(Log log);

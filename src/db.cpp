@@ -55,7 +55,7 @@ vector<Log> Database::allLogs() {
     return logs;
 }
 
-Log Database::getLog(uint id) {
+Log Database::getLog(std::uint32_t id) {
     cout << "DATABASE: Getting log with ID " << id << endl;
 
     SQLite::Statement query(this->db, "SELECT species, count, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes FROM logs WHERE id = ?");

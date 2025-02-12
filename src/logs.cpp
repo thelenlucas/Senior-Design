@@ -3,16 +3,18 @@
 #include <string>
 #include <stdexcept>
 
+using std::cout, std::endl, std::string, std::runtime_error, std::optional;
+
 Log::Log(int id,
-        std::string species,
-        uint count,
-        uint len_quarters,
-        uint diameter_quarters,
-        uint cost_cents_quarters,
-        uint quality,
-        std::string location,
-        std::string notes,
-        std::optional<Database*> db
+        string species,
+        std::uint32_t count,
+        std::uint32_t len_quarters,
+        std::uint32_t diameter_quarters,
+        std::uint32_t cost_cents_quarters,
+        std::uint32_t quality,
+        string location,
+        string notes,
+        optional<Database*> db
     ) {
         this->id = id;
         this->species = species;
@@ -33,7 +35,7 @@ void Log::combine(Log other) {
     }
 
     if (!this->isConnected()) {
-        throw std::runtime_error("Primary log is not connected to a database");
+        throw runtime_error("Primary log is not connected to a database");
     }
 
     // Up the count
@@ -59,7 +61,7 @@ void Log::connect(Database* db) {
 // Removes this item from the database, throws an error if this is disconnected
 void Log::remove() {
     if (!this->isConnected()) {
-        throw std::runtime_error("Log is not connected to a database");
+        throw runtime_error("Log is not connected to a database");
     }
 
     this->db.value()->deleteLog(*this);
@@ -68,7 +70,7 @@ void Log::remove() {
 // Updates this item in the database, throws an error if this is disconnected
 void Log::update() {
     if (!this->isConnected()) {
-        throw std::runtime_error("Log is not connected to a database");
+        throw runtime_error("Log is not connected to a database");
     }
 
     this->db.value()->updateLog(*this);
