@@ -8,21 +8,20 @@
 
 #define LOGS_LOGGING true
 
-// CREATE TABLE logs (
-//     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-//     species             VARCHAR NOT NULL,
-//     count               INTEGER NOT NULL
-//                                 CHECK ( (count > -1) ),
-//     len_quarters        INT     NOT NULL
-//                                 CHECK ( (len_quarters > 0) ),
-//     diameter_quarters   INT     NOT NULL
-//                                 CHECK ( (diameter_quarters > 0) ),
-//     cost_cents_quarters INT     NOT NULL
-//                                 CHECK ( (cost_cents_quarters > 0) ),
-//     quality             INTEGER CHECK ( (quality BETWEEN 1 AND 5) ),
-//     location            VARCHAR,
-//     notes               TEXT,
-//     media               BLOB
+// CREATE TABLE cookies (
+//     id                 INTEGER PRIMARY KEY AUTOINCREMENT
+//                                UNIQUE
+//                                NOT NULL,
+//     species            TEXT    NOT NULL,
+//     thickness_quarters INTEGER CHECK ( (thickness_quarters > 0) ) 
+//                                NOT NULL,
+//     diameter_quarters  INTEGER NOT NULL
+//                                CHECK ( (diameter_quarters > 0) ),
+//     drying             INTEGER NOT NULL
+//                                CHECK ( (drying BETWEEN 0 AND 3) ),
+//     location           VARCHAR,
+//     notes              TEXT,
+//     media              BLOB
 // );
 
 // Forward declaration
@@ -32,7 +31,6 @@ class Log {
 private:
     int id;
     std::string species;
-    uint count;
     uint len_quarters;
     uint diameter_quarters;
     uint cost_cents_quarters;
@@ -46,7 +44,6 @@ private:
 public:
     Log(int id,
         std::string species,
-        uint count,
         uint len_quarters,
         uint diameter_quarters,
         uint cost_cents_quarters,
@@ -59,7 +56,6 @@ public:
     // Getters
     int getId() {return id;}
     std::string getSpecies() {return species;}
-    uint getCount() {return count;}
     uint getLenQuarters() {return len_quarters;}
     uint getDiameterQuarters() {return diameter_quarters;}
     uint getCostCentsQuarters() {return cost_cents_quarters;}
@@ -76,9 +72,6 @@ public:
 
     // Returns true if connected to a database, false otherwise
     bool isConnected() {return db.has_value();}
-
-    // Adds another log pile to this pile
-    void combine(Log other);
 
     // Removes this item from the database, throws an error if this is disconnected
     void remove();
