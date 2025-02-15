@@ -7,6 +7,8 @@
 #include "logs.hpp"
 #include "types.hpp"
 
+#include "mainwindow.h"
+
 #include <QApplication>
 #include <QPushButton>
 
@@ -16,11 +18,10 @@ int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
     // Button with label
-    QPushButton button("Hello world!");
-    button.resize(200, 100);
-    button.show();
+    MainWindow window;
+    window.show();
 
-    Database db = Database();
+    Database db;
 
     // Create a log, disconnected from a database
     /*Log::Log(int id,
