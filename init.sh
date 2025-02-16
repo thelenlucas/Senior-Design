@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 sudo apt install -y qtcreator qtbase5-dev qt5-qmake cmake cmake build-essential
 
 git submodule init
