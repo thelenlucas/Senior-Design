@@ -20,6 +20,9 @@ set(SOURCES
     src/main.cpp
     src/db.cpp
     src/logs.cpp
+    src/cookies.cpp
+    src/firewood.cpp
+    src/live_edge_slabs.cpp
     src/mainwindow.cpp
     include/mainwindow.h
 )

@@ -38,6 +38,12 @@ public:
         }
     }
 
+    // Gives the underlying database, meant to be used for one-time operations
+    // by other classes
+    SQLite::Database* getDb() {
+        return &db;
+    }
+
     // Gets a singular log from the database, given an ID
     Log getLog(uint id);
 
