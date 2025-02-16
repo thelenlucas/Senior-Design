@@ -25,7 +25,6 @@ public:
         db.exec("CREATE TABLE IF NOT EXISTS " LOGS_TABLE " ("
                 "id                  INTEGER PRIMARY KEY AUTOINCREMENT,"
                 "species             VARCHAR NOT NULL,"
-                "count               INTEGER NOT NULL CHECK ( (count > -1) ),"
                 "len_quarters        INT     NOT NULL CHECK ( (len_quarters > 0) ),"
                 "diameter_quarters   INT     NOT NULL CHECK ( (diameter_quarters > 0) ),"
                 "cost_cents_quarters INT     NOT NULL CHECK ( (cost_cents_quarters > 0) ),"
@@ -37,6 +36,12 @@ public:
         if (DB_LOGGING) {
             cout << "Database initialized" << endl;
         }
+    }
+
+    // Gives the underlying database, meant to be used for one-time operations
+    // by other classes
+    SQLite::Database* getDb() {
+        return &db;
     }
 
     // Gets a singular log from the database, given an ID

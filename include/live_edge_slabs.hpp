@@ -1,40 +1,39 @@
-#ifndef TYPES_HPP
-#define TYPES_HPP
-
-#include <string>
-#include <stdexcept>
-#include <optional>
-#include "db.hpp"
-
-#define LOGS_LOGGING true
-
-// CREATE TABLE cookies (
+// CREATE TABLE slabs (
 //     id                 INTEGER PRIMARY KEY AUTOINCREMENT
 //                                UNIQUE
 //                                NOT NULL,
 //     species            TEXT    NOT NULL,
 //     thickness_quarters INTEGER CHECK ( (thickness_quarters > 0) ) 
 //                                NOT NULL,
-//     diameter_quarters  INTEGER NOT NULL
-//                                CHECK ( (diameter_quarters > 0) ),
+//     len_quarters       INTEGER NOT NULL
+//                                CHECK ( (len_quarters > 0) ),
 //     drying             INTEGER NOT NULL
 //                                CHECK ( (drying BETWEEN 0 AND 3) ),
+//     smoothed           INTEGER CHECK ( (smoothed BETWEEN 0 AND 1) ) 
+//                                NOT NULL,
 //     location           VARCHAR,
 //     notes              TEXT,
 //     media              BLOB
 // );
 
-// Forward declaration
+#include <string>
+#include <stdexcept>
+#include <optional>
+#include "db.hpp"
+#include "types.hpp"
+
+#define SLABS_LOGGING true
+
 class Database;
 
-class Log {
+class Slab {
 private:
     int id;
     std::string species;
+    uint thickness_quarters;
     uint len_quarters;
-    uint diameter_quarters;
-    uint cost_cents_quarters;
-    uint quality;
+    Drying drying;
+    bool smoothed;
     std::string location;
     std::string notes;
 
@@ -42,12 +41,12 @@ private:
     std::optional<Database*> db;
 
 public:
-    Log(int id,
+    Slab(int id,
         std::string species,
+        uint thickness_quarters,
         uint len_quarters,
-        uint diameter_quarters,
-        uint cost_cents_quarters,
-        uint quality,
+        Drying drying,
+        bool smoothed,
         std::string location = "",
         std::string notes = "",
         std::optional<Database*> db = std::nullopt
@@ -56,28 +55,26 @@ public:
     // Getters
     int getId() {return id;}
     std::string getSpecies() {return species;}
+    uint getThicknessQuarters() {return thickness_quarters;}
     uint getLenQuarters() {return len_quarters;}
-    uint getDiameterQuarters() {return diameter_quarters;}
-    uint getCostCentsQuarters() {return cost_cents_quarters;}
-    uint getQuality() {return quality;}
+    Drying getDrying() {return drying;}
+    bool getSmoothed() {return smoothed;}
     std::string getLocation() {return location;}
     std::string getNotes() {return notes;}
-    std::optional<Database*> getDatabase() {return db;}
 
-    // ID Setter, should be only used by the database, and with caution
-    void setID(int id) {this->id = id;}
+    // Class function, takes in a database and returns all
+    // slabs in the database as a vector
+    static std::vector<Slab> allSlabs(Database *db);
 
-    // Connects this log to a database
+    // Connects this slab to a database
     void connect(Database* db);
-
-    // Returns true if connected to a database, false otherwise
-    bool isConnected() {return db.has_value();}
 
     // Removes this item from the database, throws an error if this is disconnected
     void remove();
 
     // Updates this item in the database, throws an error if this is disconnected
     void update();
-};
 
-#endif // TYPES_HPP
+    // Returns true if this slab is connected to a database
+    bool isConnected() {return this->db.has_value();}
+};

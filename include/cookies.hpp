@@ -1,13 +1,3 @@
-#ifndef TYPES_HPP
-#define TYPES_HPP
-
-#include <string>
-#include <stdexcept>
-#include <optional>
-#include "db.hpp"
-
-#define LOGS_LOGGING true
-
 // CREATE TABLE cookies (
 //     id                 INTEGER PRIMARY KEY AUTOINCREMENT
 //                                UNIQUE
@@ -24,17 +14,23 @@
 //     media              BLOB
 // );
 
-// Forward declaration
+#include <string>
+#include <stdexcept>
+#include <optional>
+#include "db.hpp"
+#include "types.hpp"
+
+#define COOKIES_LOGGING true
+
 class Database;
 
-class Log {
+class Cookie {
 private:
     int id;
     std::string species;
-    uint len_quarters;
+    uint thickness_quarters;
     uint diameter_quarters;
-    uint cost_cents_quarters;
-    uint quality;
+    Drying drying;
     std::string location;
     std::string notes;
 
@@ -42,12 +38,11 @@ private:
     std::optional<Database*> db;
 
 public:
-    Log(int id,
+    Cookie(int id,
         std::string species,
-        uint len_quarters,
+        uint thickness_quarters,
         uint diameter_quarters,
-        uint cost_cents_quarters,
-        uint quality,
+        Drying drying,
         std::string location = "",
         std::string notes = "",
         std::optional<Database*> db = std::nullopt
@@ -56,28 +51,21 @@ public:
     // Getters
     int getId() {return id;}
     std::string getSpecies() {return species;}
-    uint getLenQuarters() {return len_quarters;}
+    uint getThicknessQuarters() {return thickness_quarters;}
     uint getDiameterQuarters() {return diameter_quarters;}
-    uint getCostCentsQuarters() {return cost_cents_quarters;}
-    uint getQuality() {return quality;}
+    Drying getDrying() {return drying;}
     std::string getLocation() {return location;}
     std::string getNotes() {return notes;}
-    std::optional<Database*> getDatabase() {return db;}
-
-    // ID Setter, should be only used by the database, and with caution
-    void setID(int id) {this->id = id;}
 
     // Connects this log to a database
     void connect(Database* db);
-
-    // Returns true if connected to a database, false otherwise
-    bool isConnected() {return db.has_value();}
 
     // Removes this item from the database, throws an error if this is disconnected
     void remove();
 
     // Updates this item in the database, throws an error if this is disconnected
     void update();
-};
 
-#endif // TYPES_HPP
+    // Returns true if this log is connected to a database
+    bool isConnected() {return this->db.has_value();}
+};
