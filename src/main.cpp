@@ -21,20 +21,5 @@ int main(int argc, char* argv[]) {
     MainWindow window;
     window.show();
 
-    Database db;
-
-    // Create a log, disconnected from a database
-    Log log = Log(0, "Oak", 4, 4, 100, 5, "A-1");
-
-    // Insert it into the database
-    db.insertLog(log);
-
-    // Print out all logs
-    vector<Log> logs = db.allLogs();
-    cout << "| ID | Species | Length | Diameter | Cost | Quality | Location | Notes |" << endl;
-    for (Log log : logs) {
-        cout << "| " << log.getId() << " | " << log.getSpecies() << " | " << log.getLenQuarters() << " | " << log.getDiameterQuarters() << " | " << log.getCostCentsQuarters() << " | " << log.getQuality() << " | " << log.getLocation() << " | " << log.getNotes() << " |" << endl;
-    }
-
     return app.exec();
 }

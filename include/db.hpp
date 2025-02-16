@@ -34,7 +34,13 @@ public:
                 ");");
 
         if (DB_LOGGING) {
-            cout << "Database initialized" << endl;
+            cout << "Database initialized at" << (long)this << endl;
+        }
+    }
+
+    ~Database() {
+        if (DB_LOGGING) {
+            cout << "Database destroyed at" << (long)this << endl;
         }
     }
 
