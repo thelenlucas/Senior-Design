@@ -4,14 +4,18 @@
 #include <QMainWindow>
 
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow {
-    Q_OBJECT  // <-- This macro is critical!
+    Q_OBJECT
+
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+private slots:
+    void onEnterLogButtonClicked();
 
 private:
     Ui::MainWindow *ui;

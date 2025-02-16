@@ -1,5 +1,5 @@
-#ifndef TYPES_HPP
-#define TYPES_HPP
+#ifndef LOGS_HPP
+#define LOGS_HPP
 
 #include <string>
 #include <stdexcept>
@@ -54,14 +54,14 @@ public:
     );
 
     // Getters
-    int getId() {return id;}
-    std::string getSpecies() {return species;}
-    uint getLenQuarters() {return len_quarters;}
-    uint getDiameterQuarters() {return diameter_quarters;}
-    uint getCostCentsQuarters() {return cost_cents_quarters;}
-    uint getQuality() {return quality;}
-    std::string getLocation() {return location;}
-    std::string getNotes() {return notes;}
+    int getId() const {return id;} 
+    std::string getSpecies() const {return species;} 
+    uint getLenQuarters() const {return len_quarters;} 
+    uint getDiameterQuarters() const {return diameter_quarters;} 
+    uint getCostCentsQuarters() const {return cost_cents_quarters;} 
+    uint getQuality() const {return quality;} 
+    std::string getLocation() const {return location;} 
+    std::string getNotes() const {return notes;} 
     std::optional<Database*> getDatabase() {return db;}
 
     // ID Setter, should be only used by the database, and with caution
