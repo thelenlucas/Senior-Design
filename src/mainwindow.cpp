@@ -1,33 +1,74 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h" // Generated from ui/mainwindow.ui
-#include "logtablemodel.hpp"
-#include <string>
+#include "ui_mainwindow.h"
+#include <QSqlDatabase>
+#include <QSqlQueryModel>
+#include <QSqlError>
+#include <QDebug>
+#include "db.hpp"
+
+#define QUERY_STRING_LOGS R"(
+        SELECT 
+            species, 
+            len_quarters, 
+            diameter_quarters, 
+            location, 
+            Count(*) AS log_count
+        FROM logs
+        GROUP BY species, len_quarters, diameter_quarters, location
+    )";
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), 
+    QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);  // This call builds the UI as designed in Qt Designer.
+    ui->setupUi(this);
 
-    // Create model 
-    auto *model = new LogTableModel(this);
+    // Establish database connection.
+    // Yeah this opens another connection, but it's read-only
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("test.db"); // Update this to your actual database path.
+    if (!db.open()) {
+        qDebug() << "Database error:" << db.lastError().text();
+        return; // Early return if the connection fails.
+    }
 
-    Database db;
+    auto *model = new QSqlQueryModel(this);
+    QString queryStr = QUERY_STRING_LOGS;
+    model->setQuery(queryStr, db);
 
-    // Get all logs from the database
-    auto logs = db.allLogs();
+    // Check for query errors.
+    if (model->lastError().isValid()) {
+        qDebug() << "Query error:" << model->lastError().text();
+    }
 
-    // Populate the model with logs
-    model->setLogs(logs);
-
-    // Set the model to the table view
+    // Set the model to the table view.
     ui->tableView->setModel(model);
 
-    // Resize the columns to fit the contents
+    // Resize the columns to fit the contents.
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    // Connect the add button to the add log slot
+    // Connect the add button to the add log slot.
+    // Note: With a query model displaying aggregated data, editing is not supported.
     connect(ui->enterLogButton, &QPushButton::clicked, this, &MainWindow::onEnterLogButtonClicked);
+}
+
+void MainWindow::refreshModel()
+{
+    // Get the current model from the table view.
+    auto *model = qobject_cast<QSqlQueryModel*>(ui->tableView->model());
+    if (!model)
+        return;
+
+    // Define the query string (could also be a member variable)
+    QString queryStr = QUERY_STRING_LOGS;
+
+    // Re-run the query.
+    model->setQuery(queryStr, QSqlDatabase::database());
+
+    // Optional: Check for errors.
+    if (model->lastError().isValid()) {
+        qDebug() << "Query error:" << model->lastError().text();
+    }
 }
 
 void MainWindow::onEnterLogButtonClicked() {
@@ -38,6 +79,7 @@ void MainWindow::onEnterLogButtonClicked() {
     int diamIn = ui->diamIn->value();
     double costVal = ui->cost->value();
     int quality = ui->quality->value();
+    string location = ui->locationEntry->text().toStdString();
 
     int lenQuarters = (lenFt * 12 + lenIn) * 4;
     int diamQuarters = diamIn * 4;
@@ -47,14 +89,11 @@ void MainWindow::onEnterLogButtonClicked() {
 
     // Create a log object, insert it into the database
     Database db;
-    Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, "", "", &db);
+    Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, location, "", &db);
     db.insertLog(log);
 
-    // Refresh the table view
-    auto *model = new LogTableModel(this);
-    auto logs = db.allLogs();
-    model->setLogs(logs);
-    ui->tableView->setModel(model);
+    // Refresh the model
+    refreshModel();
 }
 
 MainWindow::~MainWindow()

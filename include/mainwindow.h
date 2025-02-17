@@ -14,6 +14,8 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void refreshModel();
+
 private slots:
     void onEnterLogButtonClicked();
 
