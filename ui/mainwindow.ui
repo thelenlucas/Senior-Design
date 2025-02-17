@@ -101,7 +101,7 @@
           <item>
            <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>Diameter</string>
+             <string>Diameter:</string>
             </property>
            </widget>
           </item>
@@ -126,7 +126,7 @@
           <item>
            <widget class="QLabel" name="label_7">
             <property name="text">
-             <string>Cost</string>
+             <string>Cost:</string>
             </property>
            </widget>
           </item>
@@ -144,7 +144,7 @@
           <item>
            <widget class="QLabel" name="label_8">
             <property name="text">
-             <string>Quality</string>
+             <string>Quality:</string>
             </property>
            </widget>
           </item>
@@ -160,7 +160,7 @@
         <item>
          <widget class="QPushButton" name="enterLogButton">
           <property name="text">
-           <string>Enter Log</string>
+           <string>Add Log</string>
           </property>
          </widget>
         </item>
@@ -169,11 +169,66 @@
      </layout>
     </item>
     <item>
-     <widget class="QTableView" name="tableView">
-      <property name="autoFillBackground">
-       <bool>false</bool>
+     <widget class="QTabWidget" name="groupedLogsTab">
+      <property name="currentIndex">
+       <number>1</number>
       </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Tab 1</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <item>
+         <widget class="QTableView" name="groupedLogsTableView">
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QTableView" name="individualLogTableView"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="logScrappingView">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="scrapLogButton">
+        <property name="text">
+         <string>Scrap Log</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="makeFirewood">
+        <property name="text">
+         <string>Make Firewood</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>

@@ -6,9 +6,11 @@
 #include <QDebug>
 #include "db.hpp"
 
-#define QUERY_STRING_LOGS R"(
-    SELECT * from grouped_logs;
+#define GROUPED_LOGS_QUERY R"(
+    SELECT * from grouped_logs_view;
 )";
+
+#define LOGS_QUERY "SELECT * FROM logs_view;"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -25,21 +27,29 @@ MainWindow::MainWindow(QWidget *parent) :
         return; // Early return if the connection fails.
     }
 
-    auto *model = new QSqlQueryModel(this);
-    QString queryStr = QUERY_STRING_LOGS;
-    model->setQuery(queryStr, db);
+    auto *groupedModel = new QSqlQueryModel(this);
+    auto *logsModel = new QSqlQueryModel(this);
+    QString queryStr = GROUPED_LOGS_QUERY;
+    QString logsQueryStr = LOGS_QUERY;
+    groupedModel->setQuery(queryStr, db);
+    logsModel->setQuery(logsQueryStr, db);
 
     // Check for query errors.
-    if (model->lastError().isValid()) {
-        qDebug() << "Query error:" << model->lastError().text();
+    if (groupedModel->lastError().isValid()) {
+        qDebug() << "Query error:" << groupedModel->lastError().text();
+    }
+    if (logsModel->lastError().isValid()) {
+        qDebug() << "Query error:" << logsModel->lastError().text();
     }
 
     // Set the model to the table view.
-    ui->tableView->setModel(model);
+    ui->groupedLogsTableView->setModel(groupedModel);
+    ui->individualLogTableView->setModel(logsModel);
     refreshModel();
 
     // Resize the columns to fit the contents.
-    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->groupedLogsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->individualLogTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     // Connect the add button to the add log slot.
     // Note: With a query model displaying aggregated data, editing is not supported.
@@ -49,26 +59,39 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::refreshModel()
 {
     // Get the current model from the table view.
-    auto *model = qobject_cast<QSqlQueryModel*>(ui->tableView->model());
-    if (!model)
+    auto *groupedModel = qobject_cast<QSqlQueryModel*>(ui->groupedLogsTableView->model());
+    if (!groupedModel)
         return;
+    auto *logsModel = qobject_cast<QSqlQueryModel*>(ui->individualLogTableView->model());
 
     // Define the query string (could also be a member variable)
-    QString queryStr = QUERY_STRING_LOGS;
+    QString queryStr = GROUPED_LOGS_QUERY;
+    QString logsQueryStr = LOGS_QUERY;
 
     // Re-run the query.
-    model->setQuery(queryStr, QSqlDatabase::database());
+    groupedModel->setQuery(queryStr, QSqlDatabase::database());
+    logsModel->setQuery(logsQueryStr, QSqlDatabase::database());
 
     // Optional: Check for errors.
-    if (model->lastError().isValid()) {
-        qDebug() << "Query error:" << model->lastError().text();
+    if (groupedModel->lastError().isValid()) {
+        qDebug() << "Query error:" << groupedModel->lastError().text();
+    }
+    if (logsModel->lastError().isValid()) {
+        qDebug() << "Query error:" << logsModel->lastError().text();
     }
 
     // Set column headers and resize columns.
-    model->setHeaderData(0, Qt::Horizontal, "Species");
-    model->setHeaderData(1, Qt::Horizontal, "Length");
-    model->setHeaderData(2, Qt::Horizontal, "Diameter");
-    model->setHeaderData(3, Qt::Horizontal, "Count");
+    groupedModel->setHeaderData(0, Qt::Horizontal, "Species");
+    groupedModel->setHeaderData(1, Qt::Horizontal, "Length");
+    groupedModel->setHeaderData(2, Qt::Horizontal, "Diameter");
+    groupedModel->setHeaderData(3, Qt::Horizontal, "Count");
+
+    logsModel->setHeaderData(0, Qt::Horizontal, "Species");
+    logsModel->setHeaderData(1, Qt::Horizontal, "Length");
+    logsModel->setHeaderData(2, Qt::Horizontal, "Diameter");
+    logsModel->setHeaderData(3, Qt::Horizontal, "Quality");
+    logsModel->setHeaderData(4, Qt::Horizontal, "Location");
+    logsModel->setHeaderData(5, Qt::Horizontal, "Value");
 }
 
 void MainWindow::onEnterLogButtonClicked() {
