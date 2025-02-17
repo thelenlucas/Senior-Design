@@ -13,7 +13,7 @@
             FLOOR(len_quarters / 48), 'ft ', 
             FLOOR((len_quarters % 48) / 4), 'in'
         ) AS length,
-        diameter_quarters / 4.0 AS diameter_inches,
+        CONCAT(FLOOR(diameter_quarters / 4), 'in') AS diameter_inches,
         location, 
         COUNT(*) AS log_count
     FROM logs
