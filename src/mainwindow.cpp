@@ -7,17 +7,7 @@
 #include "db.hpp"
 
 #define QUERY_STRING_LOGS R"(
-    SELECT 
-        species, 
-        CONCAT(
-            FLOOR(len_quarters / 48), 'ft ', 
-            FLOOR((len_quarters % 48) / 4), 'in'
-        ) AS length,
-        CONCAT(FLOOR(diameter_quarters / 4), 'in') AS diameter_inches,
-        location, 
-        COUNT(*) AS log_count
-    FROM logs
-    GROUP BY species, len_quarters, diameter_quarters, location
+    SELECT * from grouped_logs;
 )";
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -77,9 +67,8 @@ void MainWindow::refreshModel()
     // Set column headers and resize columns.
     model->setHeaderData(0, Qt::Horizontal, "Species");
     model->setHeaderData(1, Qt::Horizontal, "Length");
-    model->setHeaderData(2, Qt::Horizontal, "Diameter (in)");
-    model->setHeaderData(3, Qt::Horizontal, "Location");
-    model->setHeaderData(4, Qt::Horizontal, "Log Count");
+    model->setHeaderData(2, Qt::Horizontal, "Diameter");
+    model->setHeaderData(3, Qt::Horizontal, "Count");
 }
 
 void MainWindow::onEnterLogButtonClicked() {
