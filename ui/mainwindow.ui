@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>941</width>
-    <height>616</height>
+    <width>972</width>
+    <height>567</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -101,7 +101,7 @@
           <item>
            <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>Diameter</string>
+             <string>Diameter:</string>
             </property>
            </widget>
           </item>
@@ -126,7 +126,7 @@
           <item>
            <widget class="QLabel" name="label_7">
             <property name="text">
-             <string>Cost</string>
+             <string>Log Cost:</string>
             </property>
            </widget>
           </item>
@@ -134,6 +134,9 @@
            <widget class="QDoubleSpinBox" name="cost">
             <property name="prefix">
              <string>$</string>
+            </property>
+            <property name="minimum">
+             <double>0.010000000000000</double>
             </property>
            </widget>
           </item>
@@ -144,7 +147,7 @@
           <item>
            <widget class="QLabel" name="label_8">
             <property name="text">
-             <string>Quality</string>
+             <string>Quality:</string>
             </property>
            </widget>
           </item>
@@ -153,6 +156,15 @@
             <property name="toolTip">
              <string>(1 - 5)</string>
             </property>
+            <property name="wrapping">
+             <bool>true</bool>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>5</number>
+            </property>
            </widget>
           </item>
          </layout>
@@ -160,7 +172,7 @@
         <item>
          <widget class="QPushButton" name="enterLogButton">
           <property name="text">
-           <string>Enter Log</string>
+           <string>Add Log</string>
           </property>
          </widget>
         </item>
@@ -169,10 +181,81 @@
      </layout>
     </item>
     <item>
-     <widget class="QTableView" name="tableView">
-      <property name="autoFillBackground">
-       <bool>false</bool>
+     <widget class="QTabWidget" name="groupedLogsTab">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
+      <widget class="QWidget" name="groupedLogs">
+       <attribute name="title">
+        <string>Log Types</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <item>
+         <widget class="QTableView" name="groupedLogsTableView">
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="individualLogs">
+       <attribute name="title">
+        <string>Detailed View</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <widget class="QTableView" name="individualLogTableView">
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="logScrappingView">
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="scrapLogButton">
+            <property name="text">
+             <string>Scrap Log</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="makeFirewood">
+            <property name="text">
+             <string>Make Into Firewood</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -182,7 +265,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>941</width>
+     <width>972</width>
      <height>24</height>
     </rect>
    </property>
