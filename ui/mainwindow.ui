@@ -171,11 +171,11 @@
     <item>
      <widget class="QTabWidget" name="groupedLogsTab">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="groupedLogs">
        <attribute name="title">
-        <string>Tab 1</string>
+        <string>Log Types</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <item>
@@ -183,17 +183,33 @@
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="individualLogs">
        <attribute name="title">
-        <string>Tab 2</string>
+        <string>Detailed View</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
-         <widget class="QTableView" name="individualLogTableView"/>
+         <widget class="QTableView" name="individualLogTableView">
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

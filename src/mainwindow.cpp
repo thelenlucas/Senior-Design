@@ -10,7 +10,7 @@
     SELECT * from grouped_logs_view;
 )";
 
-#define LOGS_QUERY "SELECT * FROM logs_view;"
+#define LOGS_QUERY ("SELECT * FROM logs_view;")
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -54,6 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Connect the add button to the add log slot.
     // Note: With a query model displaying aggregated data, editing is not supported.
     connect(ui->enterLogButton, &QPushButton::clicked, this, &MainWindow::onEnterLogButtonClicked);
+    connect(ui->scrapLogButton, &QPushButton::clicked, this, &MainWindow::onScrapLogButtonClicked);
 }
 
 void MainWindow::refreshModel()
@@ -92,6 +93,7 @@ void MainWindow::refreshModel()
     logsModel->setHeaderData(3, Qt::Horizontal, "Quality");
     logsModel->setHeaderData(4, Qt::Horizontal, "Location");
     logsModel->setHeaderData(5, Qt::Horizontal, "Value");
+    logsModel->setHeaderData(6, Qt::Horizontal, "ID");
 }
 
 void MainWindow::onEnterLogButtonClicked() {
@@ -114,6 +116,32 @@ void MainWindow::onEnterLogButtonClicked() {
     Database db;
     Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, location, "", &db);
     db.insertLog(log);
+
+    // Refresh the model
+    refreshModel();
+}
+
+void MainWindow::onScrapLogButtonClicked() {
+    // Get the groupedLogsTab tab name
+    QString tabIndex = ui->groupedLogsTab->tabText(ui->groupedLogsTab->currentIndex());
+    std::vector<int> ids;
+    Database db;
+    auto sql = db.getDb();
+
+    if (tabIndex == 0) {
+        return; // Unimplemented
+    } else {
+        // Get the selected log ID
+        QModelIndex index = ui->individualLogTableView->currentIndex();
+        ids.push_back(index.sibling(index.row(), 6).data().toInt());
+    }
+    
+    // Delete all logs with the same ID
+    for (int id : ids) {
+        SQLite::Statement query(*sql, "DELETE FROM logs WHERE id = ?");
+        query.bind(1, id);
+        query.exec();
+    }
 
     // Refresh the model
     refreshModel();
