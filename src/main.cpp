@@ -11,15 +11,29 @@
 
 #include <QApplication>
 #include <QPushButton>
+#include <QThread>
 
 using namespace std;
+
+class Container : public QThread {
+private:
+    QApplication *app;
+public:
+    Container(QApplication *app) {
+        this->app = app;
+    }
+public:
+    void run() {
+        MainWindow window;
+        window.show();
+        app->exec();
+    }
+};
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
-    // Button with label
-    MainWindow window;
-    window.show();
+    Container *container = new Container(&app);
 
-    return app.exec();
+    container->run();
 }

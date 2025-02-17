@@ -11,7 +11,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # QT5
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Sql REQUIRED)
 add_subdirectory(${CMAKE_SOURCE_DIR}/SQLiteCpp)
 file(GLOB includes ${CMAKE_SOURCE_DIR}/include)
 
@@ -38,4 +38,4 @@ set_target_properties(logdb PROPERTIES
 # Specify the include directories.
 target_include_directories(logdb PUBLIC ${includes})
 
-target_link_libraries(logdb PRIVATE SQLiteCpp Qt5::Widgets)
+target_link_libraries(logdb PRIVATE SQLiteCpp Qt5::Widgets Qt5::Sql)

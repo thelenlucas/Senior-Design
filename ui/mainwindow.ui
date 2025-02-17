@@ -17,36 +17,154 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Inventory Management</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item alignment="Qt::AlignLeft">
-       <widget class="QLineEdit" name="speciesText"/>
-      </item>
-      <item alignment="Qt::AlignLeft">
-       <widget class="QSpinBox" name="lenFt"/>
-      </item>
-      <item alignment="Qt::AlignLeft">
-       <widget class="QSpinBox" name="lenIn"/>
-      </item>
-      <item alignment="Qt::AlignLeft">
-       <widget class="QSpinBox" name="diamIn"/>
-      </item>
-      <item alignment="Qt::AlignLeft">
-       <widget class="QDoubleSpinBox" name="cost"/>
-      </item>
-      <item alignment="Qt::AlignLeft">
-       <widget class="QSpinBox" name="quality"/>
-      </item>
+     <layout class="QVBoxLayout" name="logEntryLayout">
       <item>
-       <widget class="QPushButton" name="enterLogButton">
-        <property name="text">
-         <string>Enter Log</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Species</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="speciesText">
+            <property name="toolTip">
+             <string>Enter the species (&quot;Oak&quot;, &quot;&quot;Aspen&quot;, etc.)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>Location</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="locationEntry"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Length:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QSpinBox" name="lenFt"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>ft</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="diamIn"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>in</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Diameter</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QSpinBox" name="lenIn"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>in</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Cost</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="cost">
+            <property name="prefix">
+             <string>$</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Quality</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="quality">
+            <property name="toolTip">
+             <string>(1 - 5)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="enterLogButton">
+          <property name="text">
+           <string>Enter Log</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
@@ -68,18 +186,6 @@
      <height>24</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuHello_World">
-    <property name="title">
-     <string>Hello World!</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuSome_other_text">
-    <property name="title">
-     <string>Some other text!</string>
-    </property>
-   </widget>
-   <addaction name="menuHello_World"/>
-   <addaction name="menuSome_other_text"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

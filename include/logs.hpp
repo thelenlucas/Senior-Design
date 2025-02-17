@@ -53,6 +53,9 @@ public:
         std::optional<Database*> db = std::nullopt
     );
 
+    // Static method to create a vector of logs from a database
+    static std::vector<Log> logs();
+
     // Getters
     int getId() const {return id;} 
     std::string getSpecies() const {return species;} 
