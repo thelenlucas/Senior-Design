@@ -7,15 +7,18 @@
 #include "db.hpp"
 
 #define QUERY_STRING_LOGS R"(
-        SELECT 
-            species, 
-            len_quarters, 
-            diameter_quarters, 
-            location, 
-            Count(*) AS log_count
-        FROM logs
-        GROUP BY species, len_quarters, diameter_quarters, location
-    )";
+    SELECT 
+        species, 
+        CONCAT(
+            FLOOR(len_quarters / 48), 'ft ', 
+            FLOOR((len_quarters % 48) / 4), 'in'
+        ) AS length,
+        diameter_quarters / 4.0 AS diameter_inches,
+        location, 
+        COUNT(*) AS log_count
+    FROM logs
+    GROUP BY species, len_quarters, diameter_quarters, location
+)";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -43,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Set the model to the table view.
     ui->tableView->setModel(model);
+    refreshModel();
 
     // Resize the columns to fit the contents.
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -69,6 +73,13 @@ void MainWindow::refreshModel()
     if (model->lastError().isValid()) {
         qDebug() << "Query error:" << model->lastError().text();
     }
+
+    // Set column headers and resize columns.
+    model->setHeaderData(0, Qt::Horizontal, "Species");
+    model->setHeaderData(1, Qt::Horizontal, "Length");
+    model->setHeaderData(2, Qt::Horizontal, "Diameter (in)");
+    model->setHeaderData(3, Qt::Horizontal, "Location");
+    model->setHeaderData(4, Qt::Horizontal, "Log Count");
 }
 
 void MainWindow::onEnterLogButtonClicked() {
