@@ -13,6 +13,9 @@ public:
     // Set or update the logs data.
     void setLogs(const std::vector<Log>& logs);
 
+    // Update from the database.
+    void update();
+
     // QAbstractItemModel overrides:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;

@@ -53,9 +53,6 @@ public:
     // Gets a singular log from the database, given an ID
     Log getLog(uint id);
 
-    // Finds a log that matches the given log
-    std::optional<Log> findLog(Log log);
-
     // Gets all logs from the database
     std::vector<Log> allLogs();
 

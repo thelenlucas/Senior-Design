@@ -13,6 +13,14 @@ void LogTableModel::setLogs(const std::vector<Log> &logs)
     endResetModel();
 }
 
+void LogTableModel::update()
+{
+    beginResetModel();
+    Database db;
+    m_logs = db.allLogs();
+    endResetModel();
+}
+
 int LogTableModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
