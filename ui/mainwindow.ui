@@ -83,7 +83,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="diamIn"/>
+             <widget class="QSpinBox" name="lenIn"/>
             </item>
             <item>
              <widget class="QLabel" name="label_3">
@@ -108,14 +108,14 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
-             <widget class="QSpinBox" name="lenIn"/>
-            </item>
-            <item>
              <widget class="QLabel" name="label_6">
               <property name="text">
                <string>in</string>
               </property>
              </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="diamIn"/>
             </item>
            </layout>
           </item>
