@@ -52,6 +52,9 @@ public:
         std::string notes = ""
     );
 
+    // Gets a log from the database, given an ID
+    static Log fromID(uint id);
+
     // Inserts this item into the database
     void insert();
 

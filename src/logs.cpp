@@ -23,6 +23,24 @@ Log::Log(int id,
     this->notes = notes;
 }
 
+// Gets a log from the database, given an ID
+Log Log::fromID(uint id) {
+    auto sq = SQLite::Database(DATABASE_FILE, SQLite::OPEN_READONLY);
+    SQLite::Statement query(sq, "SELECT * FROM logs WHERE id = ?");
+    query.bind(1, id);
+    query.executeStep();
+    return Log(
+        query.getColumn("id"),
+        query.getColumn("species"),
+        query.getColumn("len_quarters"),
+        query.getColumn("diameter_quarters"),
+        query.getColumn("cost_cents_quarters"),
+        query.getColumn("quality"),
+        query.getColumn("location"),
+        query.getColumn("notes")
+    );
+}
+
 // Gets all logs from the database. This should
 // only be used for static purposes, as it is not
 // modifiable.
