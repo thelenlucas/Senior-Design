@@ -113,9 +113,8 @@ void MainWindow::onEnterLogButtonClicked() {
     int costQuarters = costCents / lenQuarters;
 
     // Create a log object, insert it into the database
-    Database db;
-    Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, location, "", &db);
-    db.insertLog(log);
+    Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, location);
+    log.insert();
 
     // Refresh the model
     refreshModel();

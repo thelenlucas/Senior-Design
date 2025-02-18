@@ -53,22 +53,8 @@ public:
     // Gets a singular log from the database, given an ID
     Log getLog(uint id);
 
-    // Gets all logs from the database
-    std::vector<Log> allLogs();
-
-    // Puts a new log into the database, returns the log that
-    // this log insertion refers to, could be new or an updated
-    // extant log
-    Log insertLog(Log log);
-
-    // Adds multiple logs to the database
-    void insertLogs(std::vector<Log> logs);
-
     // Updates a log in the database
     void updateLog(Log log);
-
-    // Updates multiple logs in the database
-    void updateLogs(std::vector<Log> logs);
 
     // Deletes a log from the database
     void deleteLog(Log log);
