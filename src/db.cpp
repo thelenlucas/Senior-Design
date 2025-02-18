@@ -41,29 +41,6 @@ void Database::updateLog(Log log) {
 
 }
 
-vector<Log> Database::allLogs() {
-    cout << "DATABASE: Getting all logs" << endl;
-
-    vector<Log> logs;
-    SQLite::Statement query(this->db, "SELECT id, species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes FROM logs");
-    while (query.executeStep()) {
-        Log log = Log(
-            query.getColumn(0).getInt(),
-            query.getColumn(1).getText(),
-            query.getColumn(2).getInt(),
-            query.getColumn(3).getInt(),
-            query.getColumn(4).getInt(),
-            query.getColumn(5).getInt(),
-            query.getColumn(6).getText(),
-            query.getColumn(7).getText(),
-            std::optional<Database*>(this)
-        );
-        logs.push_back(log);
-    }
-
-    return logs;
-}
-
 Log Database::getLog(uint id) {
     cout << "DATABASE: Getting log with ID " << id << endl;
 
@@ -79,23 +56,6 @@ Log Database::getLog(uint id) {
         query.getColumn(3).getInt(),
         query.getColumn(4).getInt(),
         query.getColumn(5).getText(),
-        query.getColumn(6).getText(),
-        std::optional<Database*>(this)
+        query.getColumn(6).getText()
     );
-}
-
-Log Database::insertLog(Log log) {
-    cout << "DATABASE: Inserting log with properties: " << log.getSpecies() << ", " << log.getLenQuarters() << ", " << log.getDiameterQuarters() << ", " << log.getQuality() << ", " << log.getLocation() << endl;
-
-    SQLite::Statement query(this->db, "INSERT INTO logs (species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    query.bind(1, log.getSpecies());
-    query.bind(2, log.getLenQuarters());
-    query.bind(3, log.getDiameterQuarters());
-    query.bind(4, log.getCostCentsQuarters());
-    query.bind(5, log.getQuality());
-    query.bind(6, log.getLocation());
-    query.bind(7, log.getNotes());
-    query.exec();
-
-    return log;
 }

@@ -3,6 +3,7 @@
 #include <QSqlDatabase>
 #include <QSqlQueryModel>
 #include <QSqlError>
+#include <QMessageBox>
 #include <QDebug>
 #include "db.hpp"
 
@@ -113,35 +114,29 @@ void MainWindow::onEnterLogButtonClicked() {
     int costQuarters = costCents / lenQuarters;
 
     // Create a log object, insert it into the database
-    Database db;
-    Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, location, "", &db);
-    db.insertLog(log);
+    Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, location);
+    log.insert();
 
     // Refresh the model
     refreshModel();
 }
 
 void MainWindow::onScrapLogButtonClicked() {
-    // Get the groupedLogsTab tab name
-    QString tabIndex = ui->groupedLogsTab->tabText(ui->groupedLogsTab->currentIndex());
-    std::vector<int> ids;
-    Database db;
-    auto sql = db.getDb();
-
-    if (tabIndex == 0) {
-        return; // Unimplemented
-    } else {
-        // Get the selected log ID
-        QModelIndex index = ui->individualLogTableView->currentIndex();
-        ids.push_back(index.sibling(index.row(), 6).data().toInt());
-    }
+    // Get the selected log ID
+    QModelIndex index = ui->individualLogTableView->currentIndex();
+    Log log = Log::fromID(index.sibling(index.row(), 6).data().toInt());
     
-    // Delete all logs with the same ID
-    for (int id : ids) {
-        SQLite::Statement query(*sql, "DELETE FROM logs WHERE id = ?");
-        query.bind(1, id);
-        query.exec();
+    // Confirm with the user if the log should be deleted, if that log
+    // is being actively used in a cutlist
+    if (log.isActivelyUsed()) {
+        QMessageBox::StandardButton reply = QMessageBox::question(this, "Log in use", "This log is actively used in a cutlist. Are you sure you want to scrap it?", QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::No) {
+            return;
+        }
     }
+
+    // Delete the log
+    log.remove();
 
     // Refresh the model
     refreshModel();

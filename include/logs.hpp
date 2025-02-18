@@ -49,9 +49,14 @@ public:
         uint cost_cents_quarters,
         uint quality,
         std::string location = "",
-        std::string notes = "",
-        std::optional<Database*> db = std::nullopt
+        std::string notes = ""
     );
+
+    // Gets a log from the database, given an ID
+    static Log fromID(uint id);
+
+    // Inserts this item into the database
+    void insert();
 
     // Static method to create a vector of logs from a database
     static std::vector<Log> logs();
@@ -64,23 +69,16 @@ public:
     uint getCostCentsQuarters() const {return cost_cents_quarters;} 
     uint getQuality() const {return quality;} 
     std::string getLocation() const {return location;} 
-    std::string getNotes() const {return notes;} 
-    std::optional<Database*> getDatabase() {return db;}
+    std::string getNotes() const {return notes;}
 
-    // ID Setter, should be only used by the database, and with caution
-    void setID(int id) {this->id = id;}
-
-    // Connects this log to a database
-    void connect(Database* db);
-
-    // Returns true if connected to a database, false otherwise
-    bool isConnected() {return db.has_value();}
-
-    // Removes this item from the database, throws an error if this is disconnected
+    // Removes this item from the database
     void remove();
 
-    // Updates this item in the database, throws an error if this is disconnected
+    // Updates this item in the database
     void update();
+
+    // Returns true if this object is connected to a cutlist cut that isn't done yet
+    bool isActivelyUsed();
 };
 
 #endif // TYPES_HPP
