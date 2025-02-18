@@ -7,12 +7,6 @@
 #include <QDebug>
 #include "db.hpp"
 
-#define GROUPED_LOGS_QUERY R"(
-    SELECT * from grouped_logs_view;
-)";
-
-#define LOGS_QUERY ("SELECT * FROM logs_view;")
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -30,8 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     auto *groupedModel = new QSqlQueryModel(this);
     auto *logsModel = new QSqlQueryModel(this);
-    QString queryStr = GROUPED_LOGS_QUERY;
-    QString logsQueryStr = LOGS_QUERY;
+    QString queryStr = "SELECT * from grouped_logs_view";
+    QString logsQueryStr = "SELECT * FROM logs_view";
     groupedModel->setQuery(queryStr, db);
     logsModel->setQuery(logsQueryStr, db);
 
@@ -67,8 +61,8 @@ void MainWindow::refreshModel()
     auto *logsModel = qobject_cast<QSqlQueryModel*>(ui->individualLogTableView->model());
 
     // Define the query string (could also be a member variable)
-    QString queryStr = GROUPED_LOGS_QUERY;
-    QString logsQueryStr = LOGS_QUERY;
+    QString queryStr = "SELECT * from grouped_logs_view";
+    QString logsQueryStr = "SELECT * FROM logs_view";
 
     // Re-run the query.
     groupedModel->setQuery(queryStr, QSqlDatabase::database());
