@@ -269,8 +269,25 @@
      <height>24</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="projectsEditorAction"/>
+   </widget>
+   <addaction name="menu_File"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionMenu">
+   <property name="text">
+    <string>Menu</string>
+   </property>
+  </action>
+  <action name="projectsEditorAction">
+   <property name="text">
+    <string>Projects</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

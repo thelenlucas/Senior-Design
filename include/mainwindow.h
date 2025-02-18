@@ -19,6 +19,7 @@ public:
 private slots:
     void onEnterLogButtonClicked();
     void onScrapLogButtonClicked();
+    void onProjectEditActionTriggered();
 
 private:
     Ui::MainWindow *ui;

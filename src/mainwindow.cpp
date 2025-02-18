@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include "db.hpp"
+#include "project_editor.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -50,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Note: With a query model displaying aggregated data, editing is not supported.
     connect(ui->enterLogButton, &QPushButton::clicked, this, &MainWindow::onEnterLogButtonClicked);
     connect(ui->scrapLogButton, &QPushButton::clicked, this, &MainWindow::onScrapLogButtonClicked);
+    connect(ui->projectsEditorAction, &QAction::triggered, this, &MainWindow::onProjectEditActionTriggered);
 }
 
 void MainWindow::refreshModel()
@@ -134,6 +136,11 @@ void MainWindow::onScrapLogButtonClicked() {
 
     // Refresh the model
     refreshModel();
+}
+
+void MainWindow::onProjectEditActionTriggered() {
+   ProjectEditorWindow *projectEditor = new ProjectEditorWindow(this);
+   projectEditor->show();
 }
 
 MainWindow::~MainWindow()
