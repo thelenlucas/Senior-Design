@@ -7,11 +7,9 @@
 #include <QDebug>
 #include "db.hpp"
 
-#define GROUPED_LOGS_QUERY R"(
-    SELECT * from grouped_logs_view;
-)";
+#define GROUPED_LOGS_QUERY R"(SELECT * from grouped_logs_view;)"
 
-#define LOGS_QUERY ("SELECT * FROM logs_view;")
+#define LOGS_QUERY "SELECT * FROM logs_view;"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
