@@ -17,7 +17,8 @@ Person(sawyer, "Sawyer")
 ContainerDb(db, "Inventory Database", "SQLite3", $sprite=sqlite)
 
 Container_Boundary(cutlist, "Cutlist Window") {
-    Component(entry, "Order Entry Widget", "QMQMdiSubWindow", "Create and edit orders as groups of parts", $sprite=qt_original)
+    Component(common, "Common Cut Maker", "QMdiSubWindow", "Creates common cuts", $sprite=qt_original)
+    Component(entry, "Order Entry Widget", "QMdiSubWindow", "Create and edit orders as groups of parts", $sprite=qt_original)
     Component(entry_view, "Order Entry View", "QTableView", $sprite=qt_original)
     Component(entry_model, "Order Entry Model", "QSqlQueryModel", $sprite=qt_original)
     Rel(entry, entry_view, "Displays")
@@ -37,6 +38,8 @@ Container_Boundary(cutlist, "Cutlist Window") {
     Rel(entry, interface, "Uses")
 
     Rel(interface, db, "Validates and writes")
+
+    Rel_L(common, db, "Gets Logs,\nWrites Cuts")
 }
 
 Rel(sawyer, entry, "Enters new orders, modifies existing ones")
