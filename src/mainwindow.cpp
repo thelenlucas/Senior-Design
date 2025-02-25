@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include "db.hpp"
+#include "project_editor.h"
 
 #define GROUPED_LOGS_QUERY R"(SELECT * from grouped_logs_view;)"
 
@@ -20,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Establish database connection.
     // Yeah this opens another connection, but it's read-only
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("test.db"); // Update this to your actual database path.
+    db.setDatabaseName(DATABASE_FILE);
     if (!db.open()) {
         qDebug() << "Database error:" << db.lastError().text();
         return; // Early return if the connection fails.
@@ -28,8 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     auto *groupedModel = new QSqlQueryModel(this);
     auto *logsModel = new QSqlQueryModel(this);
-    QString queryStr = GROUPED_LOGS_QUERY;
-    QString logsQueryStr = LOGS_QUERY;
+    QString queryStr = "SELECT * from grouped_logs_view";
+    QString logsQueryStr = "SELECT * FROM logs_view";
     groupedModel->setQuery(queryStr, db);
     logsModel->setQuery(logsQueryStr, db);
 
@@ -54,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Note: With a query model displaying aggregated data, editing is not supported.
     connect(ui->enterLogButton, &QPushButton::clicked, this, &MainWindow::onEnterLogButtonClicked);
     connect(ui->scrapLogButton, &QPushButton::clicked, this, &MainWindow::onScrapLogButtonClicked);
+    connect(ui->projectsEditorAction, &QAction::triggered, this, &MainWindow::onProjectEditActionTriggered);
 }
 
 void MainWindow::refreshModel()
@@ -65,8 +67,8 @@ void MainWindow::refreshModel()
     auto *logsModel = qobject_cast<QSqlQueryModel*>(ui->individualLogTableView->model());
 
     // Define the query string (could also be a member variable)
-    QString queryStr = GROUPED_LOGS_QUERY;
-    QString logsQueryStr = LOGS_QUERY;
+    QString queryStr = "SELECT * from grouped_logs_view";
+    QString logsQueryStr = "SELECT * FROM logs_view";
 
     // Re-run the query.
     groupedModel->setQuery(queryStr, QSqlDatabase::database());
@@ -138,6 +140,11 @@ void MainWindow::onScrapLogButtonClicked() {
 
     // Refresh the model
     refreshModel();
+}
+
+void MainWindow::onProjectEditActionTriggered() {
+   ProjectEditorWindow *projectEditor = new ProjectEditorWindow(this);
+   projectEditor->show();
 }
 
 MainWindow::~MainWindow()
