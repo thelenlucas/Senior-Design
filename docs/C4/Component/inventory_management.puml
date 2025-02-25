@@ -1,0 +1,48 @@
+@startuml Inventory
+
+!include <C4/C4_Context.puml>
+!include <C4/C4_Container.puml>
+!include <C4/C4_Component.puml>
+
+!$ICONURL = "https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons"
+
+!include $ICONURL/common.puml
+
+!include $ICONURL/govicons/file_excel.puml
+!include $ICONURL/devicons2/qt_original.puml
+!include $ICONURL/devicons/html5.puml
+!include $ICONURL/devicons2/sqlite.puml
+!include $ICONURL/devicons2/cplusplus.puml
+
+Person(inv, "Inventory Manger")
+
+ContainerDb(db, "Inventory Database", "SQLite3", $sprite=sqlite)
+
+System_Ext(sheet, "Spreadsheet", "Legacy Inventory Management System", $sprite=file_excel)
+
+Container_Boundary(logs, "Inventory Management Window", "QMainWindow") {
+    Component(entry, "Log Entry Panel", "QMainWindow", $sprite=qt_original)
+    Component(individual, "Individual Logs", "QTableView", $sprite=qt_original)
+    Component(group, "Grouped Logs", "QTableView", $sprite=qt_original)
+    Component(i_model, "Individual Logs Model", "QSqlQueryModel", $sprite=qt_original)
+    Component(g_model, "Grouped Logs Model", "QSqlQueryModel", $sprite=qt_original)
+    Component(handler, "Log Insertion Handler", "C++", $sprite=cplusplus)
+    Component(importer, "Spreadsheet Importer", "QMainWindow", $sprite=qt_original)
+
+    Rel(entry, handler, "Sends new logs")
+    Rel(individual, i_model, "Displays")
+    Rel(group, g_model, "Displays")
+    Rel(importer, handler, "Sends logs")
+}
+Rel(i_model, db, "Queries")
+Rel(g_model, db, "Queries")
+Rel(handler, db, "Validates and inserts")
+
+Rel(inv, entry, "Adds new logs")
+Rel(inv, individual, "Views")
+Rel(inv, group, "Views")
+Rel_U(importer, sheet, "Gets legacy data from", "xlsx")
+
+SHOW_LEGEND()
+
+@enduml

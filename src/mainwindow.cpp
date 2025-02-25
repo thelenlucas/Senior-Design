@@ -8,6 +8,10 @@
 #include "db.hpp"
 #include "project_editor.h"
 
+#define GROUPED_LOGS_QUERY R"(SELECT * from grouped_logs_view;)"
+
+#define LOGS_QUERY "SELECT * FROM logs_view;"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
