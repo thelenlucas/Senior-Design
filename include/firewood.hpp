@@ -1,27 +1,12 @@
-// CREATE TABLE firewood (
-//     id       INTEGER PRIMARY KEY AUTOINCREMENT
-//                      UNIQUE
-//                      NOT NULL,
-//     species  TEXT    NOT NULL,
-//     drying   INTEGER NOT NULL
-//                      CHECK ( (drying BETWEEN 0 AND 3) ),
-//     feet_3   INTEGER CHECK ( (feet_3 >= 0) ) 
-//                      NOT NULL,
-//     location VARCHAR,
-//     notes    TEXT,
-//     media    BLOB
-// );
-
 #include <string>
 #include <stdexcept>
 #include <optional>
 #include "types.hpp"
+#include "interfaces.hpp"
 
 #define FIREWOOD_LOGGING true
 
-class Database;
-
-class Firewood
+class Firewood : Manufacturable<Firewood>
 {
 private:
     int id;
@@ -38,8 +23,7 @@ public:
         Drying drying,
         uint feet_3,
         std::string location = "",
-        std::string notes = "",
-        std::optional<Database *> db = std::nullopt
+        std::string notes = ""
     );
 
     // Getters
@@ -52,4 +36,20 @@ public:
 
     // One chord = 128 cubic feet
     float getChords() { return feet_3 / 128.0; }
+
+    // Required for persistent interface
+    int get_id() const override { return id; }
+    bool insert() override;
+    bool update() override;
+    static std::optional<Firewood> get_by_id(int id);
+    static std::vector<Firewood> get_all();
+
+    // Required for manufacturable interface
+    static std::vector<Firewood> make_from_log(
+        Log log,
+        int len_quarters,
+        std::optional<int> thickness_quarters = 0,
+        std::optional<int> width_quarters = 0,
+        std::optional<Drying> drying = std::nullopt
+    );
 };
