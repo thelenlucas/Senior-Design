@@ -15,7 +15,6 @@
 #include <string>
 #include <stdexcept>
 #include <optional>
-#include "db.hpp"
 #include "types.hpp"
 
 #define FIREWOOD_LOGGING true
@@ -32,9 +31,6 @@ private:
     std::string location;
     std::string notes;
 
-    // Database object for data
-    std::optional<Database *> db;    
-
 public:
     Firewood(
         int id,
@@ -46,10 +42,6 @@ public:
         std::optional<Database *> db = std::nullopt
     );
 
-    // Class function, takes in a database and returns all
-    // firewood in the database as a vector
-    static std::vector<Firewood> allFirewood(Database *db);
-
     // Getters
     int getId() { return id; }
     std::string getSpecies() { return species; }
@@ -60,16 +52,4 @@ public:
 
     // One chord = 128 cubic feet
     float getChords() { return feet_3 / 128.0; }
-
-    // Connects this log to a database
-    void connect(Database *db);
-
-    // Removes this item from the database, throws an error if this is disconnected
-    void remove();
-
-    // Updates this item in the database, throws an error if this is disconnected
-    void update();
-
-    // Returns true if connected to a database, false otherwise
-    bool isConnected() { return db.has_value(); }
 };

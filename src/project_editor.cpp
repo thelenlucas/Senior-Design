@@ -7,7 +7,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QDebug>
-#include "db.hpp"
+#include "types.hpp"
 
 ProjectEditorWindow::ProjectEditorWindow(QWidget *parent) :
     QMainWindow(parent),
