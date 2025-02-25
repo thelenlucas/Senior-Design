@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Establish database connection.
     // Yeah this opens another connection, but it's read-only
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("test.db"); // Update this to your actual database path.
+    db.setDatabaseName(DATABASE_FILE);
     if (!db.open()) {
         qDebug() << "Database error:" << db.lastError().text();
         return; // Early return if the connection fails.

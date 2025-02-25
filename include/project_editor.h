@@ -17,6 +17,11 @@ public:
 private:
     Ui::ProjectsWindow *ui;
 
+    void updateProjects();
+    void updateDisplay();
+
+private slots:
+    void onProjectSelected();
 };
 
 #endif // PROJECT_EDITOR_H
