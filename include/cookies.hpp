@@ -17,7 +17,6 @@
 #include <string>
 #include <stdexcept>
 #include <optional>
-#include "db.hpp"
 #include "types.hpp"
 
 #define COOKIES_LOGGING true
@@ -33,10 +32,6 @@ private:
     Drying drying;
     std::string location;
     std::string notes;
-
-    // Database object for data
-    std::optional<Database*> db;
-
 public:
     Cookie(int id,
         std::string species,
@@ -56,16 +51,4 @@ public:
     Drying getDrying() {return drying;}
     std::string getLocation() {return location;}
     std::string getNotes() {return notes;}
-
-    // Connects this log to a database
-    void connect(Database* db);
-
-    // Removes this item from the database, throws an error if this is disconnected
-    void remove();
-
-    // Updates this item in the database, throws an error if this is disconnected
-    void update();
-
-    // Returns true if this log is connected to a database
-    bool isConnected() {return this->db.has_value();}
 };

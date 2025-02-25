@@ -1,8 +1,29 @@
 #include "logs.hpp"
+#include "types.hpp"
 
 #include <string>
 #include <SQLiteCpp/SQLiteCpp.h>
 #include <stdexcept>
+#include <iostream>
+
+// Schema:
+// CREATE TABLE logs (
+//     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+//     species             VARCHAR NOT NULL,
+//     len_quarters        INT     NOT NULL
+//                                 CHECK ( (len_quarters > 0) ),
+//     diameter_quarters   INT     NOT NULL
+//                                 CHECK ( (diameter_quarters > 0) ),
+//     cost_cents_quarters INT     NOT NULL
+//                                 CHECK ( (cost_cents_quarters > 0) ),
+//     quality             INTEGER CHECK ( (quality BETWEEN 1 AND 5) ),
+//     location            TEXT    REFERENCES storage_bins (name),
+//     notes               TEXT,
+//     media               BLOB,
+//     scrapped            INTEGER NOT NULL
+//                                 DEFAULT (0) 
+// );
+
 
 Log::Log(int id,
     std::string species,
@@ -23,52 +44,28 @@ Log::Log(int id,
     this->notes = notes;
 }
 
-// Gets a log from the database, given an ID
-Log Log::fromID(uint id) {
-    auto sq = SQLite::Database(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(sq, "SELECT * FROM logs WHERE id = ?");
+std::optional<Log> Log::get_by_id(int id) {
+    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
+    SQLite::Statement query(db, "SELECT * FROM logs WHERE id = ?;");
     query.bind(1, id);
-    query.executeStep();
-    return Log(
-        query.getColumn("id"),
-        query.getColumn("species"),
-        query.getColumn("len_quarters"),
-        query.getColumn("diameter_quarters"),
-        query.getColumn("cost_cents_quarters"),
-        query.getColumn("quality"),
-        query.getColumn("location"),
-        query.getColumn("notes")
-    );
-}
-
-// Gets all logs from the database. This should
-// only be used for static purposes, as it is not
-// modifiable.
-std::vector<Log> Log::logs() {
-    auto sq = SQLite::Database(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(sq, "SELECT * FROM logs");
-    std::vector<Log> logs;
-    
-    while (query.executeStep()) {
-        logs.push_back(Log(
-            query.getColumn("id"),
-            query.getColumn("species"),
-            query.getColumn("len_quarters"),
-            query.getColumn("diameter_quarters"),
-            query.getColumn("cost_cents_quarters"),
-            query.getColumn("quality"),
-            query.getColumn("location"),
-            query.getColumn("notes")
-        ));
+    if (query.executeStep()) {
+        return Log(
+            query.getColumn(0).getInt(),
+            query.getColumn(1).getText(),
+            query.getColumn(2).getInt(),
+            query.getColumn(3).getInt(),
+            query.getColumn(4).getInt(),
+            query.getColumn(5).getInt(),
+            query.getColumn(6).getText(),
+            query.getColumn(7).getText()
+        );
     }
-
-    return logs;
+    return std::nullopt;
 }
 
-// Inserts this item into the database
-void Log::insert() {
-    auto sq = SQLite::Database(DATABASE_FILE, SQLite::OPEN_READWRITE);
-    SQLite::Statement query(sq, "INSERT INTO logs (species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes) VALUES (?, ?, ?, ?, ?, ?, ?)");
+bool Log::insert() {
+    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
+    SQLite::Statement query(db, "INSERT INTO logs (species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes) VALUES (?, ?, ?, ?, ?, ?, ?);");
     query.bind(1, this->species);
     query.bind(2, this->len_quarters);
     query.bind(3, this->diameter_quarters);
@@ -76,21 +73,23 @@ void Log::insert() {
     query.bind(5, this->quality);
     query.bind(6, this->location);
     query.bind(7, this->notes);
-    query.exec();
+    auto ret = query.exec() > 0;
+
+    if (ret) {
+        this->id = db.getLastInsertRowid();
+    }
+
+    // Cout exception if LOGS_LOGGING
+    if (LOGS_LOGGING && !ret) {
+        std::cout << "Failed to insert log into database" << std::endl;
+    }
+
+    return ret;
 }
 
-// Removes this item from the database
-void Log::remove() {
-    auto sq = SQLite::Database(DATABASE_FILE, SQLite::OPEN_READWRITE);
-    SQLite::Statement query(sq, "DELETE FROM logs WHERE id = ?");
-    query.bind(1, this->id);
-    query.exec();
-}
-
-// Updates this item in the database
-void Log::update() {
-    auto sq = SQLite::Database(DATABASE_FILE, SQLite::OPEN_READWRITE);
-    SQLite::Statement query(sq, "UPDATE logs SET species = ?, len_quarters = ?, diameter_quarters = ?, cost_cents_quarters = ?, quality = ?, location = ?, notes = ? WHERE id = ?");
+bool Log::update() {
+    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
+    SQLite::Statement query(db, "UPDATE logs SET species = ?, len_quarters = ?, diameter_quarters = ?, cost_cents_quarters = ?, quality = ?, location = ?, notes = ? WHERE id = ?;");
     query.bind(1, this->species);
     query.bind(2, this->len_quarters);
     query.bind(3, this->diameter_quarters);
@@ -99,13 +98,43 @@ void Log::update() {
     query.bind(6, this->location);
     query.bind(7, this->notes);
     query.bind(8, this->id);
-    query.exec();
+    auto ret = query.exec() > 0;
+
+    // Cout exception if LOGS_LOGGING
+    if (LOGS_LOGGING && !ret) {
+        std::cout << "Failed to update log in database" << std::endl;
+    }
+
+    return ret;
 }
 
-bool Log::isActivelyUsed() {
-    auto sq = SQLite::Database(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(sq, "SELECT l.*, COUNT(c.id) AS cutlist_count FROM logs l LEFT JOIN cutlist c ON c.log_id = l.id AND c.done <> 1 WHERE l.id = ? GROUP BY l.id");
+std::vector<Log> Log::get_all() {
+    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
+    SQLite::Statement query(db, "SELECT * FROM logs;");
+    std::vector<Log> logs;
+    while (query.executeStep()) {
+        logs.push_back(Log(
+            query.getColumn(0).getInt(),
+            query.getColumn(1).getText(),
+            query.getColumn(2).getInt(),
+            query.getColumn(3).getInt(),
+            query.getColumn(4).getInt(),
+            query.getColumn(5).getInt(),
+            query.getColumn(6).getText(),
+            query.getColumn(7).getText()
+        ));
+    }
+    return logs;
+}
+
+void Log::scrap() {
+    // Set the scrapped column to 1 in the database
+    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
+    SQLite::Statement query(db, "UPDATE logs SET scrapped = 1 WHERE id = ?;");
     query.bind(1, this->id);
-    query.executeStep();
-    return (query.getColumn("cutlist_count").getInt() > 0);
+    query.exec();
+
+    if (LOGS_LOGGING) {
+        std::cout << "Log " << this->id << " scrapped" << std::endl;
+    }
 }

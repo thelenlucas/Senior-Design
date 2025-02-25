@@ -5,12 +5,13 @@
 #include <QSqlError>
 #include <QMessageBox>
 #include <QDebug>
-#include "db.hpp"
 #include "project_editor.h"
+#include <string>
+#include "logs.hpp"
+#include "types.hpp"
 
-#define GROUPED_LOGS_QUERY R"(SELECT * from grouped_logs_view;)"
-
-#define LOGS_QUERY "SELECT * FROM logs_view;"
+#define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
+#define LOGS_QUERY "SELECT * FROM logs_view"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,8 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     auto *groupedModel = new QSqlQueryModel(this);
     auto *logsModel = new QSqlQueryModel(this);
-    QString queryStr = "SELECT * from grouped_logs_view";
-    QString logsQueryStr = "SELECT * FROM logs_view";
+    QString queryStr = GROUPED_LOGS_QUERY;
+    QString logsQueryStr = LOGS_QUERY;
     groupedModel->setQuery(queryStr, db);
     logsModel->setQuery(logsQueryStr, db);
 
@@ -67,8 +68,8 @@ void MainWindow::refreshModel()
     auto *logsModel = qobject_cast<QSqlQueryModel*>(ui->individualLogTableView->model());
 
     // Define the query string (could also be a member variable)
-    QString queryStr = "SELECT * from grouped_logs_view";
-    QString logsQueryStr = "SELECT * FROM logs_view";
+    QString queryStr = GROUPED_LOGS_QUERY;
+    QString logsQueryStr = LOGS_QUERY;
 
     // Re-run the query.
     groupedModel->setQuery(queryStr, QSqlDatabase::database());
@@ -81,20 +82,6 @@ void MainWindow::refreshModel()
     if (logsModel->lastError().isValid()) {
         qDebug() << "Query error:" << logsModel->lastError().text();
     }
-
-    // Set column headers and resize columns.
-    groupedModel->setHeaderData(0, Qt::Horizontal, "Species");
-    groupedModel->setHeaderData(1, Qt::Horizontal, "Length");
-    groupedModel->setHeaderData(2, Qt::Horizontal, "Diameter");
-    groupedModel->setHeaderData(3, Qt::Horizontal, "Count");
-
-    logsModel->setHeaderData(0, Qt::Horizontal, "Species");
-    logsModel->setHeaderData(1, Qt::Horizontal, "Length");
-    logsModel->setHeaderData(2, Qt::Horizontal, "Diameter");
-    logsModel->setHeaderData(3, Qt::Horizontal, "Quality");
-    logsModel->setHeaderData(4, Qt::Horizontal, "Location");
-    logsModel->setHeaderData(5, Qt::Horizontal, "Value");
-    logsModel->setHeaderData(6, Qt::Horizontal, "ID");
 }
 
 void MainWindow::onEnterLogButtonClicked() {
@@ -105,7 +92,7 @@ void MainWindow::onEnterLogButtonClicked() {
     int diamIn = ui->diamIn->value();
     double costVal = ui->cost->value();
     int quality = ui->quality->value();
-    string location = ui->locationEntry->text().toStdString();
+    std::string location = ui->locationEntry->text().toStdString();
 
     int lenQuarters = (lenFt * 12 + lenIn) * 4;
     int diamQuarters = diamIn * 4;
@@ -124,21 +111,18 @@ void MainWindow::onEnterLogButtonClicked() {
 void MainWindow::onScrapLogButtonClicked() {
     // Get the selected log ID
     QModelIndex index = ui->individualLogTableView->currentIndex();
-    Log log = Log::fromID(index.sibling(index.row(), 6).data().toInt());
-    
-    // Confirm with the user if the log should be deleted, if that log
-    // is being actively used in a cutlist
-    if (log.isActivelyUsed()) {
-        QMessageBox::StandardButton reply = QMessageBox::question(this, "Log in use", "This log is actively used in a cutlist. Are you sure you want to scrap it?", QMessageBox::Yes | QMessageBox::No);
-        if (reply == QMessageBox::No) {
-            return;
-        }
+    std::optional<Log> log = Log::get_by_id(index.sibling(index.row(), 0).data().toInt());
+
+    // If the log is not found, return, after displaying an error message
+    if (!log) {
+        QMessageBox::critical(this, "Error", "Log not found");
+        return;
     }
 
-    // Delete the log
-    log.remove();
+    // Scrap the log
+    log->scrap();
 
-    // Refresh the model
+    // Update the model
     refreshModel();
 }
 
