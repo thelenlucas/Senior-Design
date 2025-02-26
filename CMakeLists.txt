@@ -5,6 +5,12 @@ project(LogDBProject)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Option to static link Qt5
+option(STATIC_LINK_QT "Link Qt libraries statically" OFF)
+if(STATIC_LINK_QT)
+    add_definitions(-DQT_STATIC)
+endif()
+
 # Enable automoc, autouic, and autorcc
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
