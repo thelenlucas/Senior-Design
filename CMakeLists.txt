@@ -12,8 +12,16 @@ set(CMAKE_AUTOUIC ON)
 
 # QT5
 find_package(Qt5 COMPONENTS Widgets Sql REQUIRED)
-add_subdirectory(${CMAKE_SOURCE_DIR}/SQLiteCpp)
 file(GLOB includes ${CMAKE_SOURCE_DIR}/include)
+
+# Fetchcontent for SQLiteCpp, tag 3.3.2
+include(FetchContent)
+FetchContent_Declare(
+    SQLiteCpp
+    GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
+    GIT_TAG        3.3.2
+)
+FetchContent_MakeAvailable(SQLiteCpp)
 
 # Specify the source files for the executable.
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
