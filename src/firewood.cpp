@@ -6,6 +6,8 @@
 #include <SQLiteCpp/SQLiteCpp.h>
 #include "logs.hpp"
 #include <math.h>
+#include <iostream>
+#include <iomanip>
 
 // Schema:
 // CREATE TABLE firewood (
@@ -30,6 +32,7 @@ Firewood::Firewood(
     std::string species,
     Drying drying,
     uint feet_3,
+    uint taken_len_quarters,
     std::string location,
     std::string notes
 ) {
@@ -37,12 +40,14 @@ Firewood::Firewood(
     this->species = species;
     this->drying = drying;
     this->feet_3 = feet_3;
+    this->taken_len_quarters = taken_len_quarters;
     this->location = location;
     this->notes = notes;
 }
 
 // Insert the object in the database
 bool Firewood::insert() {
+    if (FIREWOOD_LOGGING) std::cout << "Inserting firewood: " << this->species << std::endl;
     SQLite::Database db("firewood.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
     SQLite::Statement query(db, "INSERT INTO firewood (species, drying, feet_3, location, notes) VALUES (?, ?, ?, ?, ?)");
     query.bind(1, this->species);
@@ -57,6 +62,7 @@ bool Firewood::insert() {
 
 // Update the object in the database
 bool Firewood::update() {
+    if (FIREWOOD_LOGGING) std::cout << "Updating firewood: " << this->id << std::endl;
     SQLite::Database db("firewood.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
     SQLite::Statement query(db, "UPDATE firewood SET species = ?, drying = ?, feet_3 = ?, location = ?, notes = ? WHERE id = ?");
     query.bind(1, this->species);
@@ -71,6 +77,7 @@ bool Firewood::update() {
 
 // Get by ID
 std::optional<Firewood> Firewood::get_by_id(int id) {
+    if (FIREWOOD_LOGGING) std::cout << "Getting firewood by id: " << id << std::endl;
     SQLite::Database db("firewood.db", SQLite::OPEN_READONLY);
     SQLite::Statement query(db, "SELECT * FROM firewood WHERE id = ?");
     query.bind(1, id);
@@ -80,6 +87,7 @@ std::optional<Firewood> Firewood::get_by_id(int id) {
             query.getColumn(2).getText(),
             static_cast<Drying>(query.getColumn(3).getInt()),
             query.getColumn(4).getInt(),
+            query.getColumn(8).getInt(),
             query.getColumn(5).getText(),
             query.getColumn(6).getText()
         );
@@ -98,6 +106,7 @@ std::vector<Firewood> Firewood::get_all() {
             query.getColumn(2).getText(),
             static_cast<Drying>(query.getColumn(3).getInt()),
             query.getColumn(4).getInt(),
+            query.getColumn(8).getInt(),
             query.getColumn(5).getText(),
             query.getColumn(6).getText()
         ));
@@ -121,6 +130,6 @@ std::vector<Firewood> Firewood::make_from_log(
 
     std::vector<Firewood> firewood;
     // This is the most simple cut that exists, we just return a single item
-    firewood.push_back(Firewood(0, log.getSpecies(), drying.value_or(Drying::WET), feet_3));
+    firewood.push_back(Firewood(0, log.getSpecies(), drying.value_or(Drying::KILN_DRIED), length_feet, feet_3));
     return firewood;
 }

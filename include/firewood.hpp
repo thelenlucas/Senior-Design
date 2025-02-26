@@ -3,6 +3,7 @@
 #include <optional>
 #include "types.hpp"
 #include "interfaces.hpp"
+#include "manufacturable.hpp"
 
 #define FIREWOOD_LOGGING true
 
@@ -15,6 +16,7 @@ private:
     uint feet_3;
     std::string location;
     std::string notes;
+    uint taken_len_quarters;
 
 public:
     Firewood(
@@ -22,6 +24,7 @@ public:
         std::string species,
         Drying drying,
         uint feet_3,
+        uint taken_len_quarters,
         std::string location = "",
         std::string notes = ""
     );

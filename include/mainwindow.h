@@ -19,6 +19,7 @@ public:
 private slots:
     void onEnterLogButtonClicked();
     void onScrapLogButtonClicked();
+    void onFirewoodButtonClicked();
     void onProjectEditActionTriggered();
 
 private:
