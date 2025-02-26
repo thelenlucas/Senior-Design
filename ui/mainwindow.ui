@@ -183,7 +183,7 @@
     <item>
      <widget class="QTabWidget" name="groupedLogsTab">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="groupedLogs">
        <attribute name="title">
@@ -246,7 +246,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="makeFirewood">
+           <widget class="QPushButton" name="makeFirewoodButton">
             <property name="text">
              <string>Make Into Firewood</string>
             </property>

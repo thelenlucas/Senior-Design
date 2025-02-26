@@ -9,6 +9,9 @@
 #include <string>
 #include "logs.hpp"
 #include "types.hpp"
+#include "firewood.hpp"
+#include <iostream>
+#include <iomanip>
 
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
@@ -56,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Note: With a query model displaying aggregated data, editing is not supported.
     connect(ui->enterLogButton, &QPushButton::clicked, this, &MainWindow::onEnterLogButtonClicked);
     connect(ui->scrapLogButton, &QPushButton::clicked, this, &MainWindow::onScrapLogButtonClicked);
+    connect(ui->makeFirewoodButton, &QPushButton::clicked, this, &MainWindow::onFirewoodButtonClicked);
     connect(ui->projectsEditorAction, &QAction::triggered, this, &MainWindow::onProjectEditActionTriggered);
 }
 
@@ -123,6 +127,33 @@ void MainWindow::onScrapLogButtonClicked() {
     log->scrap();
 
     // Update the model
+    refreshModel();
+}
+
+void MainWindow::onFirewoodButtonClicked() {
+    // Get the selected log ID, and get log object
+    std::optional<Log> opt = Log::get_by_id(ui->individualLogTableView->currentIndex().siblingAtColumn(0).data().toInt());
+
+    if (!opt) {
+        QMessageBox::critical(this, "Error", "Log not found");
+        return;
+    }
+
+    // Confirm that they want to turn the log into firewood
+    QMessageBox::StandardButton reply = QMessageBox::question(this, "Confirm", "Are you sure you want to turn this entire log into firewood?", QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::No) {
+        return;
+    }
+
+    std::cout << "Turning log into firewood" << std::endl;
+
+    // We're going to convert the entire usable length of the log into firewood
+    Log log = opt.value();
+    int usableLength = log.getAvailableLength();
+
+    // Manufacture the log into firewood
+    auto firewood = Firewood::make_from_log(log, usableLength);
+
     refreshModel();
 }
 

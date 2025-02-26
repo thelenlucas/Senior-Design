@@ -71,6 +71,7 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "variant": "cpp",
-        "qdebug": "cpp"
+        "qdebug": "cpp",
+        "complex": "cpp"
     }
 }

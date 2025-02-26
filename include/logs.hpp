@@ -6,6 +6,10 @@
 #include <stdexcept>
 #include <optional>
 #include "interfaces.hpp"
+#include <SQLiteCpp/SQLiteCpp.h>
+#include "types.hpp"
+#include <iomanip>
+#include <iostream>
 
 #define LOGS_LOGGING true
 
@@ -39,6 +43,22 @@ public:
     uint getQuality() const {return quality;} 
     std::string getLocation() const {return location;} 
     std::string getNotes() const {return notes;}
+
+    // Returns the actual available length of the log
+    uint getAvailableLength() const {
+        // The taken_len_all view is the best way to get the taken length, iterate over
+        // it where from_log is our id
+        if (LOGS_LOGGING) std::cout << "Getting available length for log " << id << std::endl;
+        SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
+        SQLite::Statement query(db, "SELECT len_quarters FROM taken_len_all WHERE from_log = ?");
+        query.bind(1, id);
+        uint taken_len = 0;
+        while (query.executeStep()) {
+            taken_len += query.getColumn(0).getInt();
+        }
+
+        return len_quarters - taken_len;
+    }
 
     // Scraps a log
     void scrap();

@@ -1,4 +1,8 @@
+#ifndef INTERFACES_HPP
+#define INTERFACES_HPP
 #include <optional>
+#include "types.hpp"
+#include <vector>
 
 /// @brief  Interface for classes that can be persisted to a database
 /// @tparam Derived The derived class that implements this interface
@@ -29,4 +33,4 @@ public:
         return Derived::get_all(); // Ensures every Derived class implements this
     }
 };
- 
+#endif // INTERFACES_HPP
