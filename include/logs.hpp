@@ -2,32 +2,18 @@
 #define LOGS_HPP
 
 #include <string>
+#include <vector>
 #include <stdexcept>
 #include <optional>
-#include "db.hpp"
+#include "interfaces.hpp"
+#include <SQLiteCpp/SQLiteCpp.h>
+#include "types.hpp"
+#include <iomanip>
+#include <iostream>
 
 #define LOGS_LOGGING true
 
-// CREATE TABLE cookies (
-//     id                 INTEGER PRIMARY KEY AUTOINCREMENT
-//                                UNIQUE
-//                                NOT NULL,
-//     species            TEXT    NOT NULL,
-//     thickness_quarters INTEGER CHECK ( (thickness_quarters > 0) ) 
-//                                NOT NULL,
-//     diameter_quarters  INTEGER NOT NULL
-//                                CHECK ( (diameter_quarters > 0) ),
-//     drying             INTEGER NOT NULL
-//                                CHECK ( (drying BETWEEN 0 AND 3) ),
-//     location           VARCHAR,
-//     notes              TEXT,
-//     media              BLOB
-// );
-
-// Forward declaration
-class Database;
-
-class Log {
+class Log : public Persistent<Log> {
 private:
     int id;
     std::string species;
@@ -37,9 +23,6 @@ private:
     uint quality;
     std::string location;
     std::string notes;
-
-    // Database object for data
-    std::optional<Database*> db;
 
 public:
     Log(int id,
@@ -52,17 +35,7 @@ public:
         std::string notes = ""
     );
 
-    // Gets a log from the database, given an ID
-    static Log fromID(uint id);
-
-    // Inserts this item into the database
-    void insert();
-
-    // Static method to create a vector of logs from a database
-    static std::vector<Log> logs();
-
     // Getters
-    int getId() const {return id;} 
     std::string getSpecies() const {return species;} 
     uint getLenQuarters() const {return len_quarters;} 
     uint getDiameterQuarters() const {return diameter_quarters;} 
@@ -71,14 +44,31 @@ public:
     std::string getLocation() const {return location;} 
     std::string getNotes() const {return notes;}
 
-    // Removes this item from the database
-    void remove();
+    // Returns the actual available length of the log
+    uint getAvailableLength() const {
+        // The taken_len_all view is the best way to get the taken length, iterate over
+        // it where from_log is our id
+        if (LOGS_LOGGING) std::cout << "Getting available length for log " << id << std::endl;
+        SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
+        SQLite::Statement query(db, "SELECT len_quarters FROM taken_len_all WHERE from_log = ?");
+        query.bind(1, id);
+        uint taken_len = 0;
+        while (query.executeStep()) {
+            taken_len += query.getColumn(0).getInt();
+        }
 
-    // Updates this item in the database
-    void update();
+        return len_quarters - taken_len;
+    }
 
-    // Returns true if this object is connected to a cutlist cut that isn't done yet
-    bool isActivelyUsed();
+    // Scraps a log
+    void scrap();
+
+    // Required by Persistent
+    int get_id() const override {return id;}
+    bool insert() override;
+    bool update() override;
+    static std::optional<Log> get_by_id(int id); 
+    static std::vector<Log> get_all();
 };
 
 #endif // TYPES_HPP

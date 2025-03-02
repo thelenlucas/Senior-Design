@@ -1,7 +1,6 @@
 #include <sqlite3.h>
 #include <string>
 #include <iostream>
-#include "db.hpp"
 #include <SQLiteCpp/SQLiteCpp.h>
 #include <vector>
 #include "logs.hpp"

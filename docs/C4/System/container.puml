@@ -18,7 +18,7 @@ System_Boundary(ww, "Woodworks") {
     Container(logs, "Inventory Management Window", "QT5", $sprite=qt_original)
     Container(cutlist, "Cutlist Window", "QT5", $sprite=qt_original)
     Container(gen, "Generation Page", "QT5", $sprite=qt_original)
-    Container(db, "Inventory Database", "SQLite3", $sprite=sqlite)
+    ContainerDb(db, "Inventory Database", "SQLite3", $sprite=sqlite)
 
     Rel(logs, db, "Writes changes in inventory", "SQL")
     BiRel(cutlist, db, "Reads/Write Orders", "SQL")

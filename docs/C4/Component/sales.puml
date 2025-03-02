@@ -1,0 +1,39 @@
+@startuml Container
+
+!include <C4/C4_Context.puml>
+!include <C4/C4_Container.puml>
+!$ICONURL = "https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons"
+
+!include $ICONURL/common.puml
+!include <C4/C4_Component.puml>
+
+!include $ICONURL/govicons/file_excel.puml
+!include $ICONURL/devicons2/qt_original.puml
+!include $ICONURL/devicons/html5.puml
+!include $ICONURL/devicons2/sqlite.puml
+!include $ICONURL/devicons2/cplusplus.puml
+
+Person(sales, "Sales Manager")
+ContainerDb(db, "Inventory Database", "SQLite3", $sprite=sqlite)
+System_Ext(page, "Display", "Web Browser", $sprite=html5)
+
+Container_Boundary(gen, "Generation Page") {
+    Component(view, "Current Inventory View", "QTableView", $sprite=qt_original)
+    Component(model, "Inventory Model", "QSqlQueryModel", $sprite=qt_original)
+    Component(amount, "Amount Selector", "QMainWindow", "Selector for amount of each product to make available for sale", $sprite=qt_original)
+    Component(generator, "Product Page Generator", "C++", "Generates HTML for product pages", $sprite=cplusplus)
+    Rel(amount, generator, "Passes products and amounts")
+    Rel_R(view, amount, "Passes selected products")
+    Rel(view, model, "Displays")
+    Rel(model, db, "Queries")
+}
+
+Rel(sales, view, "Selects products for sale")
+Rel(sales, amount, "Sets amount of each product for sale")
+
+Rel(generator, db, "Reads products in inventory", "SQL")
+Rel(generator, page, "Generates", "Filesystem")
+
+SHOW_LEGEND()
+
+@enduml

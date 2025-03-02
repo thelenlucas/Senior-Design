@@ -183,7 +183,7 @@
     <item>
      <widget class="QTabWidget" name="groupedLogsTab">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="groupedLogs">
        <attribute name="title">
@@ -246,7 +246,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="makeFirewood">
+           <widget class="QPushButton" name="makeFirewoodButton">
             <property name="text">
              <string>Make Into Firewood</string>
             </property>
@@ -269,8 +269,25 @@
      <height>24</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="projectsEditorAction"/>
+   </widget>
+   <addaction name="menu_File"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionMenu">
+   <property name="text">
+    <string>Menu</string>
+   </property>
+  </action>
+  <action name="projectsEditorAction">
+   <property name="text">
+    <string>Projects</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

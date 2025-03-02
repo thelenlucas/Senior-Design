@@ -19,7 +19,6 @@
 #include <string>
 #include <stdexcept>
 #include <optional>
-#include "db.hpp"
 #include "types.hpp"
 
 #define SLABS_LOGGING true
@@ -36,9 +35,6 @@ private:
     bool smoothed;
     std::string location;
     std::string notes;
-
-    // Database object for data
-    std::optional<Database*> db;
 
 public:
     Slab(int id,
@@ -61,20 +57,4 @@ public:
     bool getSmoothed() {return smoothed;}
     std::string getLocation() {return location;}
     std::string getNotes() {return notes;}
-
-    // Class function, takes in a database and returns all
-    // slabs in the database as a vector
-    static std::vector<Slab> allSlabs(Database *db);
-
-    // Connects this slab to a database
-    void connect(Database* db);
-
-    // Removes this item from the database, throws an error if this is disconnected
-    void remove();
-
-    // Updates this item in the database, throws an error if this is disconnected
-    void update();
-
-    // Returns true if this slab is connected to a database
-    bool isConnected() {return this->db.has_value();}
 };
