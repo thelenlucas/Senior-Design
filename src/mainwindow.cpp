@@ -16,6 +16,9 @@
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
 
+/* QT MainWindow C++ File: 
+ *  - Includes all ties to the main-window UI and its operation 
+*/
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)

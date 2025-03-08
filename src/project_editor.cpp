@@ -9,6 +9,9 @@
 #include <QDebug>
 #include "types.hpp"
 
+/* QT ProjectEditor C++ File:
+ *  - Includes all ties to the project-editor UI and its operation
+*/
 ProjectEditorWindow::ProjectEditorWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ProjectsWindow)

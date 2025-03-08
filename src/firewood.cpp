@@ -27,6 +27,15 @@
 //     taken_len_quarters INTEGER NOT NULL
 // );
 
+/* Firewood C++ File:
+ *  - Ties the Firewood characteristics to each object created
+ * Includes the following functions: 
+ *  - Insert
+ *  - Update
+ *  - Get-by-ID
+ *  - Get All
+ *  - Make From Log
+*/
 Firewood::Firewood(
     int id,
     std::string species,

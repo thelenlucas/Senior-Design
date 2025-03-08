@@ -24,7 +24,15 @@
 //                                 DEFAULT (0) 
 // );
 
-
+/* Log C++ File: 
+ *  - Ties the Log characteristics to each object created
+ * Includes the following functions:
+ *  - Get-by-ID
+ *  - Insert
+ *  - Update
+ *  - Get All
+ *  - Scrap
+*/
 Log::Log(int id,
     std::string species,
     uint len_quarters,

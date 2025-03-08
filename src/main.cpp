@@ -14,6 +14,9 @@
 
 using namespace std;
 
+/* Main C++ File:
+ *  - Runs the QT UI container
+*/
 class Container : public QThread {
 private:
     QApplication *app;

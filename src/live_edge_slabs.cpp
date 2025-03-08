@@ -3,6 +3,9 @@
 #include <string>
 #include <stdexcept>
 
+/* Slab C++ File:
+ *  - Ties the Slab characteristics to each object created
+*/
 Slab::Slab(int id,
     std::string species,
     uint thickness_quarters,
