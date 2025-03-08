@@ -1,3 +1,5 @@
+/* Vestigial SQL call to create a cookie table */
+
 // CREATE TABLE cookies (
 //     id                 INTEGER PRIMARY KEY AUTOINCREMENT
 //                                UNIQUE
@@ -14,6 +16,19 @@
 //     media              BLOB
 // );
 
+/* Cookies Header File:
+ *  - Takes drying data type from Types header file
+ *   - Air, Kiln, Air&Kiln, Wet
+ * Cookie objects are given the following:
+ *  - ID (int)
+ *  - Species (string)
+ *  - Thickness (unsigned int)
+ *  - Diameter (unsingned int)
+ *  - Drying (types enum)
+ *  - Cut Location (string)
+ *  - User Notes (string)
+ * The Cookie class includes GET functions for the above variables
+*/
 #include <string>
 #include <stdexcept>
 #include <optional>

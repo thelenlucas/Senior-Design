@@ -1,6 +1,10 @@
 #ifndef PROJECT_EDITOR_H
 #define PROJECT_EDITOR_H
 
+/* ProjectEditor Header File:
+ *  - Creates a second window for the project editor
+ *  - Includes all associated widgets
+*/
 #include <QMainWindow>
 
 namespace Ui {

@@ -1,6 +1,34 @@
 #ifndef LOGS_HPP
 #define LOGS_HPP
 
+
+/* Logs Header File:
+ *  - Takes drying data type from Types header file
+ *  - Interfaces header sends updates to the UI
+ * Log objects are given the following:
+ *  - ID (int)
+ *  - Species (string)
+ *  - Length (unsigned int)
+ *  - Diameter (unsigned int)
+ *  - Cost, Cents/Quarter (unsigned int)
+ *  - Quality (unsigned int)
+ *  - Cut Location (string)
+ *  - User Notes (string)
+ * 
+ * The Log class includes GET functions for the following: 
+ *  - Species
+ *  - Length
+ *  - Diameter
+ *  - Cost
+ *  - Quality
+ *  - Cut Location
+ *  - User Notes
+ *  - Available Length
+ * 
+ * Includes a scrap function that removes the target log object
+ * 
+ * Uses interface.hpp to keep the UI updated
+*/
 #include <string>
 #include <vector>
 #include <stdexcept>

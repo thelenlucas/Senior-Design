@@ -1,3 +1,5 @@
+/* Vestigial SQL call to create a slab table */
+
 // CREATE TABLE slabs (
 //     id                 INTEGER PRIMARY KEY AUTOINCREMENT
 //                                UNIQUE
@@ -16,6 +18,21 @@
 //     media              BLOB
 // );
 
+/* Live Edge Slab Header File:
+ *  - Takes drying data type from Types header file
+ *   - Air, Kiln, Air&Kiln, Wet
+ * Live Edge Slab objects are given the following:
+ *  - ID (int)
+ *  - Species (string)
+ *  - Thickness (unsigned int)
+ *  - Length (unsingned int)
+ *  - Drying (types enum)
+ *  - Smoothed (boolean)
+ *  - Cut Location (string)
+ *  - User Notes (string)
+ * The Slab class includes GET functions for the above variables
+ * 
+*/
 #include <string>
 #include <stdexcept>
 #include <optional>

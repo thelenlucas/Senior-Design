@@ -1,6 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+/* QT MainWindow Header File:
+ *  - Includes all the widgets found in the UI
+ *  - Displays the UI
+*/
 #include <QMainWindow>
 
 namespace Ui {

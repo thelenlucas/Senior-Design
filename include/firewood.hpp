@@ -1,3 +1,27 @@
+/* Firewood Header File:
+ *  - Takes drying data type from Types header file
+ *  - Interfaces header sends updates to the UI
+ *  - Manufacturable header takes log, makes product (Firewood)
+ * Firewood objects are given the following:
+ *  - ID (int)
+ *  - Species (string)
+ *  - Drying (types enum)
+ *  - Feet^3 (unsinged int)
+ *  - Cut Location (string)
+ *  - User Notes (string)
+ *  - Length taken from log (unsinged int)
+ * 
+ * The Firewood class includes GET functions for the following variables:
+ *  - ID
+ *  - Species
+ *  - Drying
+ *  - Feet^3
+ *  - Cut Location
+ *  - User Notes
+ * 
+ * Using interfaces.hpp and manufacturable.hpp, keeps UI updated and allows
+ *  for logs to be cut and stored as Firewood
+*/
 #include <string>
 #include <stdexcept>
 #include <optional>
