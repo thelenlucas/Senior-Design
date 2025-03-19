@@ -14,16 +14,24 @@
 //     media              BLOB
 // );
 
+#ifndef COOKIES_HPP
+#define COOKIES_HPP
+
 #include <string>
+#include <vector>
 #include <stdexcept>
 #include <optional>
+#include "interfaces.hpp"
+#include <SQLiteCpp/SQLiteCpp.h>
 #include "types.hpp"
+#include <iomanip>
+#include <iostream>
 
 #define COOKIES_LOGGING true
 
-class Database;
+// class Database;
 
-class Cookie {
+class Cookie : public Persistent<Cookie> {
 private:
     int id;
     std::string species;
@@ -44,11 +52,20 @@ public:
     );
 
     // Getters
-    int getId() {return id;}
-    std::string getSpecies() {return species;}
-    uint getThicknessQuarters() {return thickness_quarters;}
-    uint getDiameterQuarters() {return diameter_quarters;}
-    Drying getDrying() {return drying;}
-    std::string getLocation() {return location;}
-    std::string getNotes() {return notes;}
+    // int getId() {return id;}
+    std::string getSpecies() const {return species;}
+    uint getThicknessQuarters() const {return thickness_quarters;}
+    uint getDiameterQuarters() const {return diameter_quarters;}
+    Drying getDrying() const {return drying;}
+    std::string getLocation() const {return location;}
+    std::string getNotes() const {return notes;}
+
+    //Persistent (copied from Log.h)
+    int get_id() const override {return id;}
+    bool insert() override;
+    bool update() override;
+    static std::optional<Cookie> get_by_id(int id);
+    static std::vector<Cookie> get_all();
 };
+
+#endif // TYPES_HPP
