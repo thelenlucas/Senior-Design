@@ -28,6 +28,14 @@ cp ../example.db ./test.db
 
 The Enter Log button in the top right currently executes a floating point exception and causes the GUI to crash
 
+Cookies Header:
+- Line 51: Database, argument 1 invalid, invalid template id
+Cookies C++:
+- Line 26: Expected ::, no declaration
+- Line 28: Expected ) before ;
+- Line 34: Unqualified )
+- Line 59: Expected ; before }
+
 # Script Requirements
 
 QT5.15
