@@ -3,7 +3,8 @@
 Run the following commands:
 ```
 cd /mnt/c/Users/[user]/Documents/GitHub/Senior-Design
-    // This gets you to the Windows directory 
+    OR
+cd GitHub/Senior-Design
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install build-essential
@@ -28,14 +29,10 @@ cp ../example.db ./test.db
 
 The Enter Log button in the top right currently executes a floating point exception and causes the GUI to crash
 
-Cookies Header:
-- Line 51: Database, argument 1 invalid, invalid template id
-
 Cookies C++:
-- Line 26: Expected ::, no declaration
-- Line 28: Expected ) before ;
-- Line 34: Unqualified )
-- Line 59: Expected ; before }
+- Line 61: No matching function call
+- Line 110: No matching function call
+- Line 124: No matching function call
 
 # Script Requirements
 

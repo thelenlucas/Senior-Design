@@ -22,33 +22,34 @@
 #include <stdexcept>
 #include <optional>
 #include "interfaces.hpp"
-#include <SQLiteCpp/SQLiteCpp.h>
+#include "manufacturable.hpp"
 #include "types.hpp"
+#include <SQLiteCpp/SQLiteCpp.h>
 #include <iomanip>
 #include <iostream>
 
 #define COOKIES_LOGGING true
 
-// class Database;
-
-class Cookie : public Persistent<Cookie> {
+class Cookie : Manufacturable<Cookie> 
+{
 private:
     int id;
     std::string species;
+    Drying drying;
     uint thickness_quarters;
     uint diameter_quarters;
-    Drying drying;
+    uint taken_len_quarters;
     std::string location;
     std::string notes;
 public:
     Cookie(int id,
         std::string species,
+        Drying drying,
         uint thickness_quarters,
         uint diameter_quarters,
-        Drying drying,
+        uint taken_len_quarters,
         std::string location = "",
-        std::string notes = "",
-        std::optional<Database*> db = std::nullopt
+        std::string notes = ""
     );
 
     // Getters
@@ -66,6 +67,14 @@ public:
     bool update() override;
     static std::optional<Cookie> get_by_id(int id);
     static std::vector<Cookie> get_all();
+
+    static std::vector<Cookie> make_from_log(
+        Log log,
+        int len_quarters,
+        std::optional<int> thickness_quarters = 0,
+        std::optional<int> diameter_quarters = 0,
+        std::optional<Drying> drying = std::nullopt
+    );
 };
 
 #endif // TYPES_HPP
