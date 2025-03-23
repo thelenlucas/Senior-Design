@@ -14,9 +14,6 @@
 //     media              BLOB
 // );
 
-#ifndef COOKIES_HPP
-#define COOKIES_HPP
-
 #include <string>
 #include <vector>
 #include <stdexcept>
@@ -35,19 +32,18 @@ class Cookie : Manufacturable<Cookie>
 private:
     int id;
     std::string species;
-    Drying drying;
     uint thickness_quarters;
     uint diameter_quarters;
-    uint taken_len_quarters;
+    Drying drying;
     std::string location;
     std::string notes;
+
 public:
     Cookie(int id,
         std::string species,
-        Drying drying,
         uint thickness_quarters,
         uint diameter_quarters,
-        uint taken_len_quarters,
+        Drying drying,
         std::string location = "",
         std::string notes = ""
     );
@@ -61,7 +57,7 @@ public:
     std::string getLocation() const {return location;}
     std::string getNotes() const {return notes;}
 
-    //Persistent (copied from Log.h)
+    //Persistent (copied from firewood.h)
     int get_id() const override {return id;}
     bool insert() override;
     bool update() override;
@@ -70,11 +66,8 @@ public:
 
     static std::vector<Cookie> make_from_log(
         Log log,
-        int len_quarters,
-        std::optional<int> thickness_quarters = 0,
+        uint thickness_quarters = 0,
         std::optional<int> diameter_quarters = 0,
         std::optional<Drying> drying = std::nullopt
     );
 };
-
-#endif // TYPES_HPP

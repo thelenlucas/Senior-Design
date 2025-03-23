@@ -1,10 +1,14 @@
 #include "cookies.hpp"
 #include "types.hpp"
+#include "interfaces.hpp"
+#include "logs.hpp"
 
 #include <string>
-#include <SQLiteCpp/SQLiteCpp.h>
 #include <stdexcept>
+#include <SQLiteCpp/SQLiteCpp.h>
+#include <math.h>
 #include <iostream>
+#include <iomanip>
 
 //Schema:
 // CREATE TABLE cookies (
@@ -21,24 +25,27 @@
 
 /* Still Need (3/18/25):
 - Copy the log id the cookie is from, insert into db
+- Handling of cookie thickness
+*/
+
+/* Errors:
+-  
 */
 
 Cookie::Cookie(
     int id,
     std::string species,
-    Drying drying,
     uint thickness_quarters,
     uint diameter_quarters,
-    uint taken_len_quarters,
+    Drying drying,
     std::string location,
     std::string notes
 ) {
     this->id = id;
     this->species = species;
-    this->drying = drying;
     this->thickness_quarters = thickness_quarters;
     this->diameter_quarters = diameter_quarters;
-    this->taken_len_quarters = taken_len_quarters;
+    this->drying = drying;
     this->location = location;
     this->notes = notes;
 }
@@ -51,11 +58,10 @@ std::optional<Cookie> Cookie::get_by_id(int id) {
         /*ID, Origin Log, Species, Thickness, Diameter, Drying (int), Location, Notes*/
         return Cookie(
             query.getColumn(0).getInt(), 
-            query.getColumn(1).getInt(),
             query.getColumn(2).getText(),
             query.getColumn(3).getInt(),
             query.getColumn(4).getInt(),
-            query.getColumn(5).getInt(),
+            static_cast<Drying>(query.getColumn(5).getInt()),
             query.getColumn(6).getText(),
             query.getColumn(7).getText()
         );
@@ -100,11 +106,10 @@ std::vector<Cookie> Cookie::get_all() {
         /*ID, Origin Log, Species, Thickness, Diameter, Drying (int), Location, Notes*/
         cookies.push_back(Cookie(
             query.getColumn(0).getInt(),
-            query.getColumn(1).getInt(),
             query.getColumn(2).getText(),
             query.getColumn(3).getInt(),
             query.getColumn(4).getInt(),
-            query.getColumn(5).getInt(),
+            static_cast<Drying>(query.getColumn(5).getInt()),
             query.getColumn(6).getText(),
             query.getColumn(7).getText()
         ));
@@ -113,14 +118,12 @@ std::vector<Cookie> Cookie::get_all() {
 
 std::vector<Cookie> Cookie::make_from_log(
     Log log,
-    int len_quarters,
-    std::optional<int> thickness_quarters,
+    uint thickness_quarters,
     std::optional<int> diameter_quarters,
     std::optional<Drying> drying
 ) {
-    float length_feet = len_quarters / 4.0 / 12.0;
-    float diameter_feet = log.getDiameterQuarters() / 4.0 / 12.0;
     std::vector<Cookie> cookie;
-    cookie.push_back(Cookie(0, log.getSpecies(), drying.value_or(Drying::KILN_DRIED), length_feet, diameter_feet))
+    /*Might need to return the remaining log as well - depends on implementation*/
+    cookie.push_back(Cookie(0, log.getSpecies(), thickness_quarters, log.getDiameterQuarters(), drying.value_or(Drying::KILN_DRIED)));
     return cookie;
 }

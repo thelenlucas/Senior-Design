@@ -27,12 +27,6 @@ cp ../example.db ./test.db
 
 # Errors
 
-The Enter Log button in the top right currently executes a floating point exception and causes the GUI to crash
-
-Cookies C++:
-- Line 61: No matching function call
-- Line 110: No matching function call
-- Line 124: No matching function call
 
 # Script Requirements
 
