@@ -1,26 +1,48 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include <string>
+#include <iostream>
+#include <iomanip>
+
 #include <QSqlDatabase>
 #include <QSqlQueryModel>
 #include <QSqlError>
 #include <QMessageBox>
 #include <QDebug>
-#include "project_editor.h"
-#include <string>
+#include <QDockWidget>
+
+#include "project_editor.hpp"
 #include "logs.hpp"
 #include "types.hpp"
 #include "firewood.hpp"
-#include <iostream>
-#include <iomanip>
+
+#include "mainwindow.hpp"
+#include "ui_mainwindow.h"
+#include "inventory.hpp"
+#include "cutlist.hpp"
+#include "sales.hpp"
 
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    //inventoryPage(new InventoryPage),
+    cutlistPage(new CutlistPage()),
+    salesPage(new SalesPage()),
+    inventoryDock(nullptr)
 {
     ui->setupUi(this);
+    setCentralWidget(ui->centralwidget);
+
+    // Add the corresponding QActions to the menu to show our UI "pages".
+    QMenu *menu = menuBar()->addMenu("WoodWorks");
+    QAction *inventoryAction = new QAction("Inventory", this);
+    QAction *cutlistAction = new QAction("Cutlist", this);
+    QAction *salesAction = new QAction("Sales", this);
+
+    menu->addAction(inventoryAction);
+    menu->addAction(cutlistAction);
+    menu->addAction(salesAction);
 
     // Establish database connection.
     // Yeah this opens another connection, but it's read-only
@@ -61,6 +83,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->scrapLogButton, &QPushButton::clicked, this, &MainWindow::onScrapLogButtonClicked);
     connect(ui->makeFirewoodButton, &QPushButton::clicked, this, &MainWindow::onFirewoodButtonClicked);
     connect(ui->projectsEditorAction, &QAction::triggered, this, &MainWindow::onProjectEditActionTriggered);
+
+    // Adding the additional UI pages for the various aspects of the app's store front and inventory management system here, for now.
+    connect(inventoryAction, &QAction::triggered, this, &MainWindow::showInventoryPage);
+    connect(cutlistAction, &QAction::triggered, this, &MainWindow::showCutlistPage);
+    connect(salesAction, &QAction::triggered, this, &MainWindow::showSalesPage);
 }
 
 void MainWindow::refreshModel()
@@ -162,7 +189,47 @@ void MainWindow::onProjectEditActionTriggered() {
    projectEditor->show();
 }
 
-MainWindow::~MainWindow()
+MainWindow::~MainWindow() 
 {
     delete ui;
+    // TODO: Remove these after testing. This is actually double deleting because
+    // of the QT parenting system, these are effectively shared pointers in the main window
+    // and will be cleaned up by scope resolution.
+    //delete inventoryPage;
+    //delete cutlistPage;
+    //delete salesPage;
+}
+
+void MainWindow::showInventoryPage()
+{
+    if (!inventoryDock)
+    {
+        InventoryPage* page = new InventoryPage();  // no parent
+
+        inventoryDock = new QDockWidget("Inventory", this);
+        inventoryDock->setObjectName("InventoryDockWidget");
+        inventoryDock->setWidget(page);
+
+        inventoryDock->setAllowedAreas(Qt::AllDockWidgetAreas);
+        inventoryDock->setFeatures(QDockWidget::DockWidgetClosable |
+                                   QDockWidget::DockWidgetMovable |
+                                   QDockWidget::DockWidgetFloatable);
+        inventoryDock->setFloating(true); // Start as a separate window
+
+        addDockWidget(Qt::RightDockWidgetArea, inventoryDock);
+    }
+
+    inventoryDock->show();
+    inventoryDock->raise();
+}
+
+
+void MainWindow::showCutlistPage() 
+{
+    cutlistPage->show();
+}
+
+void MainWindow::showSalesPage() 
+{
+    salesPage->show();
 }

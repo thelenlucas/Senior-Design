@@ -1,12 +1,14 @@
-#include "project_editor.h"
-#include "ui_projectEditor.h"
-#include <QMainWindow>
 #include <SQLiteCpp/SQLiteCpp.h>
+
+#include <QMainWindow>
 #include <QSqlDatabase>
 #include <QSqlQueryModel>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QDebug>
+
+#include "project_editor.hpp"
+#include "ui_projectEditor.h"
 #include "types.hpp"
 
 ProjectEditorWindow::ProjectEditorWindow(QWidget *parent) :

@@ -1,16 +1,19 @@
-#include <sqlite3.h>
 #include <string>
 #include <iostream>
-#include <SQLiteCpp/SQLiteCpp.h>
 #include <vector>
-#include "logs.hpp"
-#include "types.hpp"
 
-#include "mainwindow.h"
+#include <sqlite3.h>
+
+#include <SQLiteCpp/SQLiteCpp.h>
 
 #include <QApplication>
 #include <QPushButton>
 #include <QThread>
+
+#include "logs.hpp"
+#include "types.hpp"
+#include "mainwindow.hpp"
+
 
 using namespace std;
 
