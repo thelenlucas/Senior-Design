@@ -2,26 +2,159 @@
 <ui version="4.0">
     <class>CutlistPage</class>
     <widget class="QWidget" name="CutlistPage">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>400</width>
-                <height>300</height>
-            </rect>
-        </property>
         <property name="windowTitle">
-            <string>Cutlist Creator</string>
+            <string>Cutlist Manager</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="minimumSize">
+            <size>
+                <width>600</width>
+                <height>400</height>
+            </size>
+        </property>
+
+        <layout class="QVBoxLayout" name="mainLayout">
+            <property name="spacing">
+                <number>8</number>
+            </property>
             <item>
-                <widget class="QTableView" name="cutlistTable" />
-            </item>
-            <item>
-                <widget class="QPushButton" name="processButton">
-                    <property name="text">
-                        <string>Process Cutlist</string>
-                    </property>
+                <widget class="QMdiArea" name="mdiArea">
+                    <widget class="QMdiSubWindow" name="orderEntrySubwindow">
+                        <property name="windowTitle">
+                            <string>Order Entry</string>
+                        </property>
+                        <property name="minimumSize">
+                            <size>
+                                <width>400</width>
+                                <height>300</height>
+                            </size>
+                        </property>
+                        <widget class="QWidget" name="orderEntryContainer">
+                            <layout class="QVBoxLayout" name="orderEntryLayout">
+                                <property name="spacing">
+                                    <number>8</number>
+                                </property>
+                                <property name="leftMargin">
+                                    <number>6</number>
+                                </property>
+                                <property name="topMargin">
+                                    <number>6</number>
+                                </property>
+                                <property name="rightMargin">
+                                    <number>6</number>
+                                </property>
+                                <property name="bottomMargin">
+                                    <number>6</number>
+                                </property>
+                                <item>
+                                    <widget class="QTableView" name="orderEntryTable">
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding" />
+                                        </property>
+                                        <property name="selectionBehavior">
+                                            <enum>QAbstractItemView::SelectRows</enum>
+                                        </property>
+                                        <property name="selectionMode">
+                                            <enum>QAbstractItemView::SingleSelection</enum>
+                                        </property>
+                                        <property name="horizontalScrollMode">
+                                            <enum>QAbstractItemView::ScrollPerPixel</enum>
+                                        </property>
+                                        <property name="verticalScrollMode">
+                                            <enum>QAbstractItemView::ScrollPerPixel</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </widget>
+
+                    <widget class="QMdiSubWindow" name="orderMarkerSubwindow">
+                        <property name="windowTitle">
+                            <string>Order Marker</string>
+                        </property>
+                        <property name="minimumSize">
+                            <size>
+                                <width>400</width>
+                                <height>300</height>
+                            </size>
+                        </property>
+                        <widget class="QWidget" name="orderMarkerContainer">
+                            <layout class="QVBoxLayout" name="orderMarkerLayout">
+                                <property name="spacing">
+                                    <number>8</number>
+                                </property>
+                                <property name="leftMargin">
+                                    <number>6</number>
+                                </property>
+                                <property name="topMargin">
+                                    <number>6</number>
+                                </property>
+                                <property name="rightMargin">
+                                    <number>6</number>
+                                </property>
+                                <property name="bottomMargin">
+                                    <number>6</number>
+                                </property>
+                                <item>
+                                    <widget class="QTableView" name="orderMarkerTable">
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding" />
+                                        </property>
+                                        <property name="selectionBehavior">
+                                            <enum>QAbstractItemView::SelectRows</enum>
+                                        </property>
+                                        <property name="selectionMode">
+                                            <enum>QAbstractItemView::SingleSelection</enum>
+                                        </property>
+                                        <property name="horizontalScrollMode">
+                                            <enum>QAbstractItemView::ScrollPerPixel</enum>
+                                        </property>
+                                        <property name="verticalScrollMode">
+                                            <enum>QAbstractItemView::ScrollPerPixel</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </widget>
+
+                    <widget class="QMdiSubWindow" name="commonCutMarkerSubwindow">
+                        <property name="windowTitle">
+                            <string>Common Cut Marker</string>
+                        </property>
+                        <property name="minimumSize">
+                            <size>
+                                <width>400</width>
+                                <height>300</height>
+                            </size>
+                        </property>
+                        <widget class="QWidget" name="commonCutMarkerContainer">
+                            <layout class="QVBoxLayout" name="commonCutMarkerLayout">
+                                <property name="spacing">
+                                    <number>8</number>
+                                </property>
+                                <property name="leftMargin">
+                                    <number>6</number>
+                                </property>
+                                <property name="topMargin">
+                                    <number>6</number>
+                                </property>
+                                <property name="rightMargin">
+                                    <number>6</number>
+                                </property>
+                                <property name="bottomMargin">
+                                    <number>6</number>
+                                </property>
+                                <item>
+                                    <widget class="QLabel" name="commonCutMarkerLabel">
+                                        <property name="text">
+                                            <string>Common Cut Marker UI placeholder</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </widget>
                 </widget>
             </item>
         </layout>

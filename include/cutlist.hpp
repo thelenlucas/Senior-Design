@@ -2,24 +2,29 @@
 #define CUTLIST_HPP
 
 #include <QWidget>
-#include <QSqlTableModel>
+#include <QSqlQueryModel>
 
-namespace Ui 
+namespace Ui
 {
     class CutlistPage;
 }
 
-class CutlistPage : public QWidget 
-{
+class CutlistPage : public QWidget {
     Q_OBJECT
+
 public:
-    explicit CutlistPage(QWidget *parent = nullptr);
+    explicit CutlistPage(QWidget* parent = nullptr);
     ~CutlistPage();
 
 private:
-    Ui::CutlistPage *ui;
-    QSqlTableModel *model;
-    void refreshModel();
+    Ui::CutlistPage* ui;
+
+    QSqlQueryModel* orderEntryModel;
+    QSqlQueryModel* orderMarkerModel;
+
+    void refreshModels();
+    void ResizeToDisplayPercentage(double width_ratio, double height_ratio);
+    void ResizeSubWindowsProportionally(unsigned int count);
 };
 
 #endif // CUTLIST_HPP
