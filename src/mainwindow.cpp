@@ -23,18 +23,23 @@
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    //inventoryPage(new InventoryPage),
-    cutlistPage(new CutlistPage()),
-    salesPage(new SalesPage()),
-    inventoryDock(nullptr)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow),
+      cutlistPage(new CutlistPage()),
+      salesPage(new SalesPage()),
+      inventoryDock(nullptr)
 {
+    // Load UI layout and set the central widget
     ui->setupUi(this);
     setCentralWidget(ui->centralwidget);
 
-    // Add the corresponding QActions to the menu to show our UI "pages".
+    // Enable docking options globally for the main window
+    setDockOptions(QMainWindow::AnimatedDocks |
+                   QMainWindow::AllowNestedDocks |
+                   QMainWindow::AllowTabbedDocks);
+
+    // Add the menu and actions for switching between pages
     QMenu *menu = menuBar()->addMenu("WoodWorks");
     QAction *inventoryAction = new QAction("Inventory", this);
     QAction *cutlistAction = new QAction("Cutlist", this);
@@ -44,50 +49,41 @@ MainWindow::MainWindow(QWidget *parent) :
     menu->addAction(cutlistAction);
     menu->addAction(salesAction);
 
-    // Establish database connection.
-    // Yeah this opens another connection, but it's read-only
+    // Connect action triggers to handlers
+    connect(inventoryAction, &QAction::triggered, this, &MainWindow::showInventoryPage);
+    connect(cutlistAction, &QAction::triggered, this, &MainWindow::showCutlistPage);
+    connect(salesAction, &QAction::triggered, this, &MainWindow::showSalesPage);
+
+    // Set up the database connection
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(DATABASE_FILE);
     if (!db.open()) {
         qDebug() << "Database error:" << db.lastError().text();
-        return; // Early return if the connection fails.
+        return;
     }
 
+    // Load and bind models
     auto *groupedModel = new QSqlQueryModel(this);
     auto *logsModel = new QSqlQueryModel(this);
-    QString queryStr = GROUPED_LOGS_QUERY;
-    QString logsQueryStr = LOGS_QUERY;
-    groupedModel->setQuery(queryStr, db);
-    logsModel->setQuery(logsQueryStr, db);
+    groupedModel->setQuery(GROUPED_LOGS_QUERY, db);
+    logsModel->setQuery(LOGS_QUERY, db);
 
-    // Check for query errors.
-    if (groupedModel->lastError().isValid()) {
+    if (groupedModel->lastError().isValid())
         qDebug() << "Query error:" << groupedModel->lastError().text();
-    }
-    if (logsModel->lastError().isValid()) {
+    if (logsModel->lastError().isValid())
         qDebug() << "Query error:" << logsModel->lastError().text();
-    }
 
-    // Set the model to the table view.
     ui->groupedLogsTableView->setModel(groupedModel);
     ui->individualLogTableView->setModel(logsModel);
     refreshModel();
 
-    // Resize the columns to fit the contents.
     ui->groupedLogsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->individualLogTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    // Connect the add button to the add log slot.
-    // Note: With a query model displaying aggregated data, editing is not supported.
     connect(ui->enterLogButton, &QPushButton::clicked, this, &MainWindow::onEnterLogButtonClicked);
     connect(ui->scrapLogButton, &QPushButton::clicked, this, &MainWindow::onScrapLogButtonClicked);
     connect(ui->makeFirewoodButton, &QPushButton::clicked, this, &MainWindow::onFirewoodButtonClicked);
     connect(ui->projectsEditorAction, &QAction::triggered, this, &MainWindow::onProjectEditActionTriggered);
-
-    // Adding the additional UI pages for the various aspects of the app's store front and inventory management system here, for now.
-    connect(inventoryAction, &QAction::triggered, this, &MainWindow::showInventoryPage);
-    connect(cutlistAction, &QAction::triggered, this, &MainWindow::showCutlistPage);
-    connect(salesAction, &QAction::triggered, this, &MainWindow::showSalesPage);
 }
 
 void MainWindow::refreshModel()
@@ -204,25 +200,32 @@ void MainWindow::showInventoryPage()
 {
     if (!inventoryDock)
     {
-        InventoryPage* page = new InventoryPage();  // no parent
+        // Create the InventoryPage widget.
+        InventoryPage *page = new InventoryPage(this);
 
+        // Create the dock widget and assign the page.
         inventoryDock = new QDockWidget("Inventory", this);
         inventoryDock->setObjectName("InventoryDockWidget");
         inventoryDock->setWidget(page);
 
+        // Enable dock features and configure its docking behavior.
         inventoryDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         inventoryDock->setFeatures(QDockWidget::DockWidgetClosable |
                                    QDockWidget::DockWidgetMovable |
                                    QDockWidget::DockWidgetFloatable);
-        inventoryDock->setFloating(true); // Start as a separate window
 
+        // Start floating by default.
+        inventoryDock->setFloating(true);
+
+        // Add it to the main window's docking system.
         addDockWidget(Qt::RightDockWidgetArea, inventoryDock);
     }
 
+    // Show the dock if it was previously closed.
     inventoryDock->show();
     inventoryDock->raise();
+    inventoryDock->activateWindow();
 }
-
 
 void MainWindow::showCutlistPage() 
 {

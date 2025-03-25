@@ -6,7 +6,9 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QScreen>
-
+#include <QMouseEvent>
+#include <QDockWidget>
+#include <QTimer>
 
 #include "inventory.hpp"
 #include "ui_inventory.h"
@@ -37,6 +39,30 @@ InventoryPage::InventoryPage(QWidget *parent)
 
     connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
+
+    setFocusPolicy(Qt::StrongFocus);
+
+    QTimer::singleShot(0, this, [this]() {
+        for (QObject* child : this->findChildren<QObject*>())
+        {
+            qDebug() << "Late-installing filter on:" << child->metaObject()->className()
+                     << "Name:" << child->objectName();
+            child->installEventFilter(this);
+        }
+    });
+
+    QDockWidget* dock = qobject_cast<QDockWidget*>(parentWidget());
+    if (dock)
+    {
+        qDebug() << "Dock is floating?" << dock->isFloating();
+        qDebug() << "Dock is visible?" << dock->isVisible();
+        qDebug() << "Dock geometry:" << dock->geometry();
+    }
+    else
+    {
+        qDebug() << "Dock is null here!";
+    }
+    
 }
 
 InventoryPage::~InventoryPage()
@@ -87,4 +113,23 @@ void InventoryPage::onSpreadsheetImportClicked()
 
     // TODO: Implement spreadsheet import parsing logic in logic module.
     QMessageBox::information(this, "Import Selected", "File selected: " + filename);
+}
+
+void InventoryPage::mousePressEvent(QMouseEvent *event)
+{
+    qDebug() << "InventoryPage clicked at:" << event->pos() << "Mouse click on widgetAt:" << QApplication::widgetAt(QCursor::pos());
+
+    QWidget::mousePressEvent(event);
+}
+
+bool InventoryPage::eventFilter(QObject* obj, QEvent* event)
+{
+    qDebug() << "EVENT TYPE:" << event->type() << "on:" << obj->metaObject()->className() << "named:" << obj->objectName();
+
+    if (event->type() == QEvent::MouseButtonPress)
+    {
+        qDebug() << "Mouse click intercepted on:" << obj->objectName();
+    }
+
+    return QWidget::eventFilter(obj, event);
 }

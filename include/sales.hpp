@@ -9,7 +9,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class SalesPage; }
 QT_END_NAMESPACE
 
-class SalesPage : public QWidget {
+class SalesPage : public QWidget
+{
     Q_OBJECT
 
 public:
@@ -18,12 +19,16 @@ public:
 
 private:
     Ui::SalesPage* ui;
-
     QSqlQueryModel* inventoryModel;
+
+    QVector<QWidget*> itemWidgets;
+    int selectedIndex;
+    double runningTotal;
 
     void RefreshInventoryModel();
     void ResizeToDisplayPercentage(double width_ratio, double height_ratio);
-    void AddSelectedInventoryRow(const QString& labelText);
+    void AddSelectedInventoryRow(const QString& id, const QString& species, const QString& value);
+    void UpdateTotal(double delta);
 };
 
 #endif // SALES_HPP

@@ -48,8 +48,12 @@ CutlistPage::~CutlistPage()
 
 void CutlistPage::refreshModels()
 {
-    orderEntryModel->setQuery("SELECT * FROM current_order_view", QSqlDatabase::database());
-    orderMarkerModel->setQuery("SELECT * FROM pending_orders_view", QSqlDatabase::database());
+    // TODO: Create a more complete set of live views based on all available inventory including wood cuts.
+    //orderEntryModel->setQuery("SELECT * FROM current_order_view", QSqlDatabase::database());
+    //orderMarkerModel->setQuery("SELECT * FROM pending_orders_view", QSqlDatabase::database());
+
+    orderEntryModel->setQuery("SELECT * FROM cutlist", QSqlDatabase::database());
+
 
     if (orderEntryModel->lastError().isValid())
         qDebug() << "Order entry model error:" << orderEntryModel->lastError().text();

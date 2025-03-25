@@ -5,3 +5,4 @@ build/*
 !build/build.sh
 out
 **.zip
+SQLiteCPP/*

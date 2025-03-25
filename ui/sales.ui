@@ -17,6 +17,24 @@
                 <number>8</number>
             </property>
 
+            <!-- Current Inventory Label Above Inventory Table -->
+            <item>
+                <widget class="QLabel" name="inventoryLabel">
+                    <property name="text">
+                        <string>Current Inventory</string>
+                    </property>
+                    <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="font">
+                        <font>
+                            <bold>true</bold>
+                            <pointsize>12</pointsize>
+                        </font>
+                    </property>
+                </widget>
+            </item>
+
             <!-- Horizontal section: Inventory, Arrow Buttons, Selector -->
             <item>
                 <layout class="QHBoxLayout" name="horizontalLayout">
@@ -112,16 +130,28 @@
                         </layout>
                     </item>
 
-                    <!-- Amount Selector Panel -->
+                    <!-- Select Inventory Quantities Panel -->
                     <item>
                         <layout class="QVBoxLayout" name="amountSelectorLayout">
+                            <!-- Title Label -->
                             <item>
-                                <widget class="QLabel" name="amountSelectorLabel">
+                                <widget class="QLabel" name="selectInventoryLabel">
                                     <property name="text">
-                                        <string>Amount Selector Panel</string>
+                                        <string>Select Inventory Quantities</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignCenter</set>
+                                    </property>
+                                    <property name="font">
+                                        <font>
+                                            <bold>true</bold>
+                                            <pointsize>12</pointsize>
+                                        </font>
                                     </property>
                                 </widget>
                             </item>
+
+                            <!-- Scrollable Entry Layout -->
                             <item>
                                 <widget class="QScrollArea" name="amountScrollArea">
                                     <property name="widgetResizable">
@@ -137,7 +167,7 @@
                 </layout>
             </item>
 
-            <!-- Bottom Button Row -->
+            <!-- Bottom Button Row + Total Sale Value -->
             <item>
                 <layout class="QHBoxLayout" name="bottomButtonLayout">
                     <item>
@@ -156,6 +186,38 @@
                             </property>
                         </spacer>
                     </item>
+
+                    <!-- Total Value of Sale -->
+                    <item>
+                        <widget class="QLabel" name="totalValueLabel">
+                            <property name="text">
+                                <string>Total Value of Sale:</string>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignRight|Qt::AlignVCenter</set>
+                            </property>
+                        </widget>
+                    </item>
+
+                    <!-- Read-only field for total -->
+                    <item>
+                        <widget class="QLineEdit" name="totalValueDisplay">
+                            <property name="readOnly">
+                                <bool>true</bool>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignRight</set>
+                            </property>
+                            <property name="minimumWidth">
+                                <number>100</number>
+                            </property>
+                            <property name="text">
+                                <string>0.00</string>
+                            </property>
+                        </widget>
+                    </item>
+
+                    <!-- Buttons -->
                     <item>
                         <widget class="QPushButton" name="previewButton">
                             <property name="text">
