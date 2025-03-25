@@ -23,9 +23,9 @@
 //      media               BLOB
 // );
 
-/* Still Need (3/18/25):
-- Copy the log id the cookie is from, insert into db
-- Handling of cookie thickness
+/* Still Need (3/25/25):
+- Cookie GUI (wait for GUI update)
+- Handling of cookie thickness via user input (done in mainwindow.cpp)
 */
 
 /* Errors:
@@ -123,7 +123,33 @@ std::vector<Cookie> Cookie::make_from_log(
     std::optional<Drying> drying
 ) {
     std::vector<Cookie> cookie;
-    /*Might need to return the remaining log as well - depends on implementation*/
+
     cookie.push_back(Cookie(0, log.getSpecies(), thickness_quarters, log.getDiameterQuarters(), drying.value_or(Drying::KILN_DRIED)));
+
     return cookie;
 }
+/*
+void MainWindow::onCookieButtonClicked() {
+    std::optional<Log> opt = Log::get_by_id(ui->individualLogTableView->currentIndex().siblingAtColumn(0).data().toInt());
+
+    if (!opt) {
+        QMessageBox::critical(this, "Error", "Log not found");
+        return;
+    }
+
+    QMessageBox::StandardButton reply = QMessageBox::question(this, "Confirm", "Are you sure you want to cut a cookie from this log?", QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::No) {
+        return;
+    }
+
+    std::cout << "Cutting Cookie!" << std::endl;
+
+    Log log = opt.value();
+    // Query user, let them enter the desired thickness of the cookie
+    int cutDepth = ;     
+
+    auto cookie = Cookie::make_from_log(log, cutDepth);
+
+    refreshModel();
+}
+*/
