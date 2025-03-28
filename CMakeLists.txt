@@ -53,3 +53,15 @@ set_target_properties(logdb PROPERTIES
 target_include_directories(logdb PUBLIC ${includes})
 
 target_link_libraries(logdb PRIVATE SQLiteCpp Qt5::Widgets Qt5::Sql)
+
+# Copy in the database file
+add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/test.db
+    COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_SOURCE_DIR}/example.db
+            ${CMAKE_BINARY_DIR}/test.db
+    DEPENDS ${CMAKE_SOURCE_DIR}/example.db
+    COMMENT "Copying example.db to test.db in build directory"
+)
+
+add_custom_target(copy_database ALL DEPENDS ${CMAKE_BINARY_DIR}/test.db)
