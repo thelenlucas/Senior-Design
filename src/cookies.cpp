@@ -130,6 +130,7 @@ std::vector<Cookie> Cookie::make_from_log(
 }
 /*
 void MainWindow::onCookieButtonClicked() {
+    // Get the selected log id
     std::optional<Log> opt = Log::get_by_id(ui->individualLogTableView->currentIndex().siblingAtColumn(0).data().toInt());
 
     if (!opt) {
@@ -137,18 +138,20 @@ void MainWindow::onCookieButtonClicked() {
         return;
     }
 
-    QMessageBox::StandardButton reply = QMessageBox::question(this, "Confirm", "Are you sure you want to cut a cookie from this log?", QMessageBox::Yes | QMessageBox::No);
-    if (reply == QMessageBox::No) {
-        return;
-    }
-
-    std::cout << "Cutting Cookie!" << std::endl;
-
     Log log = opt.value();
-    // Query user, let them enter the desired thickness of the cookie
-    int cutDepth = ;     
 
-    auto cookie = Cookie::make_from_log(log, cutDepth);
+    // Dialog for the user to enter a uint for cookie thickness
+    // https://doc.qt.io/qt-5/qinputdialog.html
+    // Pointer, Dialog Title, Dialog Text, Initial Val, Min Val, Max Val, Trigger Val
+    bool ok;    
+    int enteredCut = QInputDialog::getInt(this, QObject::tr("Cookie Cutter"), QObject::tr("Please enter the desired cookie thickness:"), 0.01, 0.01, log.getLenQuarters(), &accept);     
+
+    if(ok && !enteredCut.isEmpty()) {
+        std::cout << "Cutting Cookie!" << std::endl;
+        unsigned int cutDepth = static_cast<unsigned int>(enteredCut);
+
+        auto cookie = Cookie::make_from_log(log, cutDepth);
+    } else { std::cout << "User canceled input." << std::endl; }
 
     refreshModel();
 }
