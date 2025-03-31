@@ -8,19 +8,23 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
     - name: Install Qt      
-      # You may pin to the exact commit or the version.
-      # uses: jurplel/install-qt-action@c6c7281365daef91a238e1c2ddce4eaa94a2991d
       uses: jurplel/install-qt-action@v4.1.1
-    - name: dir
-      run: mkdir build && cd build
-    - name: cmake
+    - name: Create build directory
+      run: mkdir build
+    - name: Check for CMakeLists.txt
+      run: |
+        if [ ! -f CMakeLists.txt ]; then
+          echo "CMakeLists.txt not found in the repository root"
+          exit 1
+        fi
+    - name: Run CMake
       run: cmake ..
-    - name: make
+      working-directory: ./build
+    - name: Build
       run: make
-          
+      working-directory: ./build
