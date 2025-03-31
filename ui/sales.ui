@@ -14,60 +14,89 @@
 
         <layout class="QVBoxLayout" name="mainLayout">
             <property name="spacing">
-                <number>8</number>
+                <number>0</number>
             </property>
-
-            <!-- Current Inventory Label Above Inventory Table -->
-            <item>
-                <widget class="QLabel" name="inventoryLabel">
-                    <property name="text">
-                        <string>Current Inventory</string>
-                    </property>
-                    <property name="alignment">
-                        <set>Qt::AlignCenter</set>
-                    </property>
-                    <property name="font">
-                        <font>
-                            <bold>true</bold>
-                            <pointsize>12</pointsize>
-                        </font>
-                    </property>
-                </widget>
-            </item>
+            <property name="leftMargin">
+                <number>0</number>
+            </property>
+            <property name="topMargin">
+                <number>0</number>
+            </property>
+            <property name="rightMargin">
+                <number>0</number>
+            </property>
+            <property name="bottomMargin">
+                <number>0</number>
+            </property>
 
             <!-- Horizontal section: Inventory, Arrow Buttons, Selector -->
             <item>
                 <layout class="QHBoxLayout" name="horizontalLayout">
                     <property name="spacing">
-                        <number>16</number>
+                        <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                        <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                        <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                        <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                        <number>0</number>
                     </property>
 
-                    <!-- Inventory Table -->
+                    <!-- Inventory Column with Label and Table -->
                     <item>
-                        <widget class="QTableView" name="inventoryTable">
-                            <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Expanding" />
+                        <layout class="QVBoxLayout" name="inventoryLayout">
+                            <property name="spacing">
+                                <number>0</number>
                             </property>
-                            <property name="selectionBehavior">
-                                <enum>QAbstractItemView::SelectRows</enum>
-                            </property>
-                            <property name="selectionMode">
-                                <enum>QAbstractItemView::SingleSelection</enum>
-                            </property>
-                            <property name="horizontalScrollMode">
-                                <enum>QAbstractItemView::ScrollPerPixel</enum>
-                            </property>
-                            <property name="verticalScrollMode">
-                                <enum>QAbstractItemView::ScrollPerPixel</enum>
-                            </property>
-                        </widget>
+                            <item>
+                                <widget class="QLabel" name="inventoryLabel">
+                                    <property name="text">
+                                        <string>Current Inventory</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignCenter</set>
+                                    </property>
+                                    <property name="font">
+                                        <font>
+                                            <bold>true</bold>
+                                            <pointsize>12</pointsize>
+                                        </font>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item>
+                                <widget class="QTableView" name="inventoryTable">
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding" />
+                                    </property>
+                                    <property name="selectionBehavior">
+                                        <enum>QAbstractItemView::SelectRows</enum>
+                                    </property>
+                                    <property name="selectionMode">
+                                        <enum>QAbstractItemView::SingleSelection</enum>
+                                    </property>
+                                    <property name="horizontalScrollMode">
+                                        <enum>QAbstractItemView::ScrollPerPixel</enum>
+                                    </property>
+                                    <property name="verticalScrollMode">
+                                        <enum>QAbstractItemView::ScrollPerPixel</enum>
+                                    </property>
+                                </widget>
+                            </item>
+                        </layout>
                     </item>
 
                     <!-- Arrow Buttons Column -->
                     <item>
                         <layout class="QVBoxLayout" name="arrowButtonLayout">
                             <property name="spacing">
-                                <number>10</number>
+                                <number>0</number>
                             </property>
                             <item>
                                 <spacer name="spacerTop">
@@ -133,7 +162,9 @@
                     <!-- Select Inventory Quantities Panel -->
                     <item>
                         <layout class="QVBoxLayout" name="amountSelectorLayout">
-                            <!-- Title Label -->
+                            <property name="spacing">
+                                <number>0</number>
+                            </property>
                             <item>
                                 <widget class="QLabel" name="selectInventoryLabel">
                                     <property name="text">
@@ -150,15 +181,50 @@
                                     </property>
                                 </widget>
                             </item>
-
-                            <!-- Scrollable Entry Layout -->
                             <item>
                                 <widget class="QScrollArea" name="amountScrollArea">
                                     <property name="widgetResizable">
                                         <bool>true</bool>
                                     </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="MinimumExpanding"
+                                            vsizetype="Expanding" />
+                                    </property>
+                                    <property name="minimumWidth">
+                                        <number>500</number>
+                                    </property>
                                     <widget class="QWidget" name="amountScrollContents">
-                                        <layout class="QVBoxLayout" name="amountEntryLayout" />
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="MinimumExpanding"
+                                                vsizetype="Preferred" />
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>500</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                        <property name="minimumWidth">
+                                            <number>500</number>
+                                        </property>
+                                        <layout class="QVBoxLayout" name="amountEntryLayout">
+                                            <property name="spacing">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="leftMargin">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="topMargin">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="rightMargin">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="bottomMargin">
+                                                <number>0</number>
+                                            </property>
+                                            <!-- bottomSpacer REMOVED -->
+                                        </layout>
                                     </widget>
                                 </widget>
                             </item>
@@ -186,8 +252,6 @@
                             </property>
                         </spacer>
                     </item>
-
-                    <!-- Total Value of Sale -->
                     <item>
                         <widget class="QLabel" name="totalValueLabel">
                             <property name="text">
@@ -198,8 +262,6 @@
                             </property>
                         </widget>
                     </item>
-
-                    <!-- Read-only field for total -->
                     <item>
                         <widget class="QLineEdit" name="totalValueDisplay">
                             <property name="readOnly">
@@ -216,8 +278,6 @@
                             </property>
                         </widget>
                     </item>
-
-                    <!-- Buttons -->
                     <item>
                         <widget class="QPushButton" name="previewButton">
                             <property name="text">

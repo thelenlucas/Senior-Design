@@ -17,6 +17,9 @@
 #include <QPalette>
 #include <QSqlRecord>
 
+#include <QEvent>
+#include <QMouseEvent>
+
 // TODO: Make this configurable via a config file or database table.
 const constexpr double DEFAULT_WINDOW_SIZE_RATIO = 0.6;
 
@@ -73,8 +76,8 @@ SalesPage::SalesPage(QWidget* parent)
             itemWidgets.removeAt(selectedIndex);
             selectedIndex = -1;
 
-            for (int i = 0; i < itemWidgets.size(); ++i)
-                itemWidgets[i]->setStyleSheet((i % 2 == 0) ? "background-color: #f0f0f0;" : "background-color: #e0e0e0;");
+            //for (int i = 0; i < itemWidgets.size(); ++i)
+            //    itemWidgets[i]->setStyleSheet((i % 2 == 0) ? "background-color: #f0f0f0;" : "background-color: #e0e0e0;");
         }
     });
 
@@ -85,6 +88,8 @@ SalesPage::SalesPage(QWidget* parent)
     connect(ui->exportButton, &QPushButton::clicked, this, []() {
         qDebug() << "Export Webpage clicked";
     });
+
+    ui->amountScrollContents->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 }
 
 SalesPage::~SalesPage()
@@ -111,18 +116,29 @@ void SalesPage::ResizeToDisplayPercentage(double width_ratio, double height_rati
     }
 }
 
-void SalesPage::AddSelectedInventoryRow(const QString& id, const QString& species, const QString& valueStr)
+void SalesPage::AddSelectedInventoryRow(QString const& id, QString const& species, QString const& value)
 {
-    QWidget* container = new QWidget;
-    QHBoxLayout* layout = new QHBoxLayout(container);
-    layout->setContentsMargins(4, 2, 4, 2);
-    layout->setSpacing(6);
+    QString labelText = QString("ID: %1 | Species: %2 | Value: %3").arg(id, species, value);
 
-    QString labelText = QString("ID: %1 | Species: %2 | Value: $%3").arg(id, species, valueStr);
+    QWidget* rowWidget = new QWidget;
+    rowWidget->setFixedHeight(100);
+    rowWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed); // 🛠 Important fix
+
+    QHBoxLayout* rowLayout = new QHBoxLayout(rowWidget);
+    rowLayout->setContentsMargins(6, 2, 6, 2);
+    rowLayout->setSpacing(6);
+
+    QLabel* imageLabel = new QLabel;
+    imageLabel->setFixedSize(80, 80);
+    imageLabel->setPixmap(QPixmap(":/images/placeholder.png").scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
     QLabel* label = new QLabel(labelText);
+    label->setMinimumWidth(200);
+
     QLineEdit* quantityEdit = new QLineEdit("1");
     quantityEdit->setFixedWidth(40);
     quantityEdit->setAlignment(Qt::AlignCenter);
+    quantityEdit->setProperty("quantity", 1);
 
     QPushButton* plusButton = new QPushButton("+");
     plusButton->setFixedSize(24, 24);
@@ -130,124 +146,91 @@ void SalesPage::AddSelectedInventoryRow(const QString& id, const QString& specie
     QPushButton* minusButton = new QPushButton("-");
     minusButton->setFixedSize(24, 24);
 
-    layout->addWidget(label);
-    layout->addWidget(minusButton);
-    layout->addWidget(quantityEdit);
-    layout->addWidget(plusButton);
+    QLineEdit* priceEdit = new QLineEdit("0.00");
+    priceEdit->setFixedWidth(60);
+    priceEdit->setAlignment(Qt::AlignRight);
+    priceEdit->setPlaceholderText("Price");
 
-    double value = valueStr.toDouble();
-    container->setProperty("value", value);
-    container->setProperty("quantity", 1);
+    QPushButton* removeButton = new QPushButton("×");
+    removeButton->setFixedSize(24, 24);
+    removeButton->setToolTip("Remove entry");
 
-    int index = itemWidgets.size();
-    container->setStyleSheet((index % 2 == 0) ? "background-color: #f0f0f0;" : "background-color: #e0e0e0;");
-    itemWidgets.append(container);
-    ui->amountEntryLayout->addWidget(container);
+    rowLayout->addWidget(imageLabel);
+    rowLayout->addWidget(label);
+    rowLayout->addWidget(minusButton);
+    rowLayout->addWidget(quantityEdit);
+    rowLayout->addWidget(plusButton);
+    rowLayout->addWidget(priceEdit);
+    rowLayout->addWidget(removeButton);
 
-    // Enable context menu signal on left click.
-    container->setContextMenuPolicy(Qt::CustomContextMenu);
-    container->setCursor(Qt::PointingHandCursor);
+    int rowIndex = itemWidgets.size();
+    QString bgColor = (rowIndex % 2 == 0) ? "#f0f0f0" : "#e0e0e0";
+    rowWidget->setStyleSheet(QString("background-color: %1;").arg(bgColor));
 
-    connect(container, &QWidget::customContextMenuRequested, this, [this, container]() {
-        selectedIndex = ui->amountEntryLayout->indexOf(container);
-        for (int i = 0; i < itemWidgets.size(); ++i)
-        {
-            itemWidgets[i]->setStyleSheet((i % 2 == 0) ? "background-color: #f0f0f0;" : "background-color: #e0e0e0;");
-        }
-        if (selectedIndex >= 0 && selectedIndex < itemWidgets.size())
-        {
-            itemWidgets[selectedIndex]->setStyleSheet("background-color: #ff7777;");
-        }
+    ui->amountEntryLayout->addWidget(rowWidget);
+    itemWidgets.append(rowWidget);
+
+    connect(plusButton, &QPushButton::clicked, this, [quantityEdit]()
+    {
+        int value = quantityEdit->text().toInt();
+        quantityEdit->setText(QString::number(value + 1));
+        quantityEdit->setProperty("quantity", value + 1);
     });
 
-    connect(plusButton, &QPushButton::clicked, this, [this, quantityEdit, container]() {
-        int qty = quantityEdit->text().toInt();
-        quantityEdit->setText(QString::number(qty + 1));
-        double value = container->property("value").toDouble();
-        container->setProperty("quantity", qty + 1);
-        UpdateTotal(value);
+    connect(minusButton, &QPushButton::clicked, this, [quantityEdit]()
+    {
+        int value = quantityEdit->text().toInt();
+        int newVal = qMax(0, value - 1);
+        quantityEdit->setText(QString::number(newVal));
+        quantityEdit->setProperty("quantity", newVal);
     });
 
-    connect(minusButton, &QPushButton::clicked, this, [this, quantityEdit, container]() {
-        int qty = quantityEdit->text().toInt();
-        if (qty > 0)
-        {
-            quantityEdit->setText(QString::number(qty - 1));
-            double value = container->property("value").toDouble();
-            container->setProperty("quantity", qty - 1);
-            UpdateTotal(-value);
-        }
+    connect(removeButton, &QPushButton::clicked, this, [this, rowWidget]()
+    {
+        ui->amountEntryLayout->removeWidget(rowWidget);
+        itemWidgets.removeOne(rowWidget);
+        rowWidget->deleteLater();
+        ReapplyStripedBackgrounds();
     });
 
-    UpdateTotal(value);
+    rowWidget->installEventFilter(this);
 }
 
-/*void SalesPage::AddSelectedInventoryRow(const QString& id, const QString& species, const QString& valueStr)
+void SalesPage::ReapplyStripedBackgrounds()
 {
-    QWidget* container = new QWidget;
-    QHBoxLayout* layout = new QHBoxLayout(container);
-    layout->setContentsMargins(4, 2, 4, 2);
-    layout->setSpacing(6);
+    for (int i = 0; i < itemWidgets.size(); ++i)
+    {
+        QString color = (i % 2 == 0) ? "#f0f0f0" : "#e0e0e0";
+        itemWidgets[i]->setStyleSheet(QString("background-color: %1;").arg(color));
+    }
+}
 
-    QString labelText = QString("ID: %1 | Species: %2 | Value: $%3").arg(id, species, valueStr);
-    QLabel* label = new QLabel(labelText);
-    QLineEdit* quantityEdit = new QLineEdit("1");
-    quantityEdit->setFixedWidth(40);
-    quantityEdit->setAlignment(Qt::AlignCenter);
-
-    QPushButton* plusButton = new QPushButton("+");
-    plusButton->setFixedSize(24, 24);
-
-    QPushButton* minusButton = new QPushButton("-");
-    minusButton->setFixedSize(24, 24);
-
-    layout->addWidget(label);
-    layout->addWidget(minusButton);
-    layout->addWidget(quantityEdit);
-    layout->addWidget(plusButton);
-
-    double value = valueStr.toDouble();
-    container->setProperty("value", value);
-    container->setProperty("quantity", 1);
-
-    int index = itemWidgets.size();
-    container->setStyleSheet((index % 2 == 0) ? "background-color: #f0f0f0;" : "background-color: #e0e0e0;");
-    itemWidgets.append(container);
-    ui->amountEntryLayout->addWidget(container);
-
-    connect(container, &QWidget::mousePressEvent, this, [this, index](QMouseEvent*) {
-        for (int i = 0; i < itemWidgets.size(); ++i)
-        {
-            itemWidgets[i]->setStyleSheet((i % 2 == 0) ? "background-color: #f0f0f0;" : "background-color: #e0e0e0;");
-        }
-        itemWidgets[index]->setStyleSheet("background-color: #ff7777;");
-        selectedIndex = index;
-    });
-
-    connect(plusButton, &QPushButton::clicked, this, [this, quantityEdit, container]() {
-        int qty = quantityEdit->text().toInt();
-        quantityEdit->setText(QString::number(qty + 1));
-        double value = container->property("value").toDouble();
-        container->setProperty("quantity", qty + 1);
-        UpdateTotal(value);
-    });
-
-    connect(minusButton, &QPushButton::clicked, this, [this, quantityEdit, container]() {
-        int qty = quantityEdit->text().toInt();
-        if (qty > 0)
-        {
-            quantityEdit->setText(QString::number(qty - 1));
-            double value = container->property("value").toDouble();
-            container->setProperty("quantity", qty - 1);
-            UpdateTotal(-value);
-        }
-    });
-
-    UpdateTotal(value);
-}*/
 
 void SalesPage::UpdateTotal(double delta)
 {
     runningTotal += delta;
     ui->totalValueDisplay->setText(QString::number(runningTotal, 'f', 2));
+}
+
+bool SalesPage::eventFilter(QObject* obj, QEvent* event)
+{
+    if (event->type() == QEvent::MouseButtonPress)
+    {
+        for (QWidget* widget : itemWidgets)
+        {
+            QFrame* frame = widget->findChild<QFrame*>();
+            if (frame)
+                frame->setStyleSheet("QFrame { background-color: white; }");
+        }
+
+        QWidget* clickedWidget = qobject_cast<QWidget*>(obj);
+        if (clickedWidget)
+        {
+            QFrame* frame = clickedWidget->findChild<QFrame*>();
+            if (frame)
+                frame->setStyleSheet("QFrame { background-color: #cce6ff; }");
+        }
+    }
+
+    return QWidget::eventFilter(obj, event);
 }

@@ -27,8 +27,11 @@ private:
 
     void RefreshInventoryModel();
     void ResizeToDisplayPercentage(double width_ratio, double height_ratio);
-    void AddSelectedInventoryRow(const QString& id, const QString& species, const QString& value);
+    void AddSelectedInventoryRow(QString const& id, QString const& species, QString const& value);
+    void ReapplyStripedBackgrounds();
     void UpdateTotal(double delta);
+    bool eventFilter(QObject* obj, QEvent* event) override;
+
 };
 
 #endif // SALES_HPP
