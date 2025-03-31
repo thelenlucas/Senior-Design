@@ -1,62 +1,85 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include <string>
+#include <iostream>
+#include <iomanip>
+
 #include <QSqlDatabase>
 #include <QSqlQueryModel>
 #include <QSqlError>
 #include <QMessageBox>
 #include <QDebug>
-#include "project_editor.h"
-#include <string>
+#include <QDockWidget>
+
+#include "project_editor.hpp"
 #include "logs.hpp"
 #include "types.hpp"
 #include "firewood.hpp"
-#include <iostream>
-#include <iomanip>
+
+#include "mainwindow.hpp"
+#include "ui_mainwindow.h"
+#include "inventory.hpp"
+#include "cutlist.hpp"
+#include "sales.hpp"
 
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow),
+      cutlistPage(new CutlistPage()),
+      salesPage(new SalesPage()),
+      inventoryPage(nullptr)
 {
+    // Load UI layout and set the central widget
     ui->setupUi(this);
+    setCentralWidget(ui->centralwidget);
 
-    // Establish database connection.
-    // Yeah this opens another connection, but it's read-only
+    // Enable docking options globally for the main window
+    setDockOptions(QMainWindow::AnimatedDocks |
+                   QMainWindow::AllowNestedDocks |
+                   QMainWindow::AllowTabbedDocks);
+
+    // Add the menu and actions for switching between pages
+    QMenu *menu = menuBar()->addMenu("WoodWorks");
+    QAction *inventoryAction = new QAction("Inventory", this);
+    QAction *cutlistAction = new QAction("Cutlist", this);
+    QAction *salesAction = new QAction("Sales", this);
+
+    menu->addAction(inventoryAction);
+    menu->addAction(cutlistAction);
+    menu->addAction(salesAction);
+
+    // Connect action triggers to handlers
+    connect(inventoryAction, &QAction::triggered, this, &MainWindow::showInventoryPage);
+    connect(cutlistAction, &QAction::triggered, this, &MainWindow::showCutlistPage);
+    connect(salesAction, &QAction::triggered, this, &MainWindow::showSalesPage);
+
+    // Set up the database connection
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(DATABASE_FILE);
     if (!db.open()) {
         qDebug() << "Database error:" << db.lastError().text();
-        return; // Early return if the connection fails.
+        return;
     }
 
+    // Load and bind models
     auto *groupedModel = new QSqlQueryModel(this);
     auto *logsModel = new QSqlQueryModel(this);
-    QString queryStr = GROUPED_LOGS_QUERY;
-    QString logsQueryStr = LOGS_QUERY;
-    groupedModel->setQuery(queryStr, db);
-    logsModel->setQuery(logsQueryStr, db);
+    groupedModel->setQuery(GROUPED_LOGS_QUERY, db);
+    logsModel->setQuery(LOGS_QUERY, db);
 
-    // Check for query errors.
-    if (groupedModel->lastError().isValid()) {
+    if (groupedModel->lastError().isValid())
         qDebug() << "Query error:" << groupedModel->lastError().text();
-    }
-    if (logsModel->lastError().isValid()) {
+    if (logsModel->lastError().isValid())
         qDebug() << "Query error:" << logsModel->lastError().text();
-    }
 
-    // Set the model to the table view.
     ui->groupedLogsTableView->setModel(groupedModel);
     ui->individualLogTableView->setModel(logsModel);
     refreshModel();
 
-    // Resize the columns to fit the contents.
     ui->groupedLogsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->individualLogTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    // Connect the add button to the add log slot.
-    // Note: With a query model displaying aggregated data, editing is not supported.
     connect(ui->enterLogButton, &QPushButton::clicked, this, &MainWindow::onEnterLogButtonClicked);
     connect(ui->scrapLogButton, &QPushButton::clicked, this, &MainWindow::onScrapLogButtonClicked);
     connect(ui->makeFirewoodButton, &QPushButton::clicked, this, &MainWindow::onFirewoodButtonClicked);
@@ -162,7 +185,41 @@ void MainWindow::onProjectEditActionTriggered() {
    projectEditor->show();
 }
 
-MainWindow::~MainWindow()
+MainWindow::~MainWindow() 
 {
     delete ui;
+    // TODO: Remove these after testing. This is actually double deleting because
+    // of the QT parenting system, these are effectively shared pointers in the main window
+    // and will be cleaned up by scope resolution.
+    //delete inventoryPage;
+    //delete cutlistPage;
+    //delete salesPage;
+}
+
+void MainWindow::showInventoryPage()
+{
+    if (!inventoryPage || !inventoryPage->isVisible())
+    {
+        inventoryPage = new InventoryPage();
+        inventoryPage->setAttribute(Qt::WA_DeleteOnClose);
+        connect(inventoryPage, &InventoryPage::destroyed, this, [this]() {
+            inventoryPage = nullptr;
+        });
+        inventoryPage->show();
+    }
+    else
+    {
+        inventoryPage->raise();
+        inventoryPage->activateWindow();
+    }
+}
+
+void MainWindow::showCutlistPage() 
+{
+    cutlistPage->show();
+}
+
+void MainWindow::showSalesPage() 
+{
+    salesPage->show();
 }
