@@ -34,6 +34,7 @@
 
 Cookie::Cookie(
     int id,
+    int from_log,
     std::string species,
     uint thickness_quarters,
     uint diameter_quarters,
@@ -42,6 +43,7 @@ Cookie::Cookie(
     std::string notes
 ) {
     this->id = id;
+    this->from_log = from_log;
     this->species = species;
     this->thickness_quarters = thickness_quarters;
     this->diameter_quarters = diameter_quarters;
@@ -58,6 +60,7 @@ std::optional<Cookie> Cookie::get_by_id(int id) {
         /*ID, Origin Log, Species, Thickness, Diameter, Drying (int), Location, Notes*/
         return Cookie(
             query.getColumn(0).getInt(), 
+            query.getColumn(1).getInt(),
             query.getColumn(2).getText(),
             query.getColumn(3).getInt(),
             query.getColumn(4).getInt(),
@@ -71,8 +74,9 @@ std::optional<Cookie> Cookie::get_by_id(int id) {
 
 bool Cookie::insert() {
     SQLite::Database db("cookies.db", SQLite::OPEN_READWRITE);
-    SQLite::Statement query(db, "INSERT INTO cookies (species, thickness_quarters, diameter_quarters, drying, location, notes) VALUES (?, ?, ?, ?, ?, ?);");
+    SQLite::Statement query(db, "INSERT INTO cookies (species, from_log, thickness_quarters, diameter_quarters, drying, location, notes) VALUES (?, ?, ?, ?, ?, ?);");
     query.bind(1, this->species);
+    query.bind(2, this->from_log);
     query.bind(3, this->thickness_quarters);
     query.bind(4, this->diameter_quarters);
     query.bind(5, this->drying);
@@ -86,8 +90,9 @@ bool Cookie::insert() {
 
 bool Cookie::update() {
     SQLite::Database db("cookies.db", SQLite::OPEN_READWRITE);
-    SQLite::Statement query(db, "UPDATE cookies SET species = ?, thickness_quarters = ?, diameter_quarters = ?, drying = ?, location = ?, notes = ? WHERE id = ?;");
+    SQLite::Statement query(db, "UPDATE cookies SET species = ?, from_log = ?, thickness_quarters = ?, diameter_quarters = ?, drying = ?, location = ?, notes = ? WHERE id = ?;");
     query.bind(1, this->species);
+    query.bind(2, this->from_log);
     query.bind(3, this->thickness_quarters);
     query.bind(4, this->diameter_quarters);
     query.bind(5, this->drying);
@@ -106,6 +111,7 @@ std::vector<Cookie> Cookie::get_all() {
         /*ID, Origin Log, Species, Thickness, Diameter, Drying (int), Location, Notes*/
         cookies.push_back(Cookie(
             query.getColumn(0).getInt(),
+            query.getColumn(1).getInt(),
             query.getColumn(2).getText(),
             query.getColumn(3).getInt(),
             query.getColumn(4).getInt(),
@@ -123,8 +129,9 @@ std::vector<Cookie> Cookie::make_from_log(
     std::optional<Drying> drying
 ) {
     std::vector<Cookie> cookie;
+    // ID, Log ID, Thickness, Diameter, Drying
 
-    cookie.push_back(Cookie(0, log.getSpecies(), thickness_quarters, log.getDiameterQuarters(), drying.value_or(Drying::KILN_DRIED)));
+    cookie.push_back(Cookie(0, log.get_id(), log.getSpecies(), thickness_quarters, log.getDiameterQuarters(), drying.value_or(Drying::KILN_DRIED)));
 
     return cookie;
 }

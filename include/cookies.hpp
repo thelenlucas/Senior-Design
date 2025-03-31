@@ -1,17 +1,14 @@
+//Schema:
 // CREATE TABLE cookies (
-//     id                 INTEGER PRIMARY KEY AUTOINCREMENT
-//                                UNIQUE
-//                                NOT NULL,
-//     species            TEXT    NOT NULL,
-//     thickness_quarters INTEGER CHECK ( (thickness_quarters > 0) ) 
-//                                NOT NULL,
-//     diameter_quarters  INTEGER NOT NULL
-//                                CHECK ( (diameter_quarters > 0) ),
-//     drying             INTEGER NOT NULL
-//                                CHECK ( (drying BETWEEN 0 AND 3) ),
-//     location           VARCHAR,
-//     notes              TEXT,
-//     media              BLOB
+//      id                  INTEGER     PRIMARY KEY     AUTOINCREMENT
+//      from_log            INTEGER     NOT NULL        FOREIGN KEY
+//      species             TEXT        NOT NULL
+//      thickness_quarters  INT         NOT NULL        CHECK CONDITION
+//      diameter_quarters   INT         NOT NULL        CHECK CONDITION
+//      drying              INT         NOT NULL        CHECK CONDITION
+//      location            TEXT                        FOREIGN KEY
+//      notes               TEXT
+//      media               BLOB
 // );
 
 #include <string>
@@ -31,6 +28,7 @@ class Cookie : Manufacturable<Cookie>
 {
 private:
     int id;
+    int from_log;
     std::string species;
     uint thickness_quarters;
     uint diameter_quarters;
@@ -40,6 +38,7 @@ private:
 
 public:
     Cookie(int id,
+        int from_log,
         std::string species,
         uint thickness_quarters,
         uint diameter_quarters,

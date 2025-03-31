@@ -10,7 +10,6 @@ sudo apt-get upgrade
 sudo apt-get install build-essential
 sudo apt install cmake
 sudo apt install -y qtcreator qtbase5-dev qt5-qmake cmake
-bash init.sh
 mkdir build && cd build && cmake .. && cp ../example.db ./test.db && make && ./logdb
 cmake ..
 make
