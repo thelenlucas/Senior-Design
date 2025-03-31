@@ -3,25 +3,21 @@
 
 #include <QMainWindow>
 
-// Forward declarations of our UI classes, not the auto generated QT wrapper classe.
-// These are necessary to accomodate QT's structure. Don't remove these.
 class InventoryPage;
 class CutlistPage;
 class SalesPage;
 
-namespace Ui 
-{
-    class MainWindow;
-}
+QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
-    void refreshModel();
 
 private slots:
     void onEnterLogButtonClicked();
@@ -29,19 +25,17 @@ private slots:
     void onFirewoodButtonClicked();
     void onProjectEditActionTriggered();
 
-    // Added UI Slot declarations.
     void showInventoryPage();
     void showCutlistPage();
     void showSalesPage();
 
 private:
-    Ui::MainWindow *ui;
-    //InventoryPage* inventoryPage;
-    CutlistPage* cutlistPage;
-    SalesPage* salesPage;
-    QDockWidget* inventoryDock;
+    void refreshModel();
 
+    Ui::MainWindow *ui;
+    InventoryPage *inventoryPage;
+    CutlistPage *cutlistPage;
+    SalesPage *salesPage;
 };
 
 #endif // MAINWINDOW_HPP
-

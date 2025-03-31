@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
       ui(new Ui::MainWindow),
       cutlistPage(new CutlistPage()),
       salesPage(new SalesPage()),
-      inventoryDock(nullptr)
+      inventoryPage(nullptr)
 {
     // Load UI layout and set the central widget
     ui->setupUi(this);
@@ -198,33 +198,20 @@ MainWindow::~MainWindow()
 
 void MainWindow::showInventoryPage()
 {
-    if (!inventoryDock)
+    if (!inventoryPage || !inventoryPage->isVisible())
     {
-        // Create the InventoryPage widget.
-        InventoryPage *page = new InventoryPage(this);
-
-        // Create the dock widget and assign the page.
-        inventoryDock = new QDockWidget("Inventory", this);
-        inventoryDock->setObjectName("InventoryDockWidget");
-        inventoryDock->setWidget(page);
-
-        // Enable dock features and configure its docking behavior.
-        inventoryDock->setAllowedAreas(Qt::AllDockWidgetAreas);
-        inventoryDock->setFeatures(QDockWidget::DockWidgetClosable |
-                                   QDockWidget::DockWidgetMovable |
-                                   QDockWidget::DockWidgetFloatable);
-
-        // Start floating by default.
-        inventoryDock->setFloating(true);
-
-        // Add it to the main window's docking system.
-        addDockWidget(Qt::RightDockWidgetArea, inventoryDock);
+        inventoryPage = new InventoryPage();
+        inventoryPage->setAttribute(Qt::WA_DeleteOnClose);
+        connect(inventoryPage, &InventoryPage::destroyed, this, [this]() {
+            inventoryPage = nullptr;
+        });
+        inventoryPage->show();
     }
-
-    // Show the dock if it was previously closed.
-    inventoryDock->show();
-    inventoryDock->raise();
-    inventoryDock->activateWindow();
+    else
+    {
+        inventoryPage->raise();
+        inventoryPage->activateWindow();
+    }
 }
 
 void MainWindow::showCutlistPage() 

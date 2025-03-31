@@ -7,7 +7,6 @@
 #include <QFileDialog>
 #include <QScreen>
 #include <QMouseEvent>
-#include <QDockWidget>
 #include <QTimer>
 
 #include "inventory.hpp"
@@ -22,13 +21,15 @@ InventoryPage::InventoryPage(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Dynamically resize window to 60% of screen size
+    // Dynamically resize window to 60% of screen size and center
     QScreen* screen = QGuiApplication::primaryScreen();
     if (screen)
     {
         QSize screenSize = screen->availableGeometry().size();
         QSize windowSize(screenSize.width() * 0.6, screenSize.height() * 0.6);
         resize(windowSize);
+        move((screenSize.width() - windowSize.width()) / 2,
+             (screenSize.height() - windowSize.height()) / 2);
     }
 
     // Setup the logical models for our mvc.
@@ -41,28 +42,9 @@ InventoryPage::InventoryPage(QWidget *parent)
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
 
     setFocusPolicy(Qt::StrongFocus);
-
-    QTimer::singleShot(0, this, [this]() {
-        for (QObject* child : this->findChildren<QObject*>())
-        {
-            qDebug() << "Late-installing filter on:" << child->metaObject()->className()
-                     << "Name:" << child->objectName();
-            child->installEventFilter(this);
-        }
-    });
-
-    QDockWidget* dock = qobject_cast<QDockWidget*>(parentWidget());
-    if (dock)
-    {
-        qDebug() << "Dock is floating?" << dock->isFloating();
-        qDebug() << "Dock is visible?" << dock->isVisible();
-        qDebug() << "Dock geometry:" << dock->geometry();
-    }
-    else
-    {
-        qDebug() << "Dock is null here!";
-    }
-    
+    setWindowTitle("Inventory Management");
+    setAttribute(Qt::WA_DeleteOnClose);
+    setWindowFlags(Qt::Window);
 }
 
 InventoryPage::~InventoryPage()
