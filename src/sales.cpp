@@ -16,6 +16,8 @@
 #include <QStyle>
 #include <QPalette>
 #include <QSqlRecord>
+#include <QDialog>
+#include <QTextBrowser>
 
 #include <QEvent>
 #include <QMouseEvent>
@@ -81,10 +83,60 @@ SalesPage::SalesPage(QWidget* parent)
         }
     });
 
-    connect(ui->previewButton, &QPushButton::clicked, this, []() {
-        qDebug() << "Preview Webpage clicked";
+    connect(ui->previewButton, &QPushButton::clicked, this, [this]() {
+        QString html;
+        html += "<!DOCTYPE html><html><head><title>Sales Preview</title>";
+        html += "<style>"
+                "body { font-family: Arial; padding: 20px; }"
+                ".item { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; display: flex; align-items: center; }"
+                "img { width: 100px; height: 100px; object-fit: cover; margin-right: 20px; }"
+                "</style>";
+        html += "</head><body>";
+        html += "<h1>Sales Preview</h1>";
+    
+        for (QWidget* item : itemWidgets)
+        {
+            QString idText, speciesText, priceText;
+            int quantity = 0;
+    
+            QLabel* label = item->findChild<QLabel*>();
+            if (label)
+            {
+                QStringList parts = label->text().split(" | ");
+                for (QString const& part : parts)
+                {
+                    if (part.startsWith("ID: "))
+                        idText = part.mid(4);
+                    else if (part.startsWith("Species: "))
+                        speciesText = part.mid(9);
+                    else if (part.startsWith("Value: "))
+                        priceText = part.mid(7);
+                }
+            }
+    
+            QLineEdit* quantityEdit = item->findChild<QLineEdit*>();
+            if (quantityEdit)
+                quantity = quantityEdit->text().toInt();
+    
+            QLineEdit* priceEdit = item->findChildren<QLineEdit*>().value(1);
+            QString finalPrice = priceEdit ? priceEdit->text() : priceText;
+    
+            html += "<div class='item'>";
+            html += "<img src='placeholder.png' alt='Image'>";
+            html += "<div>";
+            html += QString("<strong>ID:</strong> %1<br>").arg(idText);
+            html += QString("<strong>Species:</strong> %1<br>").arg(speciesText);
+            html += QString("<strong>Price:</strong> $%1<br>").arg(finalPrice);
+            html += QString("<strong>Quantity:</strong> %1").arg(quantity);
+            html += "</div></div>";
+        }
+    
+        html += "</body></html>";
+    
+        ShowHtmlPreview(html);
     });
-
+    
+    // TODO: Hook up the logic module responsible for actually outputing the html files here.
     connect(ui->exportButton, &QPushButton::clicked, this, []() {
         qDebug() << "Export Webpage clicked";
     });
@@ -123,6 +175,8 @@ void SalesPage::AddSelectedInventoryRow(QString const& id, QString const& specie
     QWidget* rowWidget = new QWidget;
     rowWidget->setFixedHeight(100);
     rowWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed); // 🛠 Important fix
+    rowWidget->setProperty("value", value.toDouble());
+    rowWidget->setProperty("quantity", 1);
 
     QHBoxLayout* rowLayout = new QHBoxLayout(rowWidget);
     rowLayout->setContentsMargins(6, 2, 6, 2);
@@ -193,6 +247,30 @@ void SalesPage::AddSelectedInventoryRow(QString const& id, QString const& specie
         ReapplyStripedBackgrounds();
     });
 
+    connect(quantityEdit, &QLineEdit::textChanged, this, [=]() {
+        bool ok;
+        int newQuantity = quantityEdit->text().toInt(&ok);
+        if (!ok) return;
+    
+        double oldValue = rowWidget->property("value").toDouble();
+        int oldQuantity = rowWidget->property("quantity").toInt();
+        UpdateTotal(-oldValue * oldQuantity);
+        rowWidget->setProperty("quantity", newQuantity);
+        UpdateTotal(oldValue * newQuantity);
+    });
+    
+    connect(priceEdit, &QLineEdit::textChanged, this, [=]() {
+        bool ok;
+        double newPrice = priceEdit->text().toDouble(&ok);
+        if (!ok) return;
+    
+        double oldPrice = rowWidget->property("value").toDouble();
+        int quantity = rowWidget->property("quantity").toInt();
+        UpdateTotal(-oldPrice * quantity);
+        rowWidget->setProperty("value", newPrice);
+        UpdateTotal(newPrice * quantity);
+    });    
+
     rowWidget->installEventFilter(this);
 }
 
@@ -233,4 +311,25 @@ bool SalesPage::eventFilter(QObject* obj, QEvent* event)
     }
 
     return QWidget::eventFilter(obj, event);
+}
+
+void SalesPage::ShowHtmlPreview(QString const& html)
+{
+    QDialog* previewDialog = new QDialog(this);
+    previewDialog->setWindowTitle("Webpage Preview");
+    previewDialog->resize(800, 600);
+
+    QVBoxLayout* layout = new QVBoxLayout(previewDialog);
+    layout->setContentsMargins(6, 6, 6, 6);
+
+    QTextBrowser* browser = new QTextBrowser;
+    browser->setHtml(html);
+    layout->addWidget(browser);
+
+    QPushButton* closeButton = new QPushButton("Close");
+    QObject::connect(closeButton, &QPushButton::clicked, previewDialog, &QDialog::accept);
+    layout->addWidget(closeButton, 0, Qt::AlignRight);
+
+    previewDialog->setLayout(layout);
+    previewDialog->exec();
 }

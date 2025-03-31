@@ -200,28 +200,30 @@ void MainWindow::showInventoryPage()
 {
     if (!inventoryDock)
     {
-        // Create the InventoryPage widget.
-        InventoryPage *page = new InventoryPage(this);
-
-        // Create the dock widget and assign the page.
+        // Create the dock widget first
         inventoryDock = new QDockWidget("Inventory", this);
         inventoryDock->setObjectName("InventoryDockWidget");
+
+        // Create InventoryPage with the dock as its parent
+        InventoryPage *page = new InventoryPage(inventoryDock);
         inventoryDock->setWidget(page);
 
-        // Enable dock features and configure its docking behavior.
+        // Dock settings
         inventoryDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         inventoryDock->setFeatures(QDockWidget::DockWidgetClosable |
                                    QDockWidget::DockWidgetMovable |
                                    QDockWidget::DockWidgetFloatable);
-
-        // Start floating by default.
         inventoryDock->setFloating(true);
 
-        // Add it to the main window's docking system.
+        // Critical: ensure focus & interaction work properly
+        inventoryDock->setFocusPolicy(Qt::StrongFocus);
+        page->setFocusPolicy(Qt::StrongFocus);
+        page->setAttribute(Qt::WA_TransparentForMouseEvents, false);
+
+        // Add dock to main window
         addDockWidget(Qt::RightDockWidgetArea, inventoryDock);
     }
 
-    // Show the dock if it was previously closed.
     inventoryDock->show();
     inventoryDock->raise();
     inventoryDock->activateWindow();

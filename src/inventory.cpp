@@ -45,24 +45,26 @@ InventoryPage::InventoryPage(QWidget *parent)
     QTimer::singleShot(0, this, [this]() {
         for (QObject* child : this->findChildren<QObject*>())
         {
-            qDebug() << "Late-installing filter on:" << child->metaObject()->className()
+            qDebug() << "Late-installing filter on:"
+                     << child->metaObject()->className()
                      << "Name:" << child->objectName();
             child->installEventFilter(this);
         }
-    });
 
-    QDockWidget* dock = qobject_cast<QDockWidget*>(parentWidget());
-    if (dock)
-    {
-        qDebug() << "Dock is floating?" << dock->isFloating();
-        qDebug() << "Dock is visible?" << dock->isVisible();
-        qDebug() << "Dock geometry:" << dock->geometry();
-    }
-    else
-    {
-        qDebug() << "Dock is null here!";
-    }
-    
+        QDockWidget* dock = qobject_cast<QDockWidget*>(this->parentWidget());
+        if (dock)
+        {
+            qDebug() << "Dock found in deferred setup:";
+            //dock->setAttribute(Qt::WA_TransparentForMouseEvents, false);
+            //dock->setFocusPolicy(Qt::StrongFocus);
+            dock->setFocus();
+            this->setFocus();
+        }
+        else
+        {
+            qDebug() << "Dock still null in deferred QTimer setup";
+        }
+    });
 }
 
 InventoryPage::~InventoryPage()
@@ -111,25 +113,60 @@ void InventoryPage::onSpreadsheetImportClicked()
     if (filename.isEmpty())
         return;
 
-    // TODO: Implement spreadsheet import parsing logic in logic module.
     QMessageBox::information(this, "Import Selected", "File selected: " + filename);
 }
 
-void InventoryPage::mousePressEvent(QMouseEvent *event)
+void InventoryPage::mousePressEvent(QMouseEvent* event)
 {
-    qDebug() << "InventoryPage clicked at:" << event->pos() << "Mouse click on widgetAt:" << QApplication::widgetAt(QCursor::pos());
+    qDebug() << "InventoryPage clicked at:" << event->pos()
+             << "Mouse click on widgetAt:" << QApplication::widgetAt(QCursor::pos());
 
     QWidget::mousePressEvent(event);
 }
 
 bool InventoryPage::eventFilter(QObject* obj, QEvent* event)
 {
-    qDebug() << "EVENT TYPE:" << event->type() << "on:" << obj->metaObject()->className() << "named:" << obj->objectName();
+    qDebug() << "EVENT TYPE:" << event->type()
+             << "on:" << obj->metaObject()->className()
+             << "named:" << obj->objectName();
 
     if (event->type() == QEvent::MouseButtonPress)
-    {
         qDebug() << "Mouse click intercepted on:" << obj->objectName();
-    }
 
     return QWidget::eventFilter(obj, event);
+}
+
+void InventoryPage::showEvent(QShowEvent* event)
+{
+    QWidget::showEvent(event);
+
+    QDockWidget* dock = qobject_cast<QDockWidget*>(this->parentWidget());
+    if (dock)
+    {
+        qDebug() << "Dock detected in showEvent:" << dock->objectName();
+        dock->setFocusPolicy(Qt::StrongFocus);
+        dock->setFocus();
+        this->setFocus();
+
+        if (!dock->isFloating())
+        {
+            dock->setFloating(true);
+            qDebug() << "Forced dock to float in showEvent.";
+        }
+
+        dock->raise();
+        dock->activateWindow();
+    }
+    else
+    {
+        qDebug() << "Dock still null in showEvent.";
+    }
+}
+
+bool InventoryPage::event(QEvent* event)
+{
+    if (event->type() == QEvent::MouseButtonPress)
+        qDebug() << "[InventoryPage] caught mouse event in generic event()";
+
+    return QWidget::event(event);
 }

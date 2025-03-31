@@ -31,6 +31,7 @@ private:
     void ReapplyStripedBackgrounds();
     void UpdateTotal(double delta);
     bool eventFilter(QObject* obj, QEvent* event) override;
+    void ShowHtmlPreview(QString const& html);
 
 };
 

@@ -3,7 +3,6 @@
 #include <vector>
 
 #include <sqlite3.h>
-
 #include <SQLiteCpp/SQLiteCpp.h>
 
 #include <QApplication>
@@ -20,40 +19,24 @@
 
 using qsd = QSqlDatabase;
 
-class Container : public QThread 
-{
-private:
-    QApplication *app;
-public:
-    Container(QApplication *app) 
-    {
-        this->app = app;
-    }
-public:
-    void run() 
-    {
-        MainWindow window;
-        window.show();
-        app->exec();
-    }
-};
-
 int main(int argc, char* argv[]) 
 {
+    QApplication app(argc, argv);
 
-    auto db = qsd::addDatabase("QSQLITE");
+    qsd db = qsd::addDatabase("QSQLITE");
     db.setDatabaseName("test.db");
     if (!db.open()) 
         qDebug() << "Failed to open database:" << db.lastError().text();
 
-    // QT SQL DEBUG stuff, will be removed eventually.
+    // Debug info
     qDebug() << "Current path:" << QDir::currentPath();
     qDebug() << "DB path:" << db.databaseName();
     qDebug() << "Available SQL drivers:" << qsd::drivers();
 
-    QApplication app(argc, argv);
+    // Create and show main window
+    MainWindow window;
+    window.show();
 
-    Container *container = new Container(&app);
-
-    container->run();
+    // Run Qt's main event loop — THIS is critical!
+    return app.exec();
 }

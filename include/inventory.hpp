@@ -19,6 +19,8 @@ public:
 protected:
     void mousePressEvent(QMouseEvent* event) override;
     bool eventFilter(QObject* obj, QEvent* event) override;
+    void showEvent(QShowEvent* event) override;
+    bool event(QEvent* event) override;
 
 private slots:
     void onAddLogClicked();
