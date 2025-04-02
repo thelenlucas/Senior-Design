@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QDockWidget>
 #include <QSqlRecord>
+#include <QScrollArea>
 
 #include "project_editor.hpp"
 #include "logs.hpp"
@@ -197,7 +198,7 @@ void MainWindow::onTableCellDoubleClicked() {
     int tableIndex = shownTable->currentIndex().row();
 
     //query database for photo of log at selected index
-    QString imageQueryStr = "SELECT * FROM logs_view";
+    QString imageQueryStr = "SELECT * FROM logs";
     QSqlQueryModel *imageModel = new QSqlQueryModel(this);
     imageModel->setQuery(imageQueryStr, QSqlDatabase::database());
     QByteArray imageData = imageModel->record(tableIndex).value("media").toByteArray();
@@ -208,8 +209,13 @@ void MainWindow::onTableCellDoubleClicked() {
 
     //open a new window & display image
     QMainWindow *imageWindow = new QMainWindow(this);
+    //QScrollArea *scrollArea = new QScrollArea(imageWindow);
+    //scrollArea->setBackgroundRole(QPalette::Dark);
     QLabel *imageLabel = new QLabel(imageWindow);
     imageLabel->setPixmap(*imagePixmap);
+    imageLabel->adjustSize();
+    imageWindow->adjustSize();
+    //scrollArea->setWidget(imageLabel);
     imageWindow->show();
 }
 
