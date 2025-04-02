@@ -22,6 +22,7 @@ protected:
 
 private slots:
     void onAddLogClicked();
+    void onCookieButtonClicked();
     void onSpreadsheetImportClicked();
 
 private:

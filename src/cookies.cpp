@@ -23,15 +23,6 @@
 //      media               BLOB
 // );
 
-/* Still Need (3/25/25):
-- Cookie GUI (wait for GUI update)
-- Handling of cookie thickness via user input (done in mainwindow.cpp)
-*/
-
-/* Errors:
--  
-*/
-
 Cookie::Cookie(
     int id,
     int from_log,
@@ -131,37 +122,6 @@ std::vector<Cookie> Cookie::make_from_log(
     std::vector<Cookie> cookie;
     // ID, Log ID, Thickness, Diameter, Drying
     cookie.push_back(Cookie(0, log.get_id(), log.getSpecies(), thickness_quarters, log.getDiameterQuarters(), drying.value_or(Drying::KILN_DRIED)));
-    // ID, species, length
-    // Likely just update log when the button is clicked and after the dialog is used
-    //log.push_back(Log(0, log.get_id(), log.getSpecies()), log.getLenQuarters - thickness_quarters - 0.75));
-
+    
     return cookie;
 }
-/*
-void MainWindow::onCookieButtonClicked() {
-    // Get the selected log id
-    std::optional<Log> opt = Log::get_by_id(ui->individualLogTableView->currentIndex().siblingAtColumn(0).data().toInt());
-
-    if (!opt) {
-        QMessageBox::critical(this, "Error", "Log not found");
-        return;
-    }
-
-    Log log = opt.value();
-
-    // Dialog for the user to enter a uint for cookie thickness
-    // https://doc.qt.io/qt-5/qinputdialog.html
-    // Pointer, Dialog Title, Dialog Text, Initial Val, Min Val, Max Val, Trigger Val
-    bool ok;    
-    int enteredCut = QInputDialog::getInt(this, QObject::tr("Cookie Cutter"), QObject::tr("Please enter the desired cookie thickness:"), 0.01, 0.01, log.getLenQuarters(), &accept);     
-
-    if(ok && !enteredCut.isEmpty()) {
-        std::cout << "Cutting Cookie!" << std::endl;
-        unsigned int cutDepth = static_cast<unsigned int>(enteredCut);
-
-        auto cookie = Cookie::make_from_log(log, cutDepth);
-    } else { std::cout << "User canceled input." << std::endl; }
-
-    refreshModel();
-}
-*/
