@@ -130,8 +130,10 @@ std::vector<Cookie> Cookie::make_from_log(
 ) {
     std::vector<Cookie> cookie;
     // ID, Log ID, Thickness, Diameter, Drying
-
     cookie.push_back(Cookie(0, log.get_id(), log.getSpecies(), thickness_quarters, log.getDiameterQuarters(), drying.value_or(Drying::KILN_DRIED)));
+    // ID, species, length
+    // Likely just update log when the button is clicked and after the dialog is used
+    //log.push_back(Log(0, log.get_id(), log.getSpecies()), log.getLenQuarters - thickness_quarters - 0.75));
 
     return cookie;
 }
