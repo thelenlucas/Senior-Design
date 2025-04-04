@@ -127,14 +127,11 @@ std::vector<Log> Log::get_all() {
     return logs;
 }
 
-std::vector<Log> Log::cut_length(int id, uint amt) {
-    std::vector<Log> log;
-    
-    // Remove given length from given log
-
-    // Update log
-
-    return log;
+void Log::cut_length(uint amt) {
+    //Remove length from Log
+    this->len_quarters -= amt + 0.125;
+    // Update Log
+    Log::update();
 }
 
 

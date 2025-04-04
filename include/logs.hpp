@@ -62,6 +62,7 @@ public:
 
     // Scraps a log
     void scrap();
+    void cut_length(uint amt);
 
     // Required by Persistent
     int get_id() const override {return id;}
@@ -69,7 +70,6 @@ public:
     bool update() override;
     static std::optional<Log> get_by_id(int id); 
     static std::vector<Log> get_all();
-    static std::optional<Log> cut_length(int id, uint amt);
 };
 
 #endif // TYPES_HPP

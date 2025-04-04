@@ -104,17 +104,17 @@ void InventoryPage::onCookieButtonClicked() {
     // https://doc.qt.io/qt-5/qinputdialog.html
     // Pointer, Dialog Title, Dialog Text, Initial Val, Min Val, Max Val, Trigger Val
     bool ok;    
-    int enteredCut = QInputDialog::getInt(this, QObject::tr("Cookie Cutter"), QObject::tr("Please enter the desired cookie thickness:"), 0.01, 0.01, log.getLenQuarters(), ok);     
-    int bladeWidth = 0.125; // Replace with non-hard-coded blade width once UI for it is complete
+    int enteredCut = QInputDialog::getInt(this, QObject::tr("Cookie Cutter"), QObject::tr("Please enter the desired cookie thickness (inches):"), 0.01, 0.01, log.getLenQuarters(), ok);     
+    //int bladeWidth = 0.125; // Replace with non-hard-coded blade width once UI for it is complete
 
-    if(ok) {
+    if(!ok) {
         std::cout << "Cutting Cookie!" << std::endl;
         //unsigned int cutDepth = static_cast<unsigned int>(enteredCut);
-        int newLogLength = log.getLenQuarters() - enteredCut - bladeWidth;
+        //int newLogLength = log.getLenQuarters() - enteredCut - bladeWidth;
 
         auto cookie = Cookie::make_from_log(log, static_cast<unsigned int>(enteredCut));
-        log(0, log.getSpecies(), newLogLength);
-        log.update();
+        log.cut_length(static_cast<unsigned int>(enteredCut));
+
     } else { std::cout << "User canceled input." << std::endl; }
 
     refreshModels();
