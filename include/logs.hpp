@@ -62,6 +62,7 @@ public:
 
     // Scraps a log
     void scrap();
+    void cut_length(uint amt);
 
     // Required by Persistent
     int get_id() const override {return id;}

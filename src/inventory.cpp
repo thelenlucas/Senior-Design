@@ -8,10 +8,12 @@
 #include <QScreen>
 #include <QMouseEvent>
 #include <QTimer>
+#include <QInputDialog>
 
 #include "inventory.hpp"
 #include "ui_inventory.h"
 #include "logs.hpp"
+#include "cookies.hpp"
 
 InventoryPage::InventoryPage(QWidget *parent)
     : QWidget(parent)
@@ -40,6 +42,7 @@ InventoryPage::InventoryPage(QWidget *parent)
 
     connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
+    connect(ui->createCookieButton, &QPushButton::clicked, this, &InventoryPage::onCookieButtonClicked);
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
@@ -82,6 +85,37 @@ void InventoryPage::onAddLogClicked()
 
     Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, location);
     log.insert();
+
+    refreshModels();
+}
+
+void InventoryPage::onCookieButtonClicked() {
+    // Get the selected log id
+    std::optional<Log> opt = Log::get_by_id(ui->individualLogsTable->currentIndex().siblingAtColumn(0).data().toInt());
+
+    if (!opt) {
+        QMessageBox::critical(this, "Error", "Log not found");
+        return;
+    }
+
+    Log log = opt.value();
+
+    // Dialog for the user to enter a uint for cookie thickness
+    // https://doc.qt.io/qt-5/qinputdialog.html
+    // Pointer, Dialog Title, Dialog Text, Initial Val, Min Val, Max Val, Trigger Val
+    bool ok;    
+    int enteredCut = QInputDialog::getInt(this, QObject::tr("Cookie Cutter"), QObject::tr("Please enter the desired cookie thickness (inches):"), 0.01, 0.01, log.getLenQuarters(), ok);     
+    //int bladeWidth = 0.125; // Replace with non-hard-coded blade width once UI for it is complete
+
+    if(!ok) {
+        std::cout << "Cutting Cookie!" << std::endl;
+        //unsigned int cutDepth = static_cast<unsigned int>(enteredCut);
+        //int newLogLength = log.getLenQuarters() - enteredCut - bladeWidth;
+
+        auto cookie = Cookie::make_from_log(log, static_cast<unsigned int>(enteredCut));
+        log.cut_length(static_cast<unsigned int>(enteredCut));
+
+    } else { std::cout << "User canceled input." << std::endl; }
 
     refreshModels();
 }

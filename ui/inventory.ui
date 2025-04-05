@@ -1,210 +1,196 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>InventoryPage</class>
-    <widget class="QWidget" name="InventoryPage">
-        <property name="windowTitle">
-            <string>Inventory Management</string>
+ <class>InventoryPage</class>
+ <widget class="QWidget" name="InventoryPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>988</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>600</width>
+    <height>400</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Inventory Management</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QGroupBox" name="logEntryPanel">
+     <property name="title">
+      <string>Log Entry Panel</string>
+     </property>
+     <layout class="QGridLayout" name="logEntryLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="speciesLabel">
+        <property name="text">
+         <string>Species:</string>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>800</width>
-                <height>600</height>
-            </rect>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="speciesEntry"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lengthFtLabel">
+        <property name="text">
+         <string>Length (ft):</string>
         </property>
-        <property name="minimumSize">
-            <size>
-                <width>600</width>
-                <height>400</height>
-            </size>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="lengthFt"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="lengthInLabel">
+        <property name="text">
+         <string>Inches:</string>
         </property>
-        <layout class="QVBoxLayout" name="mainLayout">
-
-            <!-- Log Entry Panel -->
-            <item>
-                <widget class="QGroupBox" name="logEntryPanel">
-                    <property name="title">
-                        <string>Log Entry Panel</string>
-                    </property>
-                    <layout class="QGridLayout" name="logEntryLayout">
-
-                        <item row="0" column="0">
-                            <widget class="QLabel" name="speciesLabel">
-                                <property name="text">
-                                    <string>Species:</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="0" column="1">
-                            <widget class="QLineEdit" name="speciesEntry" />
-                        </item>
-
-                        <item row="1" column="0">
-                            <widget class="QLabel" name="lengthFtLabel">
-                                <property name="text">
-                                    <string>Length (ft):</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="1" column="1">
-                            <widget class="QSpinBox" name="lengthFt" />
-                        </item>
-
-                        <item row="1" column="2">
-                            <widget class="QLabel" name="lengthInLabel">
-                                <property name="text">
-                                    <string>Inches:</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="1" column="3">
-                            <widget class="QSpinBox" name="lengthIn" />
-                        </item>
-
-                        <item row="2" column="0">
-                            <widget class="QLabel" name="diameterLabel">
-                                <property name="text">
-                                    <string>Diameter (in):</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="2" column="1">
-                            <widget class="QSpinBox" name="diameterIn" />
-                        </item>
-
-                        <item row="3" column="0">
-                            <widget class="QLabel" name="costLabel">
-                                <property name="text">
-                                    <string>Cost ($):</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="3" column="1">
-                            <widget class="QDoubleSpinBox" name="costValue" />
-                        </item>
-
-                        <item row="4" column="0">
-                            <widget class="QLabel" name="qualityLabel">
-                                <property name="text">
-                                    <string>Quality (1–10):</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="4" column="1">
-                            <widget class="QSpinBox" name="qualityValue">
-                                <property name="maximum">
-                                    <number>10</number>
-                                </property>
-                            </widget>
-                        </item>
-
-                        <item row="5" column="0">
-                            <widget class="QLabel" name="locationLabel">
-                                <property name="text">
-                                    <string>Location:</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="5" column="1" colspan="3">
-                            <widget class="QLineEdit" name="locationEntry" />
-                        </item>
-
-                        <item row="6" column="0" colspan="4">
-                            <widget class="QPushButton" name="addLogButton">
-                                <property name="text">
-                                    <string>Add Log</string>
-                                </property>
-                            </widget>
-                        </item>
-
-                    </layout>
-                </widget>
-            </item>
-
-            <!-- Tables side-by-side -->
-            <item>
-                <layout class="QHBoxLayout" name="tablesLayout">
-
-                    <!-- Individual Logs -->
-                    <item>
-                        <widget class="QTableView" name="individualLogsTable">
-                            <property name="selectionBehavior">
-                                <enum>QAbstractItemView::SelectRows</enum>
-                            </property>
-                            <property name="selectionMode">
-                                <enum>QAbstractItemView::SingleSelection</enum>
-                            </property>
-                            <property name="horizontalScrollMode">
-                                <enum>QAbstractItemView::ScrollPerPixel</enum>
-                            </property>
-                            <property name="verticalScrollMode">
-                                <enum>QAbstractItemView::ScrollPerPixel</enum>
-                            </property>
-                            <property name="showGrid">
-                                <bool>true</bool>
-                            </property>
-                            <attribute name="horizontalHeaderStretchLastSection">
-                                <bool>true</bool>
-                            </attribute>
-                        </widget>
-                    </item>
-
-                    <!-- Grouped Logs -->
-                    <item>
-                        <widget class="QTableView" name="groupedLogsTable">
-                            <property name="selectionBehavior">
-                                <enum>QAbstractItemView::SelectRows</enum>
-                            </property>
-                            <property name="selectionMode">
-                                <enum>QAbstractItemView::SingleSelection</enum>
-                            </property>
-                            <property name="horizontalScrollMode">
-                                <enum>QAbstractItemView::ScrollPerPixel</enum>
-                            </property>
-                            <property name="verticalScrollMode">
-                                <enum>QAbstractItemView::ScrollPerPixel</enum>
-                            </property>
-                            <property name="showGrid">
-                                <bool>true</bool>
-                            </property>
-                            <attribute name="horizontalHeaderStretchLastSection">
-                                <bool>true</bool>
-                            </attribute>
-                        </widget>
-                    </item>
-
-                </layout>
-            </item>
-
-            <!-- Import Button -->
-            <item>
-                <layout class="QHBoxLayout" name="importLayout">
-                    <item>
-                        <spacer name="horizontalSpacer">
-                            <property name="orientation">
-                                <enum>Qt::Horizontal</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </item>
-                    <item>
-                        <widget class="QPushButton" name="spreadsheetImporterButton">
-                            <property name="text">
-                                <string>Import from Spreadsheet...</string>
-                            </property>
-                        </widget>
-                    </item>
-                </layout>
-            </item>
-
-        </layout>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QSpinBox" name="lengthIn"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="diameterLabel">
+        <property name="text">
+         <string>Diameter (in):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="diameterIn"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="costLabel">
+        <property name="text">
+         <string>Cost ($):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="costValue"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="qualityLabel">
+        <property name="text">
+         <string>Quality (1–5):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QSpinBox" name="qualityValue">
+        <property name="maximum">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="locationLabel">
+        <property name="text">
+         <string>Location:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1" colspan="3">
+       <widget class="QLineEdit" name="locationEntry"/>
+      </item>
+      <item row="6" column="0" colspan="3">
+       <widget class="QPushButton" name="addLogButton">
+        <property name="text">
+         <string>Add Log</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="3">
+       <widget class="QPushButton" name="createCookieButton">
+        <property name="text">
+         <string>Create Cookie</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
-    <resources />
-    <connections />
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="tablesLayout">
+     <item>
+      <widget class="QTableView" name="individualLogsTable">
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="verticalScrollMode">
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
+       </property>
+       <property name="horizontalScrollMode">
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
+       </property>
+       <property name="showGrid">
+        <bool>true</bool>
+       </property>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTableView" name="groupedLogsTable">
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="verticalScrollMode">
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
+       </property>
+       <property name="horizontalScrollMode">
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
+       </property>
+       <property name="showGrid">
+        <bool>true</bool>
+       </property>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="importLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="spreadsheetImporterButton">
+       <property name="text">
+        <string>Import from Spreadsheet...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>

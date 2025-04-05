@@ -127,6 +127,14 @@ std::vector<Log> Log::get_all() {
     return logs;
 }
 
+void Log::cut_length(uint amt) {
+    //Remove length from Log
+    this->len_quarters -= amt + 0.125;
+    // Update Log
+    Log::update();
+}
+
+
 void Log::scrap() {
     // Set the scrapped column to 1 in the database
     SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
