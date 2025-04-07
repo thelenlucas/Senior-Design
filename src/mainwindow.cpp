@@ -210,11 +210,12 @@ void MainWindow::onTableCellDoubleClicked() {
     //open a new window & display image
     QMainWindow *imageWindow = new QMainWindow(this);
     //QScrollArea *scrollArea = new QScrollArea(imageWindow);
-    //scrollArea->setBackgroundRole(QPalette::Dark);
+    //scrollArea->setBackgroundRole(QPalette::Light);
     QLabel *imageLabel = new QLabel(imageWindow);
     imageLabel->setPixmap(*imagePixmap);
     imageLabel->adjustSize();
     imageWindow->adjustSize();
+    imageWindow->resize(imageLabel->size());
     //scrollArea->setWidget(imageLabel);
     imageWindow->show();
 }
