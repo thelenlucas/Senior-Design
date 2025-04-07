@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QDockWidget>
+#include <QSqlRecord>
+#include <QScrollArea>
 
 #include "project_editor.hpp"
 #include "logs.hpp"
@@ -83,6 +85,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->enterLogButton, &QPushButton::clicked, this, &MainWindow::onEnterLogButtonClicked);
     connect(ui->scrapLogButton, &QPushButton::clicked, this, &MainWindow::onScrapLogButtonClicked);
     connect(ui->makeFirewoodButton, &QPushButton::clicked, this, &MainWindow::onFirewoodButtonClicked);
+    connect(ui->individualLogTableView, &QTableView::doubleClicked, this, &MainWindow::onTableCellDoubleClicked);
     connect(ui->projectsEditorAction, &QAction::triggered, this, &MainWindow::onProjectEditActionTriggered);
 }
 
@@ -178,6 +181,43 @@ void MainWindow::onFirewoodButtonClicked() {
     auto firewood = Firewood::make_from_log(log, usableLength);
 
     refreshModel();
+}
+
+void MainWindow::onTableCellDoubleClicked() {
+    //get currently selected row
+    QTableView *shownTable;
+    /* //Not needed unless we want to allow for images from multiple logs at once when grouped.
+    if (ui->groupedLogsTab->currentIndex() = 0) {
+        shownTable = ui->groupedLogsTableView;
+    }
+    else if (ui->groupedLogsTab->currentIndex() = 1) {
+        shownTable = ui->individualLogsTableView;
+    }
+    */
+    shownTable = ui->individualLogTableView;
+    int tableIndex = shownTable->currentIndex().row();
+
+    //query database for photo of log at selected index
+    QString imageQueryStr = "SELECT * FROM logs";
+    QSqlQueryModel *imageModel = new QSqlQueryModel(this);
+    imageModel->setQuery(imageQueryStr, QSqlDatabase::database());
+    QByteArray imageData = imageModel->record(tableIndex).value("media").toByteArray();
+
+    //turn binary data into image data
+    QPixmap *imagePixmap = new QPixmap();
+    imagePixmap->loadFromData(imageData);
+
+    //open a new window & display image
+    QMainWindow *imageWindow = new QMainWindow(this);
+    //QScrollArea *scrollArea = new QScrollArea(imageWindow);
+    //scrollArea->setBackgroundRole(QPalette::Light);
+    QLabel *imageLabel = new QLabel(imageWindow);
+    imageLabel->setPixmap(*imagePixmap);
+    imageLabel->adjustSize();
+    imageWindow->adjustSize();
+    imageWindow->resize(imageLabel->size());
+    //scrollArea->setWidget(imageLabel);
+    imageWindow->show();
 }
 
 void MainWindow::onProjectEditActionTriggered() {
