@@ -1,8 +1,11 @@
 .vscode
 .vscode/*
 .cache/*
+.clang-tidy
+.clang-format
 build/*
 !build/build.sh
 out
 **.zip
 SQLiteCpp/*
+SQLiteCpp/
