@@ -45,6 +45,13 @@ InventoryPage::InventoryPage(QWidget *parent)
     ui->cookiesTable->setModel(cookiesModel);
     ui->firewoodTable->setModel(firewoodModel);
 
+    // Set the drying QComboBox to the enum values, and strings to match them
+    ui->dryingComboBox->addItem("Air Dried", static_cast<int>(Drying::AIR_DRIED));
+    ui->dryingComboBox->addItem("Kiln Dried", static_cast<int>(Drying::KILN_DRIED));
+    ui->dryingComboBox->addItem("Air Dried and Kiln Dried",
+                                static_cast<int>(Drying::AIR_AND_KILN_DRIED));
+    ui->dryingComboBox->addItem("Air and Kiln Dried", static_cast<int>(Drying::WET));
+
     RefreshModels();
 
     connect(ui->addLogButton, &QPushButton::clicked, this,
@@ -113,10 +120,16 @@ void InventoryPage::onAddLogClicked()
     int costCents = static_cast<int>(costVal * 100);
     int costQuarters = costCents / lenQuarters;
 
-    Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters,
-            quality, location);
-    log.insert();
+    // Get the drying by casting back from the QComboBox value
+    int dryingVal = ui->dryingComboBox->currentData().toInt();
+    Drying drying = static_cast<Drying>(dryingVal);
+    // Create a new log
+    Log newLog(0, species.toStdString(), lenQuarters, diamQuarters,
+               costQuarters, quality, drying, location);
+    // Insert the log into the database
+    newLog.insert();
 
+    // Refresh the models to show the new log
     RefreshModels();
 }
 

@@ -21,9 +21,8 @@
 //     notes               TEXT,
 //     media               BLOB,
 //     scrapped            INTEGER NOT NULL
-//                                 DEFAULT (0) 
+//                                 DEFAULT (0)
 // );
-
 
 Log::Log(int id,
     std::string species,
@@ -31,6 +30,7 @@ Log::Log(int id,
     uint diameter_quarters,
     uint cost_cents_quarters,
     uint quality,
+    Drying drying,
     std::string location,
     std::string notes
 ) {
@@ -40,30 +40,35 @@ Log::Log(int id,
     this->diameter_quarters = diameter_quarters;
     this->cost_cents_quarters = cost_cents_quarters;
     this->quality = quality;
+    this->drying = drying;
     this->location = location;
     this->notes = notes;
 }
 
-std::optional<Log> Log::get_by_id(int id) {
+std::optional<Log> Log::get_by_id(int id)
+{
     SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(db, "SELECT * FROM logs WHERE id = ?;");
+    SQLite::Statement query(db, "SELECT (species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes, drying) FROM logs WHERE id = ?;");
     query.bind(1, id);
-    if (query.executeStep()) {
+    if (query.executeStep())
+    {
         return Log(
-            query.getColumn(0).getInt(),
-            query.getColumn(1).getText(),
+            id,
+            query.getColumn(0).getText(),
+            query.getColumn(1).getInt(),
             query.getColumn(2).getInt(),
             query.getColumn(3).getInt(),
             query.getColumn(4).getInt(),
-            query.getColumn(5).getInt(),
-            query.getColumn(6).getText(),
-            query.getColumn(7).getText()
-        );
+            static_cast<Drying>(query.getColumn(7).getInt()),
+            query.getColumn(5).getText(),
+            query.getColumn(6).getText());
+
     }
     return std::nullopt;
 }
 
-bool Log::insert() {
+bool Log::insert()
+{
     SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
     SQLite::Statement query(db, "INSERT INTO logs (species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes) VALUES (?, ?, ?, ?, ?, ?, ?);");
     query.bind(1, this->species);
@@ -75,21 +80,24 @@ bool Log::insert() {
     query.bind(7, this->notes);
     auto ret = query.exec() > 0;
 
-    if (ret) {
+    if (ret)
+    {
         this->id = db.getLastInsertRowid();
     }
 
     // Cout exception if LOGS_LOGGING
-    if (LOGS_LOGGING && !ret) {
+    if (LOGS_LOGGING && !ret)
+    {
         std::cout << "Failed to insert log into database" << std::endl;
     }
 
     return ret;
 }
 
-bool Log::update() {
+bool Log::update()
+{
     SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
-    SQLite::Statement query(db, "UPDATE logs SET species = ?, len_quarters = ?, diameter_quarters = ?, cost_cents_quarters = ?, quality = ?, location = ?, notes = ? WHERE id = ?;");
+    SQLite::Statement query(db, "UPDATE logs SET species = ?, len_quarters = ?, diameter_quarters = ?, cost_cents_quarters = ?, quality = ?, location = ?, notes = ?, drying = ? WHERE id = ?;");
     query.bind(1, this->species);
     query.bind(2, this->len_quarters);
     query.bind(3, this->diameter_quarters);
@@ -97,52 +105,57 @@ bool Log::update() {
     query.bind(5, this->quality);
     query.bind(6, this->location);
     query.bind(7, this->notes);
-    query.bind(8, this->id);
+    query.bind(8, static_cast<int>(this->drying));
     auto ret = query.exec() > 0;
 
     // Cout exception if LOGS_LOGGING
-    if (LOGS_LOGGING && !ret) {
+    if (LOGS_LOGGING && !ret)
+    {
         std::cout << "Failed to update log in database" << std::endl;
     }
 
     return ret;
 }
 
-std::vector<Log> Log::get_all() {
+std::vector<Log> Log::get_all()
+{
     SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(db, "SELECT * FROM logs;");
+    SQLite::Statement query(db, "SELECT (species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes) FROM logs WHERE scrapped = 0;");
     std::vector<Log> logs;
-    while (query.executeStep()) {
+    while (query.executeStep())
+    {
         logs.push_back(Log(
-            query.getColumn(0).getInt(),
-            query.getColumn(1).getText(),
+            0,
+            query.getColumn(0).getText(),
+            query.getColumn(1).getInt(),
             query.getColumn(2).getInt(),
             query.getColumn(3).getInt(),
             query.getColumn(4).getInt(),
-            query.getColumn(5).getInt(),
-            query.getColumn(6).getText(),
-            query.getColumn(7).getText()
-        ));
+            static_cast<Drying>(query.getColumn(7).getInt()),
+            query.getColumn(5).getText(),
+            query.getColumn(6).getText()));
     }
     return logs;
 }
 
-void Log::cut_length(uint amt) {
-    //Remove length from Log
+void Log::cut_length(uint amt)
+{
+    // Remove length from Log
     this->len_quarters -= amt + 0.125;
     // Update Log
     Log::update();
 }
 
-
-void Log::scrap() {
+void Log::scrap()
+{
     // Set the scrapped column to 1 in the database
     SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
     SQLite::Statement query(db, "UPDATE logs SET scrapped = 1 WHERE id = ?;");
     query.bind(1, this->id);
     query.exec();
 
-    if (LOGS_LOGGING) {
+    if (LOGS_LOGGING)
+    {
         std::cout << "Log " << this->id << " scrapped" << std::endl;
     }
 }

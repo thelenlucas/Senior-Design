@@ -23,6 +23,7 @@ private:
     uint quality;
     std::string location;
     std::string notes;
+    Drying drying;
 
 public:
     Log(int id,
@@ -31,6 +32,7 @@ public:
         uint diameter_quarters,
         uint cost_cents_quarters,
         uint quality,
+        Drying drying,
         std::string location = "",
         std::string notes = ""
     );
@@ -43,6 +45,7 @@ public:
     uint getQuality() const {return quality;} 
     std::string getLocation() const {return location;} 
     std::string getNotes() const {return notes;}
+    Drying getDrying() const {return drying;}
 
     // Returns the actual available length of the log
     uint getAvailableLength() const {
