@@ -53,7 +53,7 @@ InventoryPage::InventoryPage(QWidget *parent)
                                 static_cast<int>(Drying::AIR_AND_KILN_DRIED));
     ui->dryingComboBox->addItem("Air and Kiln Dried", static_cast<int>(Drying::WET));
 
-    RefreshModels();
+    refreshModels();
 
     connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
@@ -112,7 +112,7 @@ void InventoryPage::onAddLogClicked()
     newLog.insert();
 
     // Refresh the models to show the new log
-    RefreshModels();
+    refreshModels();
 }
 
 void InventoryPage::onCookieButtonClicked() {
