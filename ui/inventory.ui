@@ -118,52 +118,71 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="tablesLayout">
-     <item>
-      <widget class="QTableView" name="individualLogsTable">
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
-       </property>
-       <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
-       </property>
-       <property name="verticalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
-       </property>
-       <property name="horizontalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
-       </property>
-       <property name="showGrid">
-        <bool>true</bool>
-       </property>
-       <attribute name="horizontalHeaderStretchLastSection">
-        <bool>true</bool>
-       </attribute>
-      </widget>
-     </item>
-     <item>
-      <widget class="QTableView" name="groupedLogsTable">
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
-       </property>
-       <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
-       </property>
-       <property name="verticalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
-       </property>
-       <property name="horizontalScrollMode">
-        <enum>QAbstractItemView::ScrollPerPixel</enum>
-       </property>
-       <property name="showGrid">
-        <bool>true</bool>
-       </property>
-       <attribute name="horizontalHeaderStretchLastSection">
-        <bool>true</bool>
-       </attribute>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QTabWidget" name="inventoryTabs">
+     <property name="tabPosition">
+      <enum>QTabWidget::North</enum>
+     </property>
+     <widget class="QWidget" name="logsTab">
+      <attribute name="title">
+       <string>Logs</string>
+      </attribute>
+      <layout class="QVBoxLayout">
+       <item>
+        <widget class="QTableView" name="individualLogsTable"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="groupedLogsTab">
+      <attribute name="title">
+       <string>Grouped Logs</string>
+      </attribute>
+      <layout class="QVBoxLayout">
+       <item>
+        <widget class="QTableView" name="groupedLogsTable"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="lumberTab">
+      <attribute name="title">
+       <string>Lumber</string>
+      </attribute>
+      <layout class="QVBoxLayout">
+       <item>
+        <widget class="QTableView" name="lumberTable"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="slabsTab">
+      <attribute name="title">
+       <string>Slabs</string>
+      </attribute>
+      <layout class="QVBoxLayout">
+       <item>
+        <widget class="QTableView" name="slabsTable"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="cookiesTab">
+      <attribute name="title">
+       <string>Cookies</string>
+      </attribute>
+      <layout class="QVBoxLayout">
+       <item>
+        <widget class="QTableView" name="cookiesTable"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="firewoodTab">
+      <attribute name="title">
+       <string>Firewood</string>
+      </attribute>
+      <layout class="QVBoxLayout">
+       <item>
+        <widget class="QTableView" name="firewoodTable"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="importLayout">
