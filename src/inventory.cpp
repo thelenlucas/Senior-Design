@@ -1,30 +1,33 @@
 #include <QApplication>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlError>
 #include <QDebug>
-#include <QMessageBox>
 #include <QFileDialog>
-#include <QScreen>
-#include <QMouseEvent>
-#include <QTimer>
 #include <QInputDialog>
+#include <QMessageBox>
+#include <QMouseEvent>
+#include <QScreen>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QTimer>
 
-#include "inventory.hpp"
-#include "ui_inventory.h"
-#include "logs.hpp"
 #include "cookies.hpp"
+#include "inventory.hpp"
+#include "logs.hpp"
+#include "ui_inventory.h"
 
 InventoryPage::InventoryPage(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::InventoryPage)
-    , individualLogsModel(new QSqlQueryModel(this))
-    , groupedLogsModel(new QSqlQueryModel(this))
+    : QWidget(parent), ui(new Ui::InventoryPage),
+      individualLogsModel(new QSqlQueryModel(this)),
+      groupedLogsModel(new QSqlQueryModel(this)),
+      lumberModel(new QSqlQueryModel(this)),
+      slabsModel(new QSqlQueryModel(this)),
+      cookiesModel(new QSqlQueryModel(this)),
+      firewoodModel(new QSqlQueryModel(this))
 {
     ui->setupUi(this);
 
-    // Dynamically resize window to 60% of screen size and center
-    QScreen* screen = QGuiApplication::primaryScreen();
+    // Dynamically resize window to 60% of screen size and center.
+    QScreen *screen = QGuiApplication::primaryScreen();
     if (screen)
     {
         QSize screenSize = screen->availableGeometry().size();
@@ -37,12 +40,19 @@ InventoryPage::InventoryPage(QWidget *parent)
     // Setup the logical models for our mvc.
     ui->individualLogsTable->setModel(individualLogsModel);
     ui->groupedLogsTable->setModel(groupedLogsModel);
+    ui->lumberTable->setModel(lumberModel);
+    ui->slabsTable->setModel(slabsModel);
+    ui->cookiesTable->setModel(cookiesModel);
+    ui->firewoodTable->setModel(firewoodModel);
 
-    refreshModels();
+    RefreshModels();
 
-    connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
-    connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
-    connect(ui->createCookieButton, &QPushButton::clicked, this, &InventoryPage::onCookieButtonClicked);
+    connect(ui->addLogButton, &QPushButton::clicked, this,
+            &InventoryPage::onAddLogClicked);
+    connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this,
+            &InventoryPage::onSpreadsheetImportClicked);
+    connect(ui->createCookieButton, &QPushButton::clicked, this,
+            &InventoryPage::onCookieButtonClicked);
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
@@ -50,21 +60,41 @@ InventoryPage::InventoryPage(QWidget *parent)
     setWindowFlags(Qt::Window);
 }
 
-InventoryPage::~InventoryPage()
-{
-    delete ui;
-}
+InventoryPage::~InventoryPage() { delete ui; }
 
-void InventoryPage::refreshModels()
+void InventoryPage::RefreshModels()
 {
     individualLogsModel->setQuery("SELECT * FROM logs_view", QSqlDatabase::database());
     groupedLogsModel->setQuery("SELECT * FROM logs_view_grouped", QSqlDatabase::database());
 
+    lumberModel->setQuery("SELECT * FROM display_lumber", QSqlDatabase::database());
+    slabsModel->setQuery("SELECT * FROM display_slabs", QSqlDatabase::database());
+    cookiesModel->setQuery("SELECT * FROM display_cookies", QSqlDatabase::database());
+    firewoodModel->setQuery("SELECT * FROM display_firewood", QSqlDatabase::database());
+
     if (individualLogsModel->lastError().isValid())
-        qDebug() << "Individual logs query error:" << individualLogsModel->lastError().text();
+        qDebug() << "Individual logs query error:"
+                 << individualLogsModel->lastError().text();
 
     if (groupedLogsModel->lastError().isValid())
-        qDebug() << "Grouped logs query error:" << groupedLogsModel->lastError().text();
+        qDebug() << "Grouped logs query error:"
+                 << groupedLogsModel->lastError().text();
+
+    if (lumberModel->lastError().isValid())
+        qDebug() << "Lumber model query error:"
+                 << lumberModel->lastError().text();
+
+    if (slabsModel->lastError().isValid())
+        qDebug() << "Slabs model query error:"
+                 << slabsModel->lastError().text();
+
+    if (cookiesModel->lastError().isValid())
+        qDebug() << "Cookies model query error:"
+                 << cookiesModel->lastError().text();
+
+    if (firewoodModel->lastError().isValid())
+        qDebug() << "Firewood model query error:"
+                 << firewoodModel->lastError().text();
 }
 
 void InventoryPage::onAddLogClicked()
@@ -83,17 +113,24 @@ void InventoryPage::onAddLogClicked()
     int costCents = static_cast<int>(costVal * 100);
     int costQuarters = costCents / lenQuarters;
 
-    Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, location);
+    Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters,
+            quality, location);
     log.insert();
 
-    refreshModels();
+    RefreshModels();
 }
 
-void InventoryPage::onCookieButtonClicked() {
+void InventoryPage::onCookieButtonClicked()
+{
     // Get the selected log id
-    std::optional<Log> opt = Log::get_by_id(ui->individualLogsTable->currentIndex().siblingAtColumn(0).data().toInt());
+    std::optional<Log> opt =
+        Log::get_by_id(ui->individualLogsTable->currentIndex()
+                        .siblingAtColumn(0)
+                        .data()
+                        .toInt());
 
-    if (!opt) {
+    if (!opt)
+    {
         QMessageBox::critical(this, "Error", "Log not found");
         return;
     }
@@ -102,27 +139,38 @@ void InventoryPage::onCookieButtonClicked() {
 
     // Dialog for the user to enter a uint for cookie thickness
     // https://doc.qt.io/qt-5/qinputdialog.html
-    // Pointer, Dialog Title, Dialog Text, Initial Val, Min Val, Max Val, Trigger Val
-    bool ok;    
-    int enteredCut = QInputDialog::getInt(this, QObject::tr("Cookie Cutter"), QObject::tr("Please enter the desired cookie thickness (inches):"), 0.01, 0.01, log.getLenQuarters(), ok);     
-    //int bladeWidth = 0.125; // Replace with non-hard-coded blade width once UI for it is complete
+    // Pointer, Dialog Title, Dialog Text, Initial Val, Min Val, Max Val,
+    // Trigger Val
+    bool ok;
+    int enteredCut = QInputDialog::getInt(
+        this, QObject::tr("Cookie Cutter"),
+        QObject::tr("Please enter the desired cookie thickness (inches):"),
+        0.01, 0.01, log.getLenQuarters(), ok);
+    // int bladeWidth = 0.125; // Replace with non-hard-coded blade width once
+    // UI for it is complete
 
-    if(!ok) {
+    if (!ok)
+    {
         std::cout << "Cutting Cookie!" << std::endl;
-        //unsigned int cutDepth = static_cast<unsigned int>(enteredCut);
-        //int newLogLength = log.getLenQuarters() - enteredCut - bladeWidth;
+        // unsigned int cutDepth = static_cast<unsigned int>(enteredCut);
+        // int newLogLength = log.getLenQuarters() - enteredCut - bladeWidth;
 
-        auto cookie = Cookie::make_from_log(log, static_cast<unsigned int>(enteredCut));
+        auto cookie =
+            Cookie::make_from_log(log, static_cast<unsigned int>(enteredCut));
         log.cut_length(static_cast<unsigned int>(enteredCut));
+    }
+    else
+    {
+        std::cout << "User canceled input." << std::endl;
+    }
 
-    } else { std::cout << "User canceled input." << std::endl; }
-
-    refreshModels();
+    RefreshModels();
 }
 
 void InventoryPage::onSpreadsheetImportClicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv *.xls *.xlsx)");
+    QString filename =
+        QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv *.xls *.xlsx)");
 
     if (filename.isEmpty())
         return;
@@ -133,14 +181,18 @@ void InventoryPage::onSpreadsheetImportClicked()
 
 void InventoryPage::mousePressEvent(QMouseEvent *event)
 {
-    qDebug() << "InventoryPage clicked at:" << event->pos() << "Mouse click on widgetAt:" << QApplication::widgetAt(QCursor::pos());
+    qDebug() << "InventoryPage clicked at:" << event->pos()
+             << "Mouse click on widgetAt:"
+             << QApplication::widgetAt(QCursor::pos());
 
     QWidget::mousePressEvent(event);
 }
 
-bool InventoryPage::eventFilter(QObject* obj, QEvent* event)
+bool InventoryPage::eventFilter(QObject *obj, QEvent *event)
 {
-    qDebug() << "EVENT TYPE:" << event->type() << "on:" << obj->metaObject()->className() << "named:" << obj->objectName();
+    qDebug() << "EVENT TYPE:" << event->type()
+             << "on:" << obj->metaObject()->className()
+             << "named:" << obj->objectName();
 
     if (event->type() == QEvent::MouseButtonPress)
     {

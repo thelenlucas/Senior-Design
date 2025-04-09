@@ -1,8 +1,7 @@
-.vscode
-.vscode/*
 .cache/*
 build/*
 !build/build.sh
 out
 **.zip
 SQLiteCpp/*
+SQLiteCpp/

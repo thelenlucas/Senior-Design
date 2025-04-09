@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(LogDBProject)
 
+# For analysis with clangd.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Require C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -53,6 +56,31 @@ set_target_properties(logdb PROPERTIES
 target_include_directories(logdb PUBLIC ${includes})
 
 target_link_libraries(logdb PRIVATE SQLiteCpp Qt5::Widgets Qt5::Sql)
+
+add_compile_options(
+    # Standard warnings.
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wshadow
+    -Wconversion
+    # Warning guards against undefined behavior.
+    -Wundef
+    -Wuninitialized
+    #-Wuse-after-free (only in clang)
+    -Wstrict-aliasing
+    -Wstrict-overflow
+    -Warray-bounds
+    -Wsequence-point #(only in gcc and deprecated after C++20)
+    # Additional warnings that are a good idea.
+    -Wsign-conversion
+    -Wsign-compare
+    -Wnull-dereference
+    -Wdouble-promotion
+    -Wformat=2
+    -Wimplicit-fallthrough
+    -Wcast-align
+)
 
 # Copy in the database file
 add_custom_command(

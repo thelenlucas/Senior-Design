@@ -1,0 +1,128 @@
+[
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql -std=gnu++17 -fPIC -o CMakeFiles/logdb.dir/logdb_autogen/mocs_compilation.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/mocs_compilation.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/mocs_compilation.cpp",
+  "output": "CMakeFiles/logdb.dir/logdb_autogen/mocs_compilation.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql -std=gnu++17 -fPIC -o CMakeFiles/logdb.dir/src/cookies.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/src/cookies.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/src/cookies.cpp",
+  "output": "CMakeFiles/logdb.dir/src/cookies.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql -std=gnu++17 -fPIC -o CMakeFiles/logdb.dir/src/cutlist.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/src/cutlist.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/src/cutlist.cpp",
+  "output": "CMakeFiles/logdb.dir/src/cutlist.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql -std=gnu++17 -fPIC -o CMakeFiles/logdb.dir/src/firewood.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/src/firewood.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/src/firewood.cpp",
+  "output": "CMakeFiles/logdb.dir/src/firewood.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql -std=gnu++17 -fPIC -o CMakeFiles/logdb.dir/src/inventory.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/src/inventory.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/src/inventory.cpp",
+  "output": "CMakeFiles/logdb.dir/src/inventory.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql -std=gnu++17 -fPIC -o CMakeFiles/logdb.dir/src/live_edge_slabs.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/src/live_edge_slabs.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/src/live_edge_slabs.cpp",
+  "output": "CMakeFiles/logdb.dir/src/live_edge_slabs.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql -std=gnu++17 -fPIC -o CMakeFiles/logdb.dir/src/logs.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/src/logs.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/src/logs.cpp",
+  "output": "CMakeFiles/logdb.dir/src/logs.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql -std=gnu++17 -fPIC -o CMakeFiles/logdb.dir/src/main.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/src/main.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/src/main.cpp",
+  "output": "CMakeFiles/logdb.dir/src/main.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql -std=gnu++17 -fPIC -o CMakeFiles/logdb.dir/src/mainwindow.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/src/mainwindow.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/src/mainwindow.cpp",
+  "output": "CMakeFiles/logdb.dir/src/mainwindow.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql -std=gnu++17 -fPIC -o CMakeFiles/logdb.dir/src/project_editor.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/src/project_editor.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/src/project_editor.cpp",
+  "output": "CMakeFiles/logdb.dir/src/project_editor.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/logdb_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt5/QtSql -std=gnu++17 -fPIC -o CMakeFiles/logdb.dir/src/sales.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/src/sales.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/src/sales.cpp",
+  "output": "CMakeFiles/logdb.dir/src/sales.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build",
+  "command": "/usr/bin/c++ -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/SQLiteCpp_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3  -Wall -Wextra -Wpedantic -Wswitch-enum -Wshadow -Wno-long-long -std=gnu++17 -fPIC -fstack-protector -o CMakeFiles/SQLiteCpp.dir/SQLiteCpp_autogen/mocs_compilation.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/SQLiteCpp_autogen/mocs_compilation.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/SQLiteCpp_autogen/mocs_compilation.cpp",
+  "output": "_deps/sqlitecpp-build/CMakeFiles/SQLiteCpp.dir/SQLiteCpp_autogen/mocs_compilation.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build",
+  "command": "/usr/bin/c++ -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/SQLiteCpp_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3  -Wall -Wextra -Wpedantic -Wswitch-enum -Wshadow -Wno-long-long -std=gnu++17 -fPIC -fstack-protector -o CMakeFiles/SQLiteCpp.dir/src/Backup.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Backup.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Backup.cpp",
+  "output": "_deps/sqlitecpp-build/CMakeFiles/SQLiteCpp.dir/src/Backup.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build",
+  "command": "/usr/bin/c++ -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/SQLiteCpp_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3  -Wall -Wextra -Wpedantic -Wswitch-enum -Wshadow -Wno-long-long -std=gnu++17 -fPIC -fstack-protector -o CMakeFiles/SQLiteCpp.dir/src/Column.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Column.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Column.cpp",
+  "output": "_deps/sqlitecpp-build/CMakeFiles/SQLiteCpp.dir/src/Column.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build",
+  "command": "/usr/bin/c++ -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/SQLiteCpp_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3  -Wall -Wextra -Wpedantic -Wswitch-enum -Wshadow -Wno-long-long -std=gnu++17 -fPIC -fstack-protector -o CMakeFiles/SQLiteCpp.dir/src/Database.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Database.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Database.cpp",
+  "output": "_deps/sqlitecpp-build/CMakeFiles/SQLiteCpp.dir/src/Database.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build",
+  "command": "/usr/bin/c++ -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/SQLiteCpp_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3  -Wall -Wextra -Wpedantic -Wswitch-enum -Wshadow -Wno-long-long -std=gnu++17 -fPIC -fstack-protector -o CMakeFiles/SQLiteCpp.dir/src/Exception.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Exception.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Exception.cpp",
+  "output": "_deps/sqlitecpp-build/CMakeFiles/SQLiteCpp.dir/src/Exception.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build",
+  "command": "/usr/bin/c++ -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/SQLiteCpp_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3  -Wall -Wextra -Wpedantic -Wswitch-enum -Wshadow -Wno-long-long -std=gnu++17 -fPIC -fstack-protector -o CMakeFiles/SQLiteCpp.dir/src/Savepoint.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Savepoint.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Savepoint.cpp",
+  "output": "_deps/sqlitecpp-build/CMakeFiles/SQLiteCpp.dir/src/Savepoint.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build",
+  "command": "/usr/bin/c++ -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/SQLiteCpp_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3  -Wall -Wextra -Wpedantic -Wswitch-enum -Wshadow -Wno-long-long -std=gnu++17 -fPIC -fstack-protector -o CMakeFiles/SQLiteCpp.dir/src/Statement.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Statement.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Statement.cpp",
+  "output": "_deps/sqlitecpp-build/CMakeFiles/SQLiteCpp.dir/src/Statement.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build",
+  "command": "/usr/bin/c++ -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/SQLiteCpp_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3  -Wall -Wextra -Wpedantic -Wswitch-enum -Wshadow -Wno-long-long -std=gnu++17 -fPIC -fstack-protector -o CMakeFiles/SQLiteCpp.dir/src/Transaction.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Transaction.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/src/Transaction.cpp",
+  "output": "_deps/sqlitecpp-build/CMakeFiles/SQLiteCpp.dir/src/Transaction.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/sqlite3",
+  "command": "/usr/bin/c++ -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/sqlite3/sqlite3_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3  -Wall -Wextra -Wpedantic -Wswitch-enum -Wshadow -Wno-long-long -std=gnu++17 -fPIC -fstack-protector -ffunction-sections -Wimplicit-fallthrough=0 -Wno-cast-function-type -o CMakeFiles/sqlite3.dir/sqlite3_autogen/mocs_compilation.cpp.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/sqlite3/sqlite3_autogen/mocs_compilation.cpp",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/sqlite3/sqlite3_autogen/mocs_compilation.cpp",
+  "output": "_deps/sqlitecpp-build/sqlite3/CMakeFiles/sqlite3.dir/sqlite3_autogen/mocs_compilation.cpp.o"
+},
+{
+  "directory": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/sqlite3",
+  "command": "/usr/bin/cc -DSQLITE_ENABLE_COLUMN_METADATA -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-build/sqlite3/sqlite3_autogen/include -I/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3 -fPIC -fstack-protector -ffunction-sections -Wimplicit-fallthrough=0 -Wno-cast-function-type -o CMakeFiles/sqlite3.dir/sqlite3.c.o -c /mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3/sqlite3.c",
+  "file": "/mnt/c/Users/Jesse/source/repos/Senior-Design/build/_deps/sqlitecpp-src/sqlite3/sqlite3.c",
+  "output": "_deps/sqlitecpp-build/sqlite3/CMakeFiles/sqlite3.dir/sqlite3.c.o"
+}
+]
