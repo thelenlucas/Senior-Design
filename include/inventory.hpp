@@ -29,7 +29,7 @@ class InventoryPage : public QWidget
     void onSpreadsheetImportClicked();
 
   private:
-    void RefreshModels();
+    void refreshModels();
 
     Ui::InventoryPage* ui;
 
