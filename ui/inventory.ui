@@ -26,25 +26,26 @@
       <string>Log Entry Panel</string>
      </property>
      <layout class="QGridLayout" name="logEntryLayout">
+      <item row="7" column="0" colspan="3">
+       <widget class="QPushButton" name="addLogButton">
+        <property name="text">
+         <string>Add Log</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="3">
+       <widget class="QPushButton" name="createCookieButton">
+        <property name="text">
+         <string>Create Cookie</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="speciesLabel">
         <property name="text">
          <string>Species:</string>
         </property>
        </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="speciesEntry"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="lengthFtLabel">
-        <property name="text">
-         <string>Length (ft):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="lengthFt"/>
       </item>
       <item row="1" column="2">
        <widget class="QLabel" name="lengthInLabel">
@@ -53,35 +54,15 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="3">
-       <widget class="QSpinBox" name="lengthIn"/>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="diameterLabel">
-        <property name="text">
-         <string>Diameter (in):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QSpinBox" name="diameterIn"/>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="costLabel">
-        <property name="text">
-         <string>Cost ($):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QDoubleSpinBox" name="costValue"/>
-      </item>
       <item row="4" column="0">
        <widget class="QLabel" name="qualityLabel">
         <property name="text">
          <string>Quality (1–5):</string>
         </property>
        </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QSpinBox" name="lengthIn"/>
       </item>
       <item row="4" column="1">
        <widget class="QSpinBox" name="qualityValue">
@@ -90,6 +71,42 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="diameterIn"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lengthFtLabel">
+        <property name="text">
+         <string>Length (ft):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="costLabel">
+        <property name="text">
+         <string>Cost ($):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="speciesEntry"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="lengthFt"/>
+      </item>
+      <item row="5" column="1" colspan="3">
+       <widget class="QLineEdit" name="locationEntry"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="diameterLabel">
+        <property name="text">
+         <string>Diameter (in):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="costValue"/>
+      </item>
       <item row="5" column="0">
        <widget class="QLabel" name="locationLabel">
         <property name="text">
@@ -97,20 +114,17 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="1" colspan="3">
-       <widget class="QLineEdit" name="locationEntry"/>
-      </item>
-      <item row="6" column="0" colspan="3">
-       <widget class="QPushButton" name="addLogButton">
-        <property name="text">
-         <string>Add Log</string>
+      <item row="6" column="1">
+       <widget class="QComboBox" name="dryingComboBox">
+        <property name="maxCount">
+         <number>4</number>
         </property>
        </widget>
       </item>
-      <item row="6" column="3">
-       <widget class="QPushButton" name="createCookieButton">
+      <item row="6" column="0">
+       <widget class="QLabel" name="label">
         <property name="text">
-         <string>Create Cookie</string>
+         <string>Drying</string>
         </property>
        </widget>
       </item>

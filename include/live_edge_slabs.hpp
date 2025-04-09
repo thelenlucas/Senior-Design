@@ -145,4 +145,9 @@ public:
     bool getSmoothed() {return smoothed;}
     std::string getLocation() {return location;}
     std::string getNotes() {return notes;}
+
+    // Make from a log and a InProgressSlab
+    static Slab fromLogAndSlab(Log &log, InProgressSlab &slab, std::optional<Database*> db = std::nullopt) {
+        return Slab(0, log.getSpecies(), slab.thickness_eighths / 2, slab.width_eighths / 2, log.getDrying(), false);
+    }
 };
