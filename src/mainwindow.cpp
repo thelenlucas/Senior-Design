@@ -25,6 +25,8 @@
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
 
+// TODO: Remove this outdated window, replace with landing page
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
@@ -131,8 +133,8 @@ void MainWindow::onEnterLogButtonClicked() {
     int costQuarters = costCents / lenQuarters;
 
     // Create a log object, insert it into the database
-    Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, location);
-    log.insert();
+    //Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, location);
+    //log.insert();
 
     // Refresh the model
     refreshModel();
