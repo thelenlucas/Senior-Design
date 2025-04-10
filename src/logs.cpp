@@ -48,7 +48,7 @@ Log::Log(int id,
 std::optional<Log> Log::get_by_id(int id)
 {
     SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(db, "SELECT (species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes, drying) FROM logs WHERE id = ?;");
+    SQLite::Statement query(db, "SELECT species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes, drying FROM logs WHERE id = ?;");
     query.bind(1, id);
     if (query.executeStep())
     {
