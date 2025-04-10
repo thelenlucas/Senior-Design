@@ -140,10 +140,8 @@ std::vector<Log> Log::get_all()
 
 void Log::cut_length(uint amt)
 {
-    // Remove length from Log
+    // Remove length from Log - maybe move from .c to .h?
     this->len_quarters -= amt + 0.125;
-    // Update Log
-    Log::update();
 }
 
 void Log::scrap()

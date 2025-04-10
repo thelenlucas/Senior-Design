@@ -1,19 +1,19 @@
 #include <QApplication>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlError>
 #include <QDebug>
-#include <QMessageBox>
 #include <QFileDialog>
-#include <QScreen>
-#include <QMouseEvent>
-#include <QTimer>
 #include <QInputDialog>
+#include <QMessageBox>
+#include <QMouseEvent>
+#include <QScreen>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QTimer>
 
-#include "inventory.hpp"
-#include "ui_inventory.h"
-#include "logs.hpp"
 #include "cookies.hpp"
+#include "inventory.hpp"
+#include "logs.hpp"
+#include "ui_inventory.h"
 
 InventoryPage::InventoryPage(QWidget *parent)
     : QWidget(parent), ui(new Ui::InventoryPage),

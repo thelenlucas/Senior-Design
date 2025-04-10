@@ -74,7 +74,7 @@ bool Cookie::insert() {
     query.bind(6, this->location);
     query.bind(7, this->notes);
     auto ret = query.exec() > 0;
-    //if (ret) {this->id = db.getLastInsertRowid();}
+    if (ret) {this->id = db.getLastInsertRowid();}
     if(COOKIES_LOGGING && !ret) {std::cout << "Failed to insert cookie into database" << std::endl;}
     return ret;
 }
