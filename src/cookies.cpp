@@ -44,7 +44,7 @@ Cookie::Cookie(
 }
 
 std::optional<Cookie> Cookie::get_by_id(int id) {
-    SQLite::Database db("cookies.db", SQLite::OPEN_READONLY);
+    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
     SQLite::Statement query(db, "SELECT * FROM cookies WHERE id = ?;");
     query.bind(1, id);
     if (query.executeStep()) {
@@ -64,8 +64,8 @@ std::optional<Cookie> Cookie::get_by_id(int id) {
 }
 
 bool Cookie::insert() {
-    SQLite::Database db("cookies.db", SQLite::OPEN_READWRITE);
-    SQLite::Statement query(db, "INSERT INTO cookies (species, from_log, thickness_quarters, diameter_quarters, drying, location, notes) VALUES (?, ?, ?, ?, ?, ?);");
+    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
+    SQLite::Statement query(db, "INSERT INTO cookies (species, from_log, thickness_quarters, diameter_quarters, drying, location, notes) VALUES (?, ?, ?, ?, ?, ?, ?);");
     query.bind(1, this->species);
     query.bind(2, this->from_log);
     query.bind(3, this->thickness_quarters);
@@ -80,7 +80,7 @@ bool Cookie::insert() {
 }
 
 bool Cookie::update() {
-    SQLite::Database db("cookies.db", SQLite::OPEN_READWRITE);
+    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
     SQLite::Statement query(db, "UPDATE cookies SET species = ?, from_log = ?, thickness_quarters = ?, diameter_quarters = ?, drying = ?, location = ?, notes = ? WHERE id = ?;");
     query.bind(1, this->species);
     query.bind(2, this->from_log);
@@ -95,7 +95,7 @@ bool Cookie::update() {
 }
 
 std::vector<Cookie> Cookie::get_all() {
-    SQLite::Database db("cookies.db", SQLite::OPEN_READONLY);
+    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
     SQLite::Statement query(db, "SELECT * FROM cookies;");
     std::vector<Cookie> cookies;
     while(query.executeStep()){
@@ -120,8 +120,9 @@ std::vector<Cookie> Cookie::make_from_log(
     std::optional<Drying> drying
 ) {
     std::vector<Cookie> cookie;
-    // ID, Log ID, Thickness, Diameter, Drying
+    // ID, Log ID, Species, Thickness, Diameter, Drying
     cookie.push_back(Cookie(0, log.get_id(), log.getSpecies(), thickness_quarters, log.getDiameterQuarters(), drying.value_or(Drying::KILN_DRIED)));
-    
+    //std::cout << "Cookie pushed back." << std::endl;
+
     return cookie;
 }

@@ -48,7 +48,7 @@ Log::Log(int id,
 std::optional<Log> Log::get_by_id(int id)
 {
     SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(db, "SELECT (species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes, drying) FROM logs WHERE id = ?;");
+    SQLite::Statement query(db, "SELECT species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes, drying FROM logs WHERE id = ?;");
     query.bind(1, id);
     if (query.executeStep())
     {
@@ -140,10 +140,8 @@ std::vector<Log> Log::get_all()
 
 void Log::cut_length(uint amt)
 {
-    // Remove length from Log
+    // Remove length from Log - maybe move from .c to .h?
     this->len_quarters -= amt + 0.125;
-    // Update Log
-    Log::update();
 }
 
 void Log::scrap()

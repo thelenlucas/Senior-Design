@@ -26,7 +26,7 @@ InventoryPage::InventoryPage(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Dynamically resize window to 60% of screen size and center.
+    // Dynamically resize window to 60% of screen size and center
     QScreen *screen = QGuiApplication::primaryScreen();
     if (screen)
     {
@@ -40,9 +40,9 @@ InventoryPage::InventoryPage(QWidget *parent)
     // Setup the logical models for our mvc.
     ui->individualLogsTable->setModel(individualLogsModel);
     ui->groupedLogsTable->setModel(groupedLogsModel);
+    ui->cookiesTable->setModel(cookiesModel);
     ui->lumberTable->setModel(lumberModel);
     ui->slabsTable->setModel(slabsModel);
-    ui->cookiesTable->setModel(cookiesModel);
     ui->firewoodTable->setModel(firewoodModel);
 
     // Set the drying QComboBox to the enum values, and strings to match them
@@ -52,14 +52,14 @@ InventoryPage::InventoryPage(QWidget *parent)
                                 static_cast<int>(Drying::AIR_AND_KILN_DRIED));
     ui->dryingComboBox->addItem("Air and Kiln Dried", static_cast<int>(Drying::WET));
 
-    RefreshModels();
+    refreshModels();
 
     connect(ui->addLogButton, &QPushButton::clicked, this,
-            &InventoryPage::onAddLogClicked);
+         &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this,
-            &InventoryPage::onSpreadsheetImportClicked);
+         &InventoryPage::onSpreadsheetImportClicked);
     connect(ui->createCookieButton, &QPushButton::clicked, this,
-            &InventoryPage::onCookieButtonClicked);
+         &InventoryPage::onCookieButtonClicked);
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
@@ -67,9 +67,12 @@ InventoryPage::InventoryPage(QWidget *parent)
     setWindowFlags(Qt::Window);
 }
 
-InventoryPage::~InventoryPage() { delete ui; }
+InventoryPage::~InventoryPage()
+{
+    delete ui;
+}
 
-void InventoryPage::RefreshModels()
+void InventoryPage::refreshModels()
 {
     individualLogsModel->setQuery("SELECT * FROM logs_view", QSqlDatabase::database());
     groupedLogsModel->setQuery("SELECT * FROM logs_view_grouped", QSqlDatabase::database());
@@ -130,20 +133,13 @@ void InventoryPage::onAddLogClicked()
     newLog.insert();
 
     // Refresh the models to show the new log
-    RefreshModels();
+    refreshModels();
 }
 
-void InventoryPage::onCookieButtonClicked()
-{
+void InventoryPage::onCookieButtonClicked() {
     // Get the selected log id
-    std::optional<Log> opt =
-        Log::get_by_id(ui->individualLogsTable->currentIndex()
-                        .siblingAtColumn(0)
-                        .data()
-                        .toInt());
-
-    if (!opt)
-    {
+    std::optional<Log> opt = Log::get_by_id(ui->individualLogsTable->currentIndex().siblingAtColumn(0).data().toInt());
+    if (!opt) {
         QMessageBox::critical(this, "Error", "Log not found");
         return;
     }
@@ -152,38 +148,27 @@ void InventoryPage::onCookieButtonClicked()
 
     // Dialog for the user to enter a uint for cookie thickness
     // https://doc.qt.io/qt-5/qinputdialog.html
-    // Pointer, Dialog Title, Dialog Text, Initial Val, Min Val, Max Val,
-    // Trigger Val
-    bool ok;
-    int enteredCut = QInputDialog::getInt(
-        this, QObject::tr("Cookie Cutter"),
-        QObject::tr("Please enter the desired cookie thickness (inches):"),
-        0.01, 0.01, log.getLenQuarters(), ok);
-    // int bladeWidth = 0.125; // Replace with non-hard-coded blade width once
-    // UI for it is complete
-
-    if (!ok)
-    {
+    // Pointer, Dialog Title, Dialog Text, Initial Val, Min Val, Max Val, Trigger Val
+    bool ok;    
+    float enteredCut = QInputDialog::getInt(this, QObject::tr("Cookie Cutter"), QObject::tr("Please enter the desired cookie thickness (inches):"), 1, 1, log.getAvailableLength(), ok);     
+    if(!ok) {
         std::cout << "Cutting Cookie!" << std::endl;
-        // unsigned int cutDepth = static_cast<unsigned int>(enteredCut);
-        // int newLogLength = log.getLenQuarters() - enteredCut - bladeWidth;
+        int enteredQuarters = enteredCut*4;
 
-        auto cookie =
-            Cookie::make_from_log(log, static_cast<unsigned int>(enteredCut));
+        Cookie cookie = Cookie::make_from_log(log, static_cast<unsigned int>(enteredQuarters)).at(0); 
         log.cut_length(static_cast<unsigned int>(enteredCut));
-    }
-    else
-    {
-        std::cout << "User canceled input." << std::endl;
-    }
+        if(!cookie.insert()) {
+            std::cout << "ERROR: Failed to insert cookie!" << std::endl;
+        }
+    } else { std::cout << "User canceled input." << std::endl; }
 
-    RefreshModels();
+    refreshModels();
+    std::cout << "Cookies done! Models refreshed!" << std::endl;
 }
 
 void InventoryPage::onSpreadsheetImportClicked()
 {
-    QString filename =
-        QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv *.xls *.xlsx)");
+    QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv *.xls *.xlsx)");
 
     if (filename.isEmpty())
         return;
@@ -194,18 +179,18 @@ void InventoryPage::onSpreadsheetImportClicked()
 
 void InventoryPage::mousePressEvent(QMouseEvent *event)
 {
-    qDebug() << "InventoryPage clicked at:" << event->pos()
-             << "Mouse click on widgetAt:"
-             << QApplication::widgetAt(QCursor::pos());
+    qDebug() << "InventoryPage clicked at:" << event->pos() 
+    << "Mouse click on widgetAt:" 
+    << QApplication::widgetAt(QCursor::pos());
 
     QWidget::mousePressEvent(event);
 }
 
-bool InventoryPage::eventFilter(QObject *obj, QEvent *event)
+bool InventoryPage::eventFilter(QObject* obj, QEvent* event)
 {
-    qDebug() << "EVENT TYPE:" << event->type()
-             << "on:" << obj->metaObject()->className()
-             << "named:" << obj->objectName();
+    qDebug() << "EVENT TYPE:" << event->type() 
+    << "on:" << obj->metaObject()->className() 
+    << "named:" << obj->objectName();
 
     if (event->type() == QEvent::MouseButtonPress)
     {
