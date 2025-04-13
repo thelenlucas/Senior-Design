@@ -13,3 +13,4 @@ codebase/*
 repomix-output.xml
 *.py
 docs/*
+Testing/*

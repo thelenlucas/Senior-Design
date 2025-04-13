@@ -13,6 +13,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QDir>
+#include <QtDebug>
 
 #include "logs.hpp"
 #include "types.hpp"

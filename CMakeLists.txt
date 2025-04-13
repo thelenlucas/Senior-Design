@@ -46,6 +46,21 @@ set(
 # Create the executable target.
 add_executable(logdb ${SOURCES})
 
+# ----------------------------------------------------------------------------- 
+# Unit‑testing (GoogleTest) 
+# -----------------------------------------------------------------------------
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+)
+# Prevent GoogleTest from overriding our compiler options
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+add_subdirectory(tests)
+
 # -----------------------------------------------------------------------------
 # Documentation (Doxygen)
 # -----------------------------------------------------------------------------

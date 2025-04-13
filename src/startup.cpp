@@ -1,8 +1,9 @@
 #include "schema.hpp"
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QDebug>
 
-bool ensureSchema(QSqlDatabase& db)
+static bool ensureSchema(QSqlDatabase& db)
 {
     QSqlQuery q{db};
 
