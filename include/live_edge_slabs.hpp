@@ -205,8 +205,8 @@ public:
         this->current_used_diameter_eighths += needed_diameter;
 
         if (SLABS_LOGGING) {
-            std::cout << "Slice made: Thickness=" << thickness_eighths << "/8", Width=" << board_width << "/8", Kerf=" << kerf_eights << "/8"" << std::endl;
-            std::cout << "Total diameter used: " << this->current_used_diameter_eighths << "/8" out of " << this->log_diameter_eighths << "/8"" << std::endl;
+            std::cout << "Slice made: Thickness=" << thickness_eighths << "/8", Width=" << board_width << "/8", Kerf=" << kerf_eights << "/8" << std::endl;
+            std::cout << "Total diameter used: " << this->current_used_diameter_eighths << "/8" out of " << this->log_diameter_eighths << "/8" << std::endl;
         }
 
         // Clear the redo queue on a new action
