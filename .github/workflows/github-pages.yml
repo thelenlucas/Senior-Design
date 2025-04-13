@@ -58,7 +58,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build/docs/html     # <‑‑ this is where `add_custom_target(doc …)` writes :contentReference[oaicite:0]{index=0}
+          path: docs/html
 
       # 6 — Publish
       - name: Deploy to GitHub Pages
