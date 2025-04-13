@@ -46,24 +46,33 @@ set(
 # Create the executable target.
 add_executable(logdb ${SOURCES})
 
-# ---------- Doxygen documentation ----------------------------------
-find_package(Doxygen REQUIRED dot)
+# -----------------------------------------------------------------------------
+# Documentation (Doxygen)
+# -----------------------------------------------------------------------------
 
-if (DOXYGEN_FOUND)
-    # configure_file copies our checked‑in Doxyfile.in, replaces variables, and
-    # writes a build‑dir version called Doxyfile
-    set(DOXYGEN_IN  ${CMAKE_SOURCE_DIR}/Doxyfile)
-    set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/Doxyfile)
+option(BUILD_DOCS "Generate API documentation with Doxygen" OFF)
 
-    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} COPYONLY)
+if (BUILD_DOCS)
+    # Attempt to locate Doxygen quietly; documentation is optional.
+    find_package(Doxygen QUIET dot)
 
-    add_custom_target(doc
-        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/..
-        COMMENT "Generating API documentation with Doxygen"
-        VERBATIM)
-endif ()
+    if (DOXYGEN_FOUND)
+        # configure_file copies our checked‑in Doxyfile, replaces variables, and
+        # writes a build‑dir version called Doxyfile
+        set(DOXYGEN_IN  ${CMAKE_SOURCE_DIR}/Doxyfile)
+        set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/Doxyfile)
 
+        configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} COPYONLY)
+
+        add_custom_target(doc
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/..
+            COMMENT "Generating API documentation with Doxygen"
+            VERBATIM)
+    else()
+        message(WARNING "Doxygen not found; documentation target will be skipped.")
+    endif()
+endif()
 
 # Set the AUTOUIC_SEARCH_PATHS property to the source directory.
 set_target_properties(logdb PROPERTIES
