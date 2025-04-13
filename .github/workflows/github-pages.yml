@@ -1,0 +1,61 @@
+# Deploy API documentation (generated with CMake → Doxygen) to GitHub Pages
+name: Docs → GitHub Pages
+
+on:
+  # Rebuild & publish whenever main is updated
+  push:
+    branches: [ "main" ]
+
+  # Allow manual runs from the Actions tab
+  workflow_dispatch:
+
+# Grant the runner the minimum permissions Pages needs
+permissions:
+  contents: read
+  pages:    write
+  id-token: write
+
+# Prevent overlapping deployments
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      # 1 — Fetch code
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2 — Toolchain for docs
+      - name: Install Doxygen + Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      # 3 — Configure & build the “doc” target (defined in CMakeLists.txt)
+      - name: Configure with CMake
+        run: cmake -B build -S .
+
+      - name: Build Doxygen docs
+        run: cmake --build build --target doc
+
+      # 4 — Prepare Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 5 — Upload only the generated HTML
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/docs/html     # <‑‑ this is where `add_custom_target(doc …)` writes :contentReference[oaicite:0]{index=0}
+
+      # 6 — Publish
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
