@@ -18,6 +18,8 @@
 #include "types.hpp"
 #include "mainwindow.hpp"
 
+#include "startup.cpp"
+
 using qsd = QSqlDatabase;
 
 class Container : public QThread 
@@ -45,6 +47,9 @@ int main(int argc, char* argv[])
     db.setDatabaseName("test.db");
     if (!db.open()) 
         qDebug() << "Failed to open database:" << db.lastError().text();
+
+    if (!ensureSchema(db))
+        qDebug() << "Failed to ensure schema:" << db.lastError().text();
 
     // QT SQL DEBUG stuff, will be removed eventually.
     qDebug() << "Current path:" << QDir::currentPath();
