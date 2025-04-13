@@ -54,7 +54,7 @@ option(BUILD_DOCS "Generate API documentation with Doxygen" OFF)
 
 if (BUILD_DOCS)
     # Attempt to locate Doxygen quietly; documentation is optional.
-    find_package(Doxygen QUIET dot)
+    find_package(Doxygen QUIET COMPONENTS dot)
 
     if (DOXYGEN_FOUND)
         # configure_file copies our checked‑in Doxyfile, replaces variables, and
