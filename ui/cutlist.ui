@@ -11,7 +11,6 @@
                 <height>400</height>
             </size>
         </property>
-
         <layout class="QVBoxLayout" name="mainLayout">
             <property name="spacing">
                 <number>8</number>
@@ -22,129 +21,264 @@
                         <property name="windowTitle">
                             <string>Order Entry</string>
                         </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>800</width>
+                                <height>300</height>
+                            </rect>
+                        </property>
                         <property name="minimumSize">
                             <size>
-                                <width>400</width>
+                                <width>600</width>
                                 <height>300</height>
                             </size>
                         </property>
                         <widget class="QWidget" name="orderEntryContainer">
+                            <property name="minimumSize">
+                                <size>
+                                    <width>600</width>
+                                    <height>300</height>
+                                </size>
+                            </property>
                             <layout class="QVBoxLayout" name="orderEntryLayout">
-                                <property name="spacing">
-                                    <number>8</number>
-                                </property>
-                                <property name="leftMargin">
-                                    <number>6</number>
-                                </property>
-                                <property name="topMargin">
-                                    <number>6</number>
-                                </property>
-                                <property name="rightMargin">
-                                    <number>6</number>
-                                </property>
-                                <property name="bottomMargin">
-                                    <number>6</number>
-                                </property>
+                                <item>
+                                    <spacer name="topSpacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Vertical</enum>
+                                        </property>
+                                        <property name="sizeHint" stdset="0">
+                                            <size>
+                                                <width>0</width>
+                                                <height>10</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
                                 <item>
                                     <widget class="QTableView" name="orderEntryTable">
                                         <property name="sizePolicy">
-                                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding" />
-                                        </property>
-                                        <property name="selectionBehavior">
-                                            <enum>QAbstractItemView::SelectRows</enum>
-                                        </property>
-                                        <property name="selectionMode">
-                                            <enum>QAbstractItemView::SingleSelection</enum>
-                                        </property>
-                                        <property name="horizontalScrollMode">
-                                            <enum>QAbstractItemView::ScrollPerPixel</enum>
-                                        </property>
-                                        <property name="verticalScrollMode">
-                                            <enum>QAbstractItemView::ScrollPerPixel</enum>
+                                            <sizepolicy hsizetype="Expanding" vsizetype="Preferred" />
                                         </property>
                                     </widget>
                                 </item>
-                            </layout>
-                        </widget>
-                    </widget>
-
-                    <widget class="QMdiSubWindow" name="orderMarkerSubwindow">
-                        <property name="windowTitle">
-                            <string>Order Marker</string>
-                        </property>
-                        <property name="minimumSize">
-                            <size>
-                                <width>400</width>
-                                <height>300</height>
-                            </size>
-                        </property>
-                        <widget class="QWidget" name="orderMarkerContainer">
-                            <layout class="QVBoxLayout" name="orderMarkerLayout">
-                                <property name="spacing">
-                                    <number>8</number>
-                                </property>
-                                <property name="leftMargin">
-                                    <number>6</number>
-                                </property>
-                                <property name="topMargin">
-                                    <number>6</number>
-                                </property>
-                                <property name="rightMargin">
-                                    <number>6</number>
-                                </property>
-                                <property name="bottomMargin">
-                                    <number>6</number>
-                                </property>
                                 <item>
                                     <widget class="QTableView" name="orderMarkerTable">
                                         <property name="sizePolicy">
-                                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding" />
-                                        </property>
-                                        <property name="selectionBehavior">
-                                            <enum>QAbstractItemView::SelectRows</enum>
-                                        </property>
-                                        <property name="selectionMode">
-                                            <enum>QAbstractItemView::SingleSelection</enum>
-                                        </property>
-                                        <property name="horizontalScrollMode">
-                                            <enum>QAbstractItemView::ScrollPerPixel</enum>
-                                        </property>
-                                        <property name="verticalScrollMode">
-                                            <enum>QAbstractItemView::ScrollPerPixel</enum>
+                                            <sizepolicy hsizetype="Expanding" vsizetype="Preferred" />
                                         </property>
                                     </widget>
                                 </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="projectControlsLayout">
+                                        <item>
+                                            <widget class="QComboBox" name="projectSelectorParts" />
+                                        </item>
+                                        <item>
+                                            <widget class="QPushButton" name="deleteProjectButton">
+                                                <property name="text">
+                                                    <string>Delete Project</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <widget class="QLabel" name="partsLabel">
+                                        <property name="text">
+                                            <string>Project Parts</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QTableView" name="customPartsTable">
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding" />
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QLabel" name="matchingLogsLabel">
+                                        <property name="text">
+                                            <string>Matching Logs</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QTableView" name="matchingLogsTable">
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding" />
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="cutActionButtonsLayout">
+                                        <item>
+                                            <widget class="QPushButton" name="completeCutButton">
+                                                <property name="text">
+                                                    <string>Complete Part Cut</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QPushButton" name="undoCutButton">
+                                                <property name="text">
+                                                    <string>Undo Last Cut</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QPushButton" name="adjustCutLengthButton">
+                                                <property name="text">
+                                                    <string>Adjust Used Length...</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
                             </layout>
+
                         </widget>
                     </widget>
+                    <widget class="QMdiSubWindow" name="orderMarkerSubwindow">
+                        <property name="windowTitle">
+                            <string>Standard Cuts</string>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>310</y>
+                                <width>800</width>
+                                <height>300</height>
+                            </rect>
+                        </property>
+                        <property name="minimumSize">
+                            <size>
+                                <width>600</width>
+                                <height>300</height>
+                            </size>
+                        </property>
+                        <widget class="QWidget" name="standardCutsContainer">
+                            <property name="minimumSize">
+                                <size>
+                                    <width>600</width>
+                                    <height>300</height>
+                                </size>
+                            </property>
+                            <layout class="QVBoxLayout" name="standardCutsLayout">
+                                <item>
+                                    <spacer name="topSpacerStandard">
+                                        <property name="orientation">
+                                            <enum>Qt::Vertical</enum>
+                                        </property>
+                                        <property name="sizeHint" stdset="0">
+                                            <size>
+                                                <width>0</width>
+                                                <height>10</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <item>
+                                    <layout class="QFormLayout" name="cutFilterForm">
+                                        <property name="fieldGrowthPolicy">
+                                            <enum>QFormLayout::ExpandingFieldsGrow</enum>
+                                        </property>
+                                        <item row="0" column="0">
+                                            <widget class="QLabel" name="logSpeciesLabel">
+                                                <property name="text">
+                                                    <string>Species:</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="0" column="1">
+                                            <widget class="QLineEdit" name="logSpeciesFilter" />
+                                        </item>
+                                        <item row="1" column="0">
+                                            <widget class="QLabel" name="logLengthLabel">
+                                                <property name="text">
+                                                    <string>Min Length (in):</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="1" column="1">
+                                            <widget class="QSpinBox" name="logLengthFilter" />
+                                        </item>
+                                        <item row="2" column="0">
+                                            <widget class="QLabel" name="logDiameterLabel">
+                                                <property name="text">
+                                                    <string>Min Diameter (in):</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="2" column="1">
+                                            <widget class="QSpinBox" name="logDiameterFilter" />
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <widget class="QTableView" name="standardLogTable">
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding" />
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="standardCutButtonsLayout">
+                                        <item>
+                                            <widget class="QPushButton" name="cookieCutButton">
+                                                <property name="text">
+                                                    <string>Cut Cookies...</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QPushButton" name="slabCutButton">
+                                                <property name="text">
+                                                    <string>Cut Slabs...</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QPushButton" name="lumberCutButton">
+                                                <property name="text">
+                                                    <string>Cut Lumber...</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
+                            </layout>
 
+                        </widget>
+                    </widget>
                     <widget class="QMdiSubWindow" name="commonCutMarkerSubwindow">
                         <property name="windowTitle">
                             <string>Common Cut Marker</string>
                         </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>620</y>
+                                <width>800</width>
+                                <height>200</height>
+                            </rect>
+                        </property>
                         <property name="minimumSize">
                             <size>
-                                <width>400</width>
-                                <height>300</height>
+                                <width>600</width>
+                                <height>200</height>
                             </size>
                         </property>
                         <widget class="QWidget" name="commonCutMarkerContainer">
+                            <property name="minimumSize">
+                                <size>
+                                    <width>600</width>
+                                    <height>200</height>
+                                </size>
+                            </property>
                             <layout class="QVBoxLayout" name="commonCutMarkerLayout">
-                                <property name="spacing">
-                                    <number>8</number>
-                                </property>
-                                <property name="leftMargin">
-                                    <number>6</number>
-                                </property>
-                                <property name="topMargin">
-                                    <number>6</number>
-                                </property>
-                                <property name="rightMargin">
-                                    <number>6</number>
-                                </property>
-                                <property name="bottomMargin">
-                                    <number>6</number>
-                                </property>
                                 <item>
                                     <widget class="QLabel" name="commonCutMarkerLabel">
                                         <property name="text">
@@ -155,7 +289,8 @@
                             </layout>
                         </widget>
                     </widget>
-                </widget>
+                </widget> <!--
+                mdiArea -->
             </item>
         </layout>
     </widget>
