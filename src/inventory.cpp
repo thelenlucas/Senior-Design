@@ -33,8 +33,7 @@ InventoryPage::InventoryPage(QWidget *parent)
         QSize screenSize = screen->availableGeometry().size();
         QSize windowSize(screenSize.width() * 0.6, screenSize.height() * 0.6);
         resize(windowSize);
-        move((screenSize.width() - windowSize.width()) / 2,
-             (screenSize.height() - windowSize.height()) / 2);
+        move((screenSize.width() - windowSize.width()) / 2, (screenSize.height() - windowSize.height()) / 2);
     }
 
     // Setup the logical models for our mvc.
@@ -54,12 +53,9 @@ InventoryPage::InventoryPage(QWidget *parent)
 
     refreshModels();
 
-    connect(ui->addLogButton, &QPushButton::clicked, this,
-         &InventoryPage::onAddLogClicked);
-    connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this,
-         &InventoryPage::onSpreadsheetImportClicked);
-    connect(ui->createCookieButton, &QPushButton::clicked, this,
-         &InventoryPage::onCookieButtonClicked);
+    connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
+    connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
+    connect(ui->createCookieButton, &QPushButton::clicked, this, &InventoryPage::onCookieButtonClicked);
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
