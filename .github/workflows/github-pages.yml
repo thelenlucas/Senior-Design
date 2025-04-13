@@ -38,7 +38,6 @@ jobs:
         uses: jurplel/install-qt-action@v4.1.1
         with:
           cache: true            # speeds up subsequent runs
-          modules: "qtbase qttools"   # Widgets+Sql live in qtbase; qhelpgenerator in qttools
       - name: Install Doxygen + Graphviz
         run: |
           sudo apt-get update
