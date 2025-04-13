@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 #include <optional>
+#include "slab_factory.hpp"  // InProgressSlab stuff
 
 // ---------------------------------------------------------------------------------------------------------------------
 //  Slab – ctor & simple getters
