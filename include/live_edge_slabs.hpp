@@ -1,148 +1,195 @@
-// CREATE TABLE slabs (
-//     id                 INTEGER PRIMARY KEY AUTOINCREMENT
-//                                UNIQUE
-//                                NOT NULL,
-//     species            TEXT    NOT NULL,
-//     thickness_quarters INTEGER CHECK ( (thickness_quarters > 0) ) 
-//                                NOT NULL,
-//     len_quarters       INTEGER NOT NULL
-//                                CHECK ( (len_quarters > 0) ),
-//     drying             INTEGER NOT NULL
-//                                CHECK ( (drying BETWEEN 0 AND 3) ),
-//     smoothed           INTEGER CHECK ( (smoothed BETWEEN 0 AND 1) ) 
-//                                NOT NULL,
-//     location           VARCHAR,
-//     notes              TEXT,
-//     media              BLOB
-// );
+#pragma once
+/**
+ * @file slabs.hpp
+ * @brief Declarations for Slab data‑model and SlabManufacturer helper.
+ *
+ * Heavyweight definitions (database access, manufacturing, etc.) live in *slabs.cpp*.
+ * Lightweight geometry helpers inside SlabManufacturer remain header‑only for inlining.
+ */
 
 #include <string>
-#include <stdexcept>
-#include <optional>
-#include "types.hpp"
 #include <vector>
-#include "logs.hpp"
+#include <optional>
+#include "types.hpp"      // Drying, etc.
+#include "logs.hpp"       // Log class
+#include "interfaces.hpp" // Persistent<>
+#include "manufacturable.hpp"
+
+// ---------------------------------------------------------------------------------------------------------------------
+//  Slab – Persistable + Manufacturable board cut from a Log
+// ---------------------------------------------------------------------------------------------------------------------
+
+class Slab final : public Manufacturable<Slab>
+{
+public:
+    // Construction ------------------------------------------------------------------
+    Slab() = default;
+    Slab(int                id,
+         std::string        species,
+         unsigned           thickness_eighths,
+         unsigned           len_quarters,
+         unsigned           width_eighths,
+         Drying             drying          = Drying::WET,
+         bool               smoothed        = false,
+         std::string        location        = {},
+         std::string        notes           = {});
+
+    // Getters -----------------------------------------------------------------------
+    [[nodiscard]] int                     get_id()          const noexcept override;
+    [[nodiscard]] const std::string&      getSpecies()      const noexcept { return species_; }
+    [[nodiscard]] unsigned                getThickness8()   const noexcept { return thickness_eighths_; }
+    [[nodiscard]] unsigned                getLenQ()         const noexcept { return len_quarters_; }
+    [[nodiscard]] unsigned                getWidth8()       const noexcept { return width_eighths_; }
+    [[nodiscard]] Drying                  getDrying()       const noexcept { return drying_; }
+    [[nodiscard]] bool                    isSmoothed()      const noexcept { return smoothed_; }
+    [[nodiscard]] const std::string&      getLocation()     const noexcept { return location_; }
+    [[nodiscard]] const std::string&      getNotes()        const noexcept { return notes_; }
+
+    // Persistent interface ----------------------------------------------------------
+    bool insert() override;                      // defined in slabs.cpp
+    bool update() override;                      // defined in slabs.cpp
+    static std::optional<Slab> get_by_id(int id);        // slabs.cpp
+    static std::vector<Slab>   get_all();                // slabs.cpp
+
+    // Manufacturable interface ------------------------------------------------------
+    static std::vector<Slab> make_from_log(
+        Log                     log,
+        int                     len_quarters,
+        std::optional<int>      thickness_eighths = std::nullopt,
+        std::optional<int>      width_eighths     = std::nullopt,
+        std::optional<Drying>   drying            = std::nullopt);   // slabs.cpp
+
+    // Convenience factory used by SlabManufacturer (implemented in slabs.cpp)
+    static std::vector<Slab> manufacture_and_persist_slabs(
+        Log &                          log,
+        const std::vector<struct InProgressSlab>& cuts,
+        int                              total_len_quarters,
+        const std::string&               location = {},
+        const std::string&               notes    = {});
+
+private:
+    int          id_{-1};
+    std::string  species_;
+    unsigned     thickness_eighths_{0};
+    unsigned     len_quarters_{0};
+    unsigned     width_eighths_{0};
+    Drying       drying_{Drying::WET};
+    bool         smoothed_{false};
+    std::string  location_;
+    std::string  notes_;
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+//  Helper types for live‑edge slab planning
+// ---------------------------------------------------------------------------------------------------------------------
+
+struct InProgressSlab
+{
+    int width_eighths  = 0;
+    int thickness_eighths = 0;
+    int kerf_eighths      = 0;
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+//  SlabManufacturer – geometry & workflow helper (header‑only)
+// ---------------------------------------------------------------------------------------------------------------------
+
+class SlabManufacturer
+{
+public:
+    explicit SlabManufacturer(Log &log);
+
+    // Plan / modify cuts -------------------------------------------------------------
+    bool makeSlice(int thickness_eighths, int kerf_eighths = 0);
+    bool undo();
+    bool redo();
+
+    // Introspection ------------------------------------------------------------------
+    [[nodiscard]] int                                availableDiameterEighths() const;
+    [[nodiscard]] const std::vector<InProgressSlab>& getMadeCuts()            const { return madeCuts_; }
+    [[nodiscard]] const std::vector<InProgressSlab>& getRedoQueue()           const { return redoQueue_; }
+
+    // Commit all cuts to real Slab objects and persist
+    std::vector<Slab> finalize(const std::string& location = {}, const std::string& notes = {});
+
+private:
+    // Geometry helpers (inline) ------------------------------------------------------
+    [[nodiscard]] int widthAtOffset(int offset_eighths) const;
+    [[nodiscard]] int nextCutWidth(int thickness_eighths) const;
+
+    // State -------------------------------------------------------------------------
+    Log*                          log_{nullptr};
+    int                           log_len_q_{0};
+    int                           log_diameter_8_{0};
+    int                           used_diameter_8_{0};
+
+    std::vector<InProgressSlab>   madeCuts_;
+    std::vector<InProgressSlab>   redoQueue_;
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
+//  Inline definitions for SlabManufacturer geometry helpers
+// ---------------------------------------------------------------------------------------------------------------------
+
 #include <cmath>
+#include <cstdlib>
 
-#define SLABS_LOGGING true
+inline SlabManufacturer::SlabManufacturer(Log &log)
+    : log_{&log},
+      log_len_q_{static_cast<int>(log.getLenQuarters())},
+      log_diameter_8_{static_cast<int>(log.getDiameterQuarters()) * 2},
+      used_diameter_8_{0} {}
 
-struct InProgressSlab {
-    int width_eighths;
-    int thickness_eighths;
-    int kerf_eighths;
-};
 
-class Database;
-class SlabManufacturer {
-private:
-    Log* original_log;
-    int log_len_eighths;
-    int log_diameter_eighths;
-    int current_used_diameter_eighths;
-    std::vector<InProgressSlab> madeCuts;
-    std::vector<InProgressSlab> undoQueue;
+inline int SlabManufacturer::widthAtOffset(int offset_8) const
+{
+    const double r = log_diameter_8_ / 2.0;
+    const double y = std::abs(r - (used_diameter_8_ + offset_8));
+    if (y >= r) return 0;
+    return static_cast<int>(2 * std::sqrt(r*r - y*y));
+}
 
-    int widthAtOffsetFromCurrentEighths(int offset) {
-        int midpoint = this->log_diameter_eighths / 2;
-        int from_midpoint = abs(midpoint - this->current_used_diameter_eighths + offset);
+inline int SlabManufacturer::nextCutWidth(int thickness_8) const
+{
+    const int w0 = widthAtOffset(0);
+    const int w1 = widthAtOffset(thickness_8);
+    return (w0 && w1) ? (w0 + w1) / 2 : 0;
+}
 
-        return 2 * sqrt(pow((this->log_diameter_eighths/2),2) - pow(from_midpoint, 2));
-    }
+inline bool SlabManufacturer::makeSlice(int thickness_8, int kerf_8)
+{
+    if (thickness_8 <= 0 || thickness_8 + kerf_8 > availableDiameterEighths()) return false;
+    const int w = nextCutWidth(thickness_8);
+    if (w == 0) return false;
+    madeCuts_.push_back({w, thickness_8, kerf_8});
+    used_diameter_8_ += thickness_8 + kerf_8;
+    redoQueue_.clear();
+    return true;
+}
 
-public:
-    SlabManufacturer(Log &log) {
-        this->log_len_eighths = log.getLenQuarters() * 2;
-        this->log_diameter_eighths = log.getDiameterQuarters() * 2;
-        this->current_used_diameter_eighths = 8;
-        madeCuts = std::vector<InProgressSlab>();
-        undoQueue = std::vector<InProgressSlab>();
-        this->original_log = &log;
-    }
+inline bool SlabManufacturer::undo()
+{
+    if (madeCuts_.empty()) return false;
+    redoQueue_.push_back(madeCuts_.back());
+    used_diameter_8_ -= madeCuts_.back().thickness_eighths + madeCuts_.back().kerf_eighths;
+    madeCuts_.pop_back();
+    return true;
+}
 
-    int nextCutWouldBeEightsThick(int thickness_eighths) {
-        int distance_from_current = this->widthAtOffsetFromCurrentEighths(0);
-        int distance_from_cut = this->widthAtOffsetFromCurrentEighths(thickness_eighths);
+inline bool SlabManufacturer::redo()
+{
+    if (redoQueue_.empty()) return false;
+    const auto cut = redoQueue_.back();
+    if (cut.thickness_eighths + cut.kerf_eighths > availableDiameterEighths()) return false;
+    madeCuts_.push_back(cut);
+    used_diameter_8_ += cut.thickness_eighths + cut.kerf_eighths;
+    redoQueue_.pop_back();
+    return true;
+}
 
-        return (distance_from_cut + distance_from_current) / 2;
-    }
+inline int SlabManufacturer::availableDiameterEighths() const
+{
+    return log_diameter_8_ - used_diameter_8_;
+}
 
-    bool makeSlice(int thickness_eighths, int kerf_eights) {
-        // Check if the cut is possible
-        if (this->current_used_diameter_eighths + thickness_eighths + kerf_eights) {
-            return false;
-        }
-
-        // Get the width of the cut board
-        int board_width = this->nextCutWouldBeEightsThick(thickness_eighths);
-        InProgressSlab slab = {board_width, thickness_eighths, kerf_eights};
-        this->madeCuts.push_back(slab);
-        this->current_used_diameter_eighths += thickness_eighths + kerf_eights;
-
-        return true;
-    }
-
-    // Returns false if there are no cuts to undo, true otherwise
-    bool undo() {
-        // Take the last cut, remove it from the madecuts and add it to the undo queue.
-        if (this->madeCuts.size() == 0) {
-            return false;
-        }
-        InProgressSlab lastCut = this->madeCuts.back();
-        this->madeCuts.pop_back();
-        this->undoQueue.push_back(lastCut);
-        this->current_used_diameter_eighths -= lastCut.thickness_eighths + lastCut.kerf_eighths;
-        return true;
-    }
-    
-    // Returns false if there are no cuts to redo, true otherwise
-    bool redo() {
-        // Take the last cut added to the undo queue, remove it from the undo queue and add it to the made cuts.
-        if (this->undoQueue.size() == 0) {
-            return false;
-        }
-
-        InProgressSlab lastCut = this->undoQueue.back();
-        this->undoQueue.pop_back();
-        this->madeCuts.push_back(lastCut);
-        this->current_used_diameter_eighths += lastCut.thickness_eighths + lastCut.kerf_eighths;
-        return true;
-    }
-
-    int availableQuarters() {
-        return this->original_log->getDiameterQuarters()*2 - this->current_used_diameter_eighths;
-    };
-};
-
-class Slab {
-private:
-    int id;
-    std::string species;
-    uint thickness_quarters;
-    uint len_quarters;
-    Drying drying;
-    bool smoothed;
-    std::string location;
-    std::string notes;
-
-public:
-    Slab(int id,
-        std::string species,
-        uint thickness_quarters,
-        uint len_quarters,
-        Drying drying,
-        bool smoothed,
-        std::string location = "",
-        std::string notes = "",
-        std::optional<Database*> db = std::nullopt
-    );
-
-    // Getters
-    int getId() {return id;}
-    std::string getSpecies() {return species;}
-    uint getThicknessQuarters() {return thickness_quarters;}
-    uint getLenQuarters() {return len_quarters;}
-    Drying getDrying() {return drying;}
-    bool getSmoothed() {return smoothed;}
-    std::string getLocation() {return location;}
-    std::string getNotes() {return notes;}
-};
+// finalize() is defined in slabs.cpp because it depends on Slab database ops

@@ -1,148 +1,228 @@
+// ---------------------------------------------------------------------------------------------------------------------
+//  logs.cpp – persistence & workflow logic for Log
+// ---------------------------------------------------------------------------------------------------------------------
+
 #include "logs.hpp"
-#include "types.hpp"
 
-#include <string>
 #include <SQLiteCpp/SQLiteCpp.h>
-#include <stdexcept>
+
 #include <iostream>
+#include <stdexcept>
+#include <utility>
 
-// Schema:
-// CREATE TABLE logs (
-//     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-//     species             VARCHAR NOT NULL,
-//     len_quarters        INT     NOT NULL
-//                                 CHECK ( (len_quarters > 0) ),
-//     diameter_quarters   INT     NOT NULL
-//                                 CHECK ( (diameter_quarters > 0) ),
-//     cost_cents_quarters INT     NOT NULL
-//                                 CHECK ( (cost_cents_quarters > 0) ),
-//     quality             INTEGER CHECK ( (quality BETWEEN 1 AND 5) ),
-//     location            TEXT    REFERENCES storage_bins (name),
-//     notes               TEXT,
-//     media               BLOB,
-//     scrapped            INTEGER NOT NULL
-//                                 DEFAULT (0) 
-// );
+using namespace std::string_literals;
 
-
-Log::Log(int id,
-    std::string species,
-    uint len_quarters,
-    uint diameter_quarters,
-    uint cost_cents_quarters,
-    uint quality,
-    std::string location,
-    std::string notes
-) {
-    this->id = id;
-    this->species = species;
-    this->len_quarters = len_quarters;
-    this->diameter_quarters = diameter_quarters;
-    this->cost_cents_quarters = cost_cents_quarters;
-    this->quality = quality;
-    this->location = location;
-    this->notes = notes;
+namespace
+{
+    constexpr bool kEnableLogging = LOGS_LOGGING;
+    constexpr const char* kDbFile = DATABASE_FILE; // defined by build system
 }
 
-std::optional<Log> Log::get_by_id(int id) {
-    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(db, "SELECT * FROM logs WHERE id = ?;");
-    query.bind(1, id);
-    if (query.executeStep()) {
-        return Log(
-            query.getColumn(0).getInt(),
-            query.getColumn(1).getText(),
-            query.getColumn(2).getInt(),
-            query.getColumn(3).getInt(),
-            query.getColumn(4).getInt(),
-            query.getColumn(5).getInt(),
-            query.getColumn(6).getText(),
-            query.getColumn(7).getText()
-        );
+// ---------------------------------------------------------------------------------------------------------------------
+//  Construction
+// ---------------------------------------------------------------------------------------------------------------------
+
+Log::Log(int                id,
+         std::string        species,
+         unsigned           len_quarters,
+         unsigned           diameter_quarters,
+         unsigned           cost_cents_quarters,
+         unsigned           quality,
+         Drying             drying,
+         std::string        location,
+         std::string        notes)
+    : id_{id},
+      species_{std::move(species)},
+      len_quarters_{len_quarters},
+      diameter_quarters_{diameter_quarters},
+      cost_cents_quarters_{cost_cents_quarters},
+      quality_{quality},
+      location_{std::move(location)},
+      notes_{std::move(notes)},
+      drying_{drying} {}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//  Helper – available length
+// ---------------------------------------------------------------------------------------------------------------------
+
+unsigned Log::getAvailableLength() const
+{
+    try {
+        SQLite::Database db{kDbFile, SQLite::OPEN_READONLY};
+        SQLite::Statement stmt{db,
+            "SELECT SUM(len_quarters) FROM taken_len_all WHERE from_log = ?"};
+        stmt.bind(1, id_);
+
+        unsigned taken_len = 0;
+        if (stmt.executeStep() && !stmt.getColumn(0).isNull())
+            taken_len = static_cast<unsigned>(stmt.getColumn(0).getInt());
+
+        return (len_quarters_ >= taken_len) ? (len_quarters_ - taken_len) : 0U;
     }
-    return std::nullopt;
+    catch (const std::exception& e) {
+        if (kEnableLogging)
+            std::cerr << "Log::getAvailableLength() failed — " << e.what() << std::endl;
+        return 0;
+    }
 }
 
-bool Log::insert() {
-    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
-    SQLite::Statement query(db, "INSERT INTO logs (species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes) VALUES (?, ?, ?, ?, ?, ?, ?);");
-    query.bind(1, this->species);
-    query.bind(2, this->len_quarters);
-    query.bind(3, this->diameter_quarters);
-    query.bind(4, this->cost_cents_quarters);
-    query.bind(5, this->quality);
-    query.bind(6, this->location);
-    query.bind(7, this->notes);
-    auto ret = query.exec() > 0;
+// ---------------------------------------------------------------------------------------------------------------------
+//  Persistent interface – database helpers
+// ---------------------------------------------------------------------------------------------------------------------
 
-    if (ret) {
-        this->id = db.getLastInsertRowid();
+bool Log::insert()
+{
+    try {
+        if (kEnableLogging)
+            std::cout << "[Log] inserting — species: " << species_ << std::endl;
+
+        SQLite::Database db{kDbFile, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+        SQLite::Statement stmt{db,
+            "INSERT INTO logs (species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes, drying) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"};
+
+        stmt.bind(1, species_);
+        stmt.bind(2, static_cast<int>(len_quarters_));
+        stmt.bind(3, static_cast<int>(diameter_quarters_));
+        stmt.bind(4, static_cast<int>(cost_cents_quarters_));
+        stmt.bind(5, static_cast<int>(quality_));
+        stmt.bind(6, location_);
+        stmt.bind(7, notes_);
+        stmt.bind(8, static_cast<int>(drying_));
+        stmt.exec();
+
+        id_ = static_cast<int>(db.getLastInsertRowid());
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Log::insert() failed — " << e.what() << std::endl;
+        return false;
+    }
+}
+
+bool Log::update()
+{
+    try {
+        if (kEnableLogging)
+            std::cout << "[Log] updating id=" << id_ << std::endl;
+
+        SQLite::Database db{kDbFile, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+        SQLite::Statement stmt{db,
+            "UPDATE logs SET species = ?, len_quarters = ?, diameter_quarters = ?, cost_cents_quarters = ?, quality = ?, "
+            "location = ?, notes = ?, drying = ? WHERE id = ?"};
+
+        stmt.bind(1, species_);
+        stmt.bind(2, static_cast<int>(len_quarters_));
+        stmt.bind(3, static_cast<int>(diameter_quarters_));
+        stmt.bind(4, static_cast<int>(cost_cents_quarters_));
+        stmt.bind(5, static_cast<int>(quality_));
+        stmt.bind(6, location_);
+        stmt.bind(7, notes_);
+        stmt.bind(8, static_cast<int>(drying_));
+        stmt.bind(9, id_);
+        stmt.exec();
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Log::update() failed — " << e.what() << std::endl;
+        return false;
+    }
+}
+
+std::optional<Log> Log::get_by_id(int id)
+{
+    try {
+        SQLite::Database db{kDbFile, SQLite::OPEN_READONLY};
+        SQLite::Statement stmt{db,
+            "SELECT species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes, drying "
+            "FROM logs WHERE id = ?"};
+        stmt.bind(1, id);
+
+        if (!stmt.executeStep())
+            return std::nullopt;
+
+        return Log{id,
+                   stmt.getColumn(0).getString(),
+                   static_cast<unsigned>(stmt.getColumn(1).getInt()),
+                   static_cast<unsigned>(stmt.getColumn(2).getInt()),
+                   static_cast<unsigned>(stmt.getColumn(3).getInt()),
+                   static_cast<unsigned>(stmt.getColumn(4).getInt()),
+                   static_cast<Drying>(stmt.getColumn(7).getInt()),
+                   stmt.getColumn(5).getString(),
+                   stmt.getColumn(6).getString()};
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Log::get_by_id() failed — " << e.what() << std::endl;
+        return std::nullopt;
+    }
+}
+
+std::vector<Log> Log::get_all()
+{
+    std::vector<Log> result;
+
+    try {
+        SQLite::Database db{kDbFile, SQLite::OPEN_READONLY};
+        SQLite::Statement stmt{db,
+            "SELECT id, species, len_quarters, diameter_quarters, cost_cents_quarters, quality, location, notes, drying "
+            "FROM logs WHERE scrapped = 0"};
+
+        while (stmt.executeStep()) {
+            result.emplace_back(
+                stmt.getColumn(0).getInt(),
+                stmt.getColumn(1).getString(),
+                static_cast<unsigned>(stmt.getColumn(2).getInt()),
+                static_cast<unsigned>(stmt.getColumn(3).getInt()),
+                static_cast<unsigned>(stmt.getColumn(4).getInt()),
+                static_cast<unsigned>(stmt.getColumn(5).getInt()),
+                static_cast<Drying>(stmt.getColumn(8).getInt()),
+                stmt.getColumn(6).getString(),
+                stmt.getColumn(7).getString());
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Log::get_all() failed — " << e.what() << std::endl;
     }
 
-    // Cout exception if LOGS_LOGGING
-    if (LOGS_LOGGING && !ret) {
-        std::cout << "Failed to insert log into database" << std::endl;
+    return result;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//  Workflow helpers
+// ---------------------------------------------------------------------------------------------------------------------
+
+void Log::cut_length(unsigned amt_quarters)
+{
+    if (amt_quarters > len_quarters_)
+        amt_quarters = len_quarters_;
+
+    len_quarters_ -= amt_quarters;
+
+    try {
+        SQLite::Database db{kDbFile, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+        SQLite::Statement stmt{db,
+            "UPDATE logs SET len_quarters = ? WHERE id = ?"};
+        stmt.bind(1, static_cast<int>(len_quarters_));
+        stmt.bind(2, id_);
+        stmt.exec();
     }
-
-    return ret;
-}
-
-bool Log::update() {
-    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
-    SQLite::Statement query(db, "UPDATE logs SET species = ?, len_quarters = ?, diameter_quarters = ?, cost_cents_quarters = ?, quality = ?, location = ?, notes = ? WHERE id = ?;");
-    query.bind(1, this->species);
-    query.bind(2, this->len_quarters);
-    query.bind(3, this->diameter_quarters);
-    query.bind(4, this->cost_cents_quarters);
-    query.bind(5, this->quality);
-    query.bind(6, this->location);
-    query.bind(7, this->notes);
-    query.bind(8, this->id);
-    auto ret = query.exec() > 0;
-
-    // Cout exception if LOGS_LOGGING
-    if (LOGS_LOGGING && !ret) {
-        std::cout << "Failed to update log in database" << std::endl;
+    catch (const std::exception& e) {
+        std::cerr << "Log::cut_length() failed — " << e.what() << std::endl;
     }
-
-    return ret;
 }
 
-std::vector<Log> Log::get_all() {
-    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(db, "SELECT * FROM logs;");
-    std::vector<Log> logs;
-    while (query.executeStep()) {
-        logs.push_back(Log(
-            query.getColumn(0).getInt(),
-            query.getColumn(1).getText(),
-            query.getColumn(2).getInt(),
-            query.getColumn(3).getInt(),
-            query.getColumn(4).getInt(),
-            query.getColumn(5).getInt(),
-            query.getColumn(6).getText(),
-            query.getColumn(7).getText()
-        ));
+void Log::scrap()
+{
+    try {
+        SQLite::Database db{kDbFile, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+        SQLite::Statement stmt{db, "UPDATE logs SET scrapped = 1 WHERE id = ?"};
+        stmt.bind(1, id_);
+        stmt.exec();
+
+        if (kEnableLogging)
+            std::cout << "[Log] id=" << id_ << " scrapped" << std::endl;
     }
-    return logs;
-}
-
-void Log::cut_length(uint amt) {
-    //Remove length from Log
-    this->len_quarters -= amt + 0.125;
-    // Update Log
-    Log::update();
-}
-
-
-void Log::scrap() {
-    // Set the scrapped column to 1 in the database
-    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
-    SQLite::Statement query(db, "UPDATE logs SET scrapped = 1 WHERE id = ?;");
-    query.bind(1, this->id);
-    query.exec();
-
-    if (LOGS_LOGGING) {
-        std::cout << "Log " << this->id << " scrapped" << std::endl;
+    catch (const std::exception& e) {
+        std::cerr << "Log::scrap() failed — " << e.what() << std::endl;
     }
 }

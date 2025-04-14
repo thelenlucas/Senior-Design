@@ -1,4 +1,3 @@
-.vscode
 .vscode/*
 .cache/*
 build/*
@@ -6,3 +5,11 @@ build/*
 out
 **.zip
 SQLiteCpp/*
+SQLiteCpp/
+.venv/*
+.qdrant/*
+.monoflat_cache.json
+codebase/*
+repomix-output.xml
+*.py
+docs/*

@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(LogDBProject)
 
+# For analysis with clangd.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Require C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -43,6 +46,34 @@ set(
 # Create the executable target.
 add_executable(logdb ${SOURCES})
 
+# -----------------------------------------------------------------------------
+# Documentation (Doxygen)
+# -----------------------------------------------------------------------------
+
+option(BUILD_DOCS "Generate API documentation with Doxygen" OFF)
+
+if (BUILD_DOCS)
+    # Attempt to locate Doxygen quietly; documentation is optional.
+    find_package(Doxygen QUIET COMPONENTS dot)
+
+    if (DOXYGEN_FOUND)
+        # configure_file copies our checked‑in Doxyfile, replaces variables, and
+        # writes a build‑dir version called Doxyfile
+        set(DOXYGEN_IN  ${CMAKE_SOURCE_DIR}/Doxyfile)
+        set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/Doxyfile)
+
+        configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} COPYONLY)
+
+        add_custom_target(doc
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/..
+            COMMENT "Generating API documentation with Doxygen"
+            VERBATIM)
+    else()
+        message(WARNING "Doxygen not found; documentation target will be skipped.")
+    endif()
+endif()
+
 # Set the AUTOUIC_SEARCH_PATHS property to the source directory.
 set_target_properties(logdb PROPERTIES
     AUTOMOC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/src"
@@ -53,6 +84,31 @@ set_target_properties(logdb PROPERTIES
 target_include_directories(logdb PUBLIC ${includes})
 
 target_link_libraries(logdb PRIVATE SQLiteCpp Qt5::Widgets Qt5::Sql)
+
+add_compile_options(
+    # Standard warnings.
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wshadow
+    -Wconversion
+    # Warning guards against undefined behavior.
+    -Wundef
+    -Wuninitialized
+    #-Wuse-after-free (only in clang)
+    -Wstrict-aliasing
+    -Wstrict-overflow
+    -Warray-bounds
+    -Wsequence-point #(only in gcc and deprecated after C++20)
+    # Additional warnings that are a good idea.
+    -Wsign-conversion
+    -Wsign-compare
+    -Wnull-dereference
+    -Wdouble-promotion
+    -Wformat=2
+    -Wimplicit-fallthrough
+    -Wcast-align
+)
 
 # Copy in the database file
 add_custom_command(

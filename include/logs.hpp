@@ -1,75 +1,89 @@
-#ifndef LOGS_HPP
-#define LOGS_HPP
+#pragma once
+/**
+ * @file logs.hpp
+ * @brief Defines the Log class representing a log of wood, including its properties and persistence logic.
+ * @details Doxygen comments from the original file are preserved. Implementation details that touch the
+ *          database or heavyweight business logic live in *logs.cpp*; this header remains lightweight
+ *          to maximise compiler inlining opportunities.
+ */
 
 #include <string>
 #include <vector>
-#include <stdexcept>
 #include <optional>
-#include "interfaces.hpp"
-#include <SQLiteCpp/SQLiteCpp.h>
-#include "types.hpp"
-#include <iomanip>
-#include <iostream>
+#include <iostream>   // For optional debug logging
 
+#include "types.hpp"        // Drying enum
+#include "logs.hpp"         // Forward declarations for related helpers (if any)
+#include "interfaces.hpp"   // Persistent<>
+
+/**
+ * @brief Controls verbose logging specific to Log class operations. Set to false to disable.
+ */
 #define LOGS_LOGGING true
 
-class Log : public Persistent<Log> {
-private:
-    int id;
-    std::string species;
-    uint len_quarters;
-    uint diameter_quarters;
-    uint cost_cents_quarters;
-    uint quality;
-    std::string location;
-    std::string notes;
+// ---------------------------------------------------------------------------------------------------------------------
+//  Log – Persistable model of a raw log ready for milling
+// ---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Represents a single log of wood, tracking its properties, cost, and status.
+ * @details This class manages log data and interacts with the database for persistence,
+ *          inheriting from the Persistent<Log> interface.
+ */
+class Log final : public Persistent<Log>
+{
 public:
-    Log(int id,
-        std::string species,
-        uint len_quarters,
-        uint diameter_quarters,
-        uint cost_cents_quarters,
-        uint quality,
-        std::string location = "",
-        std::string notes = ""
-    );
+    // Construction ------------------------------------------------------------------
+    Log() = default;
+    Log(int                id,
+        std::string        species,
+        unsigned           len_quarters,
+        unsigned           diameter_quarters,
+        unsigned           cost_cents_quarters,
+        unsigned           quality,
+        Drying             drying,
+        std::string        location = {},
+        std::string        notes    = {});
 
-    // Getters
-    std::string getSpecies() const {return species;} 
-    uint getLenQuarters() const {return len_quarters;} 
-    uint getDiameterQuarters() const {return diameter_quarters;} 
-    uint getCostCentsQuarters() const {return cost_cents_quarters;} 
-    uint getQuality() const {return quality;} 
-    std::string getLocation() const {return location;} 
-    std::string getNotes() const {return notes;}
+    // Getters -----------------------------------------------------------------------
+    [[nodiscard]] int                get_id()            const noexcept override { return id_; }
+    [[nodiscard]] const std::string& getSpecies()        const noexcept { return species_; }
+    [[nodiscard]] unsigned           getLenQuarters()    const noexcept { return len_quarters_; }
+    [[nodiscard]] unsigned           getDiameterQuarters() const noexcept { return diameter_quarters_; }
+    [[nodiscard]] unsigned           getCostCentsQuarters() const noexcept { return cost_cents_quarters_; }
+    [[nodiscard]] unsigned           getQuality()        const noexcept { return quality_; }
+    [[nodiscard]] const std::string& getLocation()       const noexcept { return location_; }
+    [[nodiscard]] const std::string& getNotes()          const noexcept { return notes_; }
+    [[nodiscard]] Drying             getDrying()         const noexcept { return drying_; }
 
-    // Returns the actual available length of the log
-    uint getAvailableLength() const {
-        // The taken_len_all view is the best way to get the taken length, iterate over
-        // it where from_log is our id
-        if (LOGS_LOGGING) std::cout << "Getting available length for log " << id << std::endl;
-        SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
-        SQLite::Statement query(db, "SELECT len_quarters FROM taken_len_all WHERE from_log = ?");
-        query.bind(1, id);
-        uint taken_len = 0;
-        while (query.executeStep()) {
-            taken_len += query.getColumn(0).getInt();
-        }
+    /**
+     * @brief Calculates the remaining usable length of the log in quarters of an inch.
+     * @details This subtracts the total length of all items already manufactured
+     *          (e.g., slabs, cookies) from this log's original length (`len_quarters_`).
+     *          It queries the `taken_len_all` database view to get the used length.
+     * @return The currently available length in quarters of an inch. Returns 0 if the
+     *         calculated available length is negative (which shouldn't happen ideally).
+     */
+    unsigned getAvailableLength() const;
 
-        return len_quarters - taken_len;
-    }
+    // Workflow helpers --------------------------------------------------------------
+    void scrap();                               ///< Marks the log as scrapped / unusable.
+    void cut_length(unsigned amt_quarters);     ///< Reduces the recorded original length.
 
-    // Scraps a log
-    void scrap();
-    void cut_length(uint amt);
+    // Persistent interface ----------------------------------------------------------
+    bool insert() override;                     // defined in logs.cpp
+    bool update() override;                     // defined in logs.cpp
+    static std::optional<Log> get_by_id(int id);          // logs.cpp
+    static std::vector<Log>   get_all();                  // logs.cpp
 
-    // Required by Persistent
-    int get_id() const override {return id;}
-    bool insert() override;
-    bool update() override;
-    static std::optional<Log> get_by_id(int id); 
-    static std::vector<Log> get_all();
+private:
+    int          id_{-1};
+    std::string  species_;
+    unsigned     len_quarters_{0};
+    unsigned     diameter_quarters_{0};
+    unsigned     cost_cents_quarters_{0};
+    unsigned     quality_{0};
+    std::string  location_;
+    std::string  notes_;
+    Drying       drying_{Drying::WET};
 };
-
-#endif // TYPES_HPP
