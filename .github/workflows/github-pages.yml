@@ -45,7 +45,7 @@ jobs:
 
       # 3 — Configure & build the “doc” target (defined in CMakeLists.txt)
       - name: Configure with CMake
-        run: cmake -B build -S .
+        run: cmake -B build -S . -DBUILD_DOCS=ON
 
       - name: Build Doxygen docs
         run: cmake --build build --target doc

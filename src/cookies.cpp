@@ -1,128 +1,181 @@
+// ---------------------------------------------------------------------------------------------------------------------
+//  cookie.cpp – persistence & manufacturing logic for Cookie
+// ---------------------------------------------------------------------------------------------------------------------
+
 #include "cookies.hpp"
-#include "types.hpp"
-#include "interfaces.hpp"
-#include "logs.hpp"
 
-#include <string>
-#include <stdexcept>
 #include <SQLiteCpp/SQLiteCpp.h>
-#include <math.h>
+
 #include <iostream>
-#include <iomanip>
+#include <stdexcept>
+#include <utility>
 
-//Schema:
-// CREATE TABLE cookies (
-//      id                  INTEGER     PRIMARY KEY     AUTOINCREMENT
-//      from_log            INTEGER     NOT NULL        FOREIGN KEY
-//      species             TEXT        NOT NULL
-//      thickness_quarters  INT         NOT NULL        CHECK CONDITION
-//      diameter_quarters   INT         NOT NULL        CHECK CONDITION
-//      drying              INT         NOT NULL        CHECK CONDITION
-//      location            TEXT                        FOREIGN KEY
-//      notes               TEXT
-//      media               BLOB
-// );
+using namespace std::string_literals;
 
-Cookie::Cookie(
-    int id,
-    int from_log,
-    std::string species,
-    uint thickness_quarters,
-    uint diameter_quarters,
-    Drying drying,
-    std::string location,
-    std::string notes
-) {
-    this->id = id;
-    this->from_log = from_log;
-    this->species = species;
-    this->thickness_quarters = thickness_quarters;
-    this->diameter_quarters = diameter_quarters;
-    this->drying = drying;
-    this->location = location;
-    this->notes = notes;
+namespace
+{
+    constexpr bool kEnableLogging = COOKIES_LOGGING;
+    constexpr const char* kDbFile = "cookies.db"; // adjust if you store all tables in a common DB
 }
 
-std::optional<Cookie> Cookie::get_by_id(int id) {
-    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(db, "SELECT * FROM cookies WHERE id = ?;");
-    query.bind(1, id);
-    if (query.executeStep()) {
-        /*ID, Origin Log, Species, Thickness, Diameter, Drying (int), Location, Notes*/
-        return Cookie(
-            query.getColumn(0).getInt(), 
-            query.getColumn(1).getInt(),
-            query.getColumn(2).getText(),
-            query.getColumn(3).getInt(),
-            query.getColumn(4).getInt(),
-            static_cast<Drying>(query.getColumn(5).getInt()),
-            query.getColumn(6).getText(),
-            query.getColumn(7).getText()
-        );
-    } 
-    return std::nullopt;
+// ---------------------------------------------------------------------------------------------------------------------
+//  Construction
+// ---------------------------------------------------------------------------------------------------------------------
+
+Cookie::Cookie(int                id,
+               int                from_log,
+               std::string        species,
+               unsigned           thickness_quarters,
+               unsigned           diameter_quarters,
+               Drying             drying,
+               std::string        location,
+               std::string        notes)
+    : id_{id},
+      from_log_{from_log},
+      species_{std::move(species)},
+      thickness_quarters_{thickness_quarters},
+      diameter_quarters_{diameter_quarters},
+      drying_{drying},
+      location_{std::move(location)},
+      notes_{std::move(notes)} {}
+
+int Cookie::get_id() const noexcept { return id_; }
+
+// ---------------------------------------------------------------------------------------------------------------------
+//  Persistent interface – database helpers
+// ---------------------------------------------------------------------------------------------------------------------
+
+bool Cookie::insert()
+{
+    try {
+        if (kEnableLogging)
+            std::cout << "[Cookie] inserting — species: " << species_ << std::endl;
+
+        SQLite::Database db{kDbFile, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+        SQLite::Statement stmt{db,
+            "INSERT INTO cookies (from_log, species, thickness_quarters, diameter_quarters, drying, location, notes) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)"};
+
+        stmt.bind(1, from_log_);
+        stmt.bind(2, species_);
+        stmt.bind(3, static_cast<int>(thickness_quarters_));
+        stmt.bind(4, static_cast<int>(diameter_quarters_));
+        stmt.bind(5, static_cast<int>(drying_));
+        stmt.bind(6, location_);
+        stmt.bind(7, notes_);
+        stmt.exec();
+
+        id_ = static_cast<int>(db.getLastInsertRowid());
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Cookie::insert() failed — " << e.what() << std::endl;
+        return false;
+    }
 }
 
-bool Cookie::insert() {
-    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
-    SQLite::Statement query(db, "INSERT INTO cookies (species, from_log, thickness_quarters, diameter_quarters, drying, location, notes) VALUES (?, ?, ?, ?, ?, ?, ?);");
-    query.bind(1, this->species);
-    query.bind(2, this->from_log);
-    query.bind(3, this->thickness_quarters);
-    query.bind(4, this->diameter_quarters);
-    query.bind(5, this->drying);
-    query.bind(6, this->location);
-    query.bind(7, this->notes);
-    auto ret = query.exec() > 0;
-    if (ret) {this->id = db.getLastInsertRowid();}
-    if(COOKIES_LOGGING && !ret) {std::cout << "Failed to insert cookie into database" << std::endl;}
-    return ret;
+bool Cookie::update()
+{
+    try {
+        if (kEnableLogging)
+            std::cout << "[Cookie] updating id=" << id_ << std::endl;
+
+        SQLite::Database db{kDbFile, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+        SQLite::Statement stmt{db,
+            "UPDATE cookies SET from_log = ?, species = ?, thickness_quarters = ?, diameter_quarters = ?, drying = ?, "
+            "location = ?, notes = ? WHERE id = ?"};
+
+        stmt.bind(1, from_log_);
+        stmt.bind(2, species_);
+        stmt.bind(3, static_cast<int>(thickness_quarters_));
+        stmt.bind(4, static_cast<int>(diameter_quarters_));
+        stmt.bind(5, static_cast<int>(drying_));
+        stmt.bind(6, location_);
+        stmt.bind(7, notes_);
+        stmt.bind(8, id_);
+        stmt.exec();
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Cookie::update() failed — " << e.what() << std::endl;
+        return false;
+    }
 }
 
-bool Cookie::update() {
-    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READWRITE);
-    SQLite::Statement query(db, "UPDATE cookies SET species = ?, from_log = ?, thickness_quarters = ?, diameter_quarters = ?, drying = ?, location = ?, notes = ? WHERE id = ?;");
-    query.bind(1, this->species);
-    query.bind(2, this->from_log);
-    query.bind(3, this->thickness_quarters);
-    query.bind(4, this->diameter_quarters);
-    query.bind(5, this->drying);
-    query.bind(6, this->location);
-    query.bind(7, this->notes);
-    auto ret = query.exec() > 0;
-    if(COOKIES_LOGGING && !ret) {std::cout << "Failed to update cookie in database" << std::endl;}
-    return ret;
+std::optional<Cookie> Cookie::get_by_id(int id)
+{
+    try {
+        if (kEnableLogging)
+            std::cout << "[Cookie] fetching id=" << id << std::endl;
+
+        SQLite::Database db{kDbFile, SQLite::OPEN_READONLY};
+        SQLite::Statement stmt{db, "SELECT * FROM cookies WHERE id = ?"};
+        stmt.bind(1, id);
+
+        if (!stmt.executeStep())
+            return std::nullopt;
+
+        return Cookie{
+            stmt.getColumn(0).getInt(),                      // id
+            stmt.getColumn(1).getInt(),                      // from_log
+            stmt.getColumn(2).getString(),                   // species
+            static_cast<unsigned>(stmt.getColumn(3).getInt()),// thickness
+            static_cast<unsigned>(stmt.getColumn(4).getInt()),// diameter
+            static_cast<Drying>(stmt.getColumn(5).getInt()), // drying
+            stmt.getColumn(6).getString(),                   // location
+            stmt.getColumn(7).getString()};                  // notes
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Cookie::get_by_id() failed — " << e.what() << std::endl;
+        return std::nullopt;
+    }
 }
 
-std::vector<Cookie> Cookie::get_all() {
-    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(db, "SELECT * FROM cookies;");
-    std::vector<Cookie> cookies;
-    while(query.executeStep()){
-        /*ID, Origin Log, Species, Thickness, Diameter, Drying (int), Location, Notes*/
-        cookies.push_back(Cookie(
-            query.getColumn(0).getInt(),
-            query.getColumn(1).getInt(),
-            query.getColumn(2).getText(),
-            query.getColumn(3).getInt(),
-            query.getColumn(4).getInt(),
-            static_cast<Drying>(query.getColumn(5).getInt()),
-            query.getColumn(6).getText(),
-            query.getColumn(7).getText()
-        ));
-    } return cookies;
+std::vector<Cookie> Cookie::get_all()
+{
+    std::vector<Cookie> result;
+
+    try {
+        SQLite::Database db{kDbFile, SQLite::OPEN_READONLY};
+        SQLite::Statement stmt{db, "SELECT * FROM cookies"};
+
+        while (stmt.executeStep()) {
+            result.emplace_back(
+                stmt.getColumn(0).getInt(),
+                stmt.getColumn(1).getInt(),
+                stmt.getColumn(2).getString(),
+                static_cast<unsigned>(stmt.getColumn(3).getInt()),
+                static_cast<unsigned>(stmt.getColumn(4).getInt()),
+                static_cast<Drying>(stmt.getColumn(5).getInt()),
+                stmt.getColumn(6).getString(),
+                stmt.getColumn(7).getString());
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Cookie::get_all() failed — " << e.what() << std::endl;
+    }
+
+    return result;
 }
 
-std::vector<Cookie> Cookie::make_from_log(
-    Log log,
-    uint thickness_quarters,
-    std::optional<int> diameter_quarters,
-    std::optional<Drying> drying
-) {
-    std::vector<Cookie> cookie;
-    // ID, Log ID, Species, Thickness, Diameter, Drying
-    cookie.push_back(Cookie(0, log.get_id(), log.getSpecies(), thickness_quarters, log.getDiameterQuarters(), drying.value_or(Drying::KILN_DRIED)));
-    //std::cout << "Cookie pushed back." << std::endl;
+// ---------------------------------------------------------------------------------------------------------------------
+//  Manufacturable interface – derive Cookies from a Log
+// ---------------------------------------------------------------------------------------------------------------------
 
-    return cookie;
+std::vector<Cookie> Cookie::make_from_log(Log                     log,
+                                          unsigned                thickness_quarters,
+                                          std::optional<int>      diameter_quarters,
+                                          std::optional<Drying>   drying)
+{
+    std::vector<Cookie> out;
+
+    out.emplace_back(-1,                                         // id (to persist later)
+                     log.get_id(),                               // from_log
+                     log.getSpecies(),                           // species
+                     thickness_quarters,                         // thickness
+                     static_cast<unsigned>(
+                         diameter_quarters.value_or(log.getDiameterQuarters())),
+                     drying.value_or(Drying::KILN_DRIED),        // drying
+                     /* location */ "", /* notes */ "");
+    return out;
 }
