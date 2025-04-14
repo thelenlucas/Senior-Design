@@ -1,4 +1,5 @@
 #include "live_edge_slabs.hpp"
+#include "slab_manufacturer.hpp"
 #include "types.hpp"          // DATABASE_FILE, Drying enum
 #include "logs.hpp"            // Log class (for SlabManufacturer::finalize)
 #include <SQLiteCpp/SQLiteCpp.h>
