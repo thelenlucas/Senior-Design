@@ -15,7 +15,7 @@ using namespace std::string_literals;
 namespace
 {
     constexpr bool kEnableLogging = COOKIES_LOGGING;
-    constexpr const char* kDbFile = "cookies.db"; // adjust if you store all tables in a common DB
+    constexpr const char* kDbFile = "test.db";
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -38,8 +38,6 @@ Cookie::Cookie(int                id,
       drying_{drying},
       location_{std::move(location)},
       notes_{std::move(notes)} {}
-
-int Cookie::get_id() const noexcept { return id_; }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //  Persistent interface – database helpers
@@ -164,7 +162,7 @@ std::vector<Cookie> Cookie::get_all()
 
 std::vector<Cookie> Cookie::make_from_log(Log                     log,
                                           unsigned                thickness_quarters,
-                                          std::optional<int>      diameter_quarters,
+                                          std::optional<int>      diameter_quarters, // Ignored for this implementation
                                           std::optional<Drying>   drying)
 {
     std::vector<Cookie> out;
@@ -173,9 +171,8 @@ std::vector<Cookie> Cookie::make_from_log(Log                     log,
                      log.get_id(),                               // from_log
                      log.getSpecies(),                           // species
                      thickness_quarters,                         // thickness
-                     static_cast<unsigned>(
-                         diameter_quarters.value_or(log.getDiameterQuarters())),
-                     drying.value_or(Drying::KILN_DRIED),        // drying
+                     static_cast<unsigned>(log.getDiameterQuarters()),
+                     drying.value_or(log.getDrying()),        // If not specified, default to the logs
                      /* location */ "", /* notes */ "");
     return out;
 }

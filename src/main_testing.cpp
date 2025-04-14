@@ -6,6 +6,7 @@
 
 #include "logs.hpp"
 #include "types.hpp"
+#include "cookies.hpp"
 
 using namespace std;
 
@@ -36,6 +37,23 @@ int main(int argc, char* argv[]) {
     log.wasteKerf(kerfWaste16ths);
     cout << "Kerf waste applied. Remaining length: " << log.getAvailableLength() << endl;
     assert(log.getAvailableLength() == (log.getLenQuarters() - cutLength - kerfWaste4ths));
+
+    // New log to test cookie cutting
+    Log cookieLog(-1, "Maple", 12*12*4, 6*4, 100, 3, Drying::WET, "", "");
+    cookieLog.insert();
+    assert(cookieLog.get_id() != -1);
+    cout << "Cookie Log ID: " << cookieLog.get_id() << endl;
+    // 3 in cookie
+    unsigned cookieThickness = 3*4;
+    vector<Cookie> cookies = Cookie::make_from_log(cookieLog, cookieThickness);
+    Cookie cookie = cookies[0];
+    cookie.insert();
+    assert(cookie.get_id() != -1);
+    assert(cookie.getThicknessQuarters() == cookieThickness);
+    assert(cookieLog.getAvailableLength() == (cookieLog.getLenQuarters() - cookieThickness));
+    cout << "Cookie ID: " << cookie.get_id() << endl;
+    cout << "Cookie tests passed" << endl;
+
 
     return 0;
 }

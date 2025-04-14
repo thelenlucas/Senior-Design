@@ -64,49 +64,63 @@ public:
      * @brief Gets the unique identifier of the cookie.
      * @return The ID of the cookie.
      */
-    [[nodiscard]] int get_id() const noexcept override;
+    [[nodiscard]] int get_id() const noexcept override { return id_; }
 
     /**
      * @brief Gets the ID of the log from which the cookie was created.
      * @return The log ID.
      */
-    [[nodiscard]] int getFromLogId() const noexcept;
+    [[nodiscard]] int getFromLogId() const noexcept {
+        return from_log_;
+    }
 
     /**
      * @brief Gets the species of the cookie.
      * @return The species as a string.
      */
-    [[nodiscard]] const std::string& getSpecies() const noexcept;
+    [[nodiscard]] const std::string& getSpecies() const noexcept {
+        return species_;
+    }
 
     /**
      * @brief Gets the thickness of the cookie in quarters of an inch.
      * @return The thickness in quarters.
      */
-    [[nodiscard]] unsigned getThicknessQuarters() const noexcept;
+    [[nodiscard]] unsigned getThicknessQuarters() const noexcept {
+        return thickness_quarters_;
+    }
 
     /**
      * @brief Gets the diameter of the cookie in quarters of an inch.
      * @return The diameter in quarters.
      */
-    [[nodiscard]] unsigned getDiameterQuarters() const noexcept;
+    [[nodiscard]] unsigned getDiameterQuarters() const noexcept {
+        return diameter_quarters_;
+    }
 
     /**
      * @brief Gets the drying method used for the cookie.
      * @return The drying method.
      */
-    [[nodiscard]] Drying getDrying() const noexcept;
+    [[nodiscard]] Drying getDrying() const noexcept {
+        return drying_;
+    }
 
     /**
      * @brief Gets the location where the cookie is stored.
      * @return The location as a string.
      */
-    [[nodiscard]] const std::string& getLocation() const noexcept;
+    [[nodiscard]] const std::string& getLocation() const noexcept {
+        return location_;
+    }
 
     /**
      * @brief Gets additional notes about the cookie.
      * @return The notes as a string.
      */
-    [[nodiscard]] const std::string& getNotes() const noexcept;
+    [[nodiscard]] const std::string& getNotes() const noexcept {
+        return notes_;
+    }
 
     /**
      * @brief Inserts the cookie into the database.

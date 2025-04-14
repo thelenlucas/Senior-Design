@@ -49,7 +49,7 @@ bool Firewood::insert()
         if (kEnableLogging)
             std::cout << "[Firewood] inserting — species: " << species_ << std::endl;
 
-        SQLite::Database db{"firewood.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+        SQLite::Database db{"test.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
         SQLite::Statement stmt{db,
             "INSERT INTO firewood (species, drying, feet_3, location, notes, taken_len_quarters) "
             "VALUES (?, ?, ?, ?, ?, ?)"};
@@ -77,7 +77,7 @@ bool Firewood::update()
         if (kEnableLogging)
             std::cout << "[Firewood] updating id=" << id_ << std::endl;
 
-        SQLite::Database db{"firewood.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+        SQLite::Database db{"test.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
         SQLite::Statement stmt{db,
             "UPDATE firewood SET species = ?, drying = ?, feet_3 = ?, location = ?, notes = ?, "
             "taken_len_quarters = ? WHERE id = ?"};
@@ -104,7 +104,7 @@ std::optional<Firewood> Firewood::get_by_id(int id)
         if (kEnableLogging)
             std::cout << "[Firewood] fetching id=" << id << std::endl;
 
-        SQLite::Database db{"firewood.db", SQLite::OPEN_READONLY};
+        SQLite::Database db{"test.db", SQLite::OPEN_READONLY};
         SQLite::Statement stmt{db, "SELECT * FROM firewood WHERE id = ?"};
         stmt.bind(1, id);
 
@@ -131,7 +131,7 @@ std::vector<Firewood> Firewood::get_all()
     std::vector<Firewood> result;
 
     try {
-        SQLite::Database db{"firewood.db", SQLite::OPEN_READONLY};
+        SQLite::Database db{"test.db", SQLite::OPEN_READONLY};
         SQLite::Statement stmt{db, "SELECT * FROM firewood"};
 
         while (stmt.executeStep()) {
