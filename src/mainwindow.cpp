@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <QDockWidget>
 #include <QSqlRecord>
-#include <QScrollArea>
+#include <QScreen>
 
 #include "project_editor.hpp"
 #include "logs.hpp"
@@ -188,14 +188,6 @@ void MainWindow::onFirewoodButtonClicked() {
 void MainWindow::onTableCellDoubleClicked() {
     //get currently selected row
     QTableView *shownTable;
-    /* //Not needed unless we want to allow for images from multiple logs at once when grouped.
-    if (ui->groupedLogsTab->currentIndex() = 0) {
-        shownTable = ui->groupedLogsTableView;
-    }
-    else if (ui->groupedLogsTab->currentIndex() = 1) {
-        shownTable = ui->individualLogsTableView;
-    }
-    */
     shownTable = ui->individualLogTableView;
     int tableIndex = shownTable->currentIndex().row();
 
@@ -211,14 +203,20 @@ void MainWindow::onTableCellDoubleClicked() {
 
     //open a new window & display image
     QMainWindow *imageWindow = new QMainWindow(this);
-    //QScrollArea *scrollArea = new QScrollArea(imageWindow);
-    //scrollArea->setBackgroundRole(QPalette::Light);
     QLabel *imageLabel = new QLabel(imageWindow);
+    if (imagePixmap->width() > QGuiApplication::primaryScreen()->availableGeometry().width()) {
+        *imagePixmap = imagePixmap->scaledToWidth(QGuiApplication::primaryScreen()->availableGeometry().width() - 100);
+    }
+    else if(imagePixmap->height() > QGuiApplication::primaryScreen()->availableGeometry().height()) {
+        *imagePixmap = imagePixmap->scaledToHeight(QGuiApplication::primaryScreen()->availableGeometry().height() - 100);
+    }
     imageLabel->setPixmap(*imagePixmap);
     imageLabel->adjustSize();
-    imageWindow->adjustSize();
     imageWindow->resize(imageLabel->size());
-    //scrollArea->setWidget(imageLabel);
+    QString imageWindowTitle = "Log #";
+    int logID = imageModel->record(tableIndex).value("ID").toInt();
+    imageWindowTitle.append(QString::number(logID));
+    imageWindow->setWindowTitle(imageWindowTitle);
     imageWindow->show();
 }
 
