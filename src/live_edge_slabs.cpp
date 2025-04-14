@@ -214,7 +214,7 @@ std::vector<Slab> Slab::manufacture_and_persist_slabs(Log &                     
     if (!ok) return {};
 
     // update log length only after all slabs persisted
-    log.cut_length(total_len_quarters);
+    log.multiCut(total_len_quarters, "Slab");
     if (!log.update()) {
         std::cerr << "Failed to update log length after slab manufacture – data may be inconsistent!\n";
     }

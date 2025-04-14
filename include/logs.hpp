@@ -68,7 +68,7 @@ public:
 
     // Workflow helpers --------------------------------------------------------------
     void scrap();                               ///< Marks the log as scrapped / unusable.
-    void cut_length(unsigned amt_quarters);     ///< Reduces the recorded original length.
+    unsigned multiCut(unsigned amt_quarters, std::string type); /// Creates a cut for multiple items, returns the partial_cut id
 
     // Persistent interface ----------------------------------------------------------
     bool insert() override;                     // defined in logs.cpp

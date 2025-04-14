@@ -191,26 +191,6 @@ std::vector<Log> Log::get_all()
 //  Workflow helpers
 // ---------------------------------------------------------------------------------------------------------------------
 
-void Log::cut_length(unsigned amt_quarters)
-{
-    if (amt_quarters > len_quarters_)
-        amt_quarters = len_quarters_;
-
-    len_quarters_ -= amt_quarters;
-
-    try {
-        SQLite::Database db{kDbFile, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
-        SQLite::Statement stmt{db,
-            "UPDATE logs SET len_quarters = ? WHERE id = ?"};
-        stmt.bind(1, static_cast<int>(len_quarters_));
-        stmt.bind(2, id_);
-        stmt.exec();
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Log::cut_length() failed — " << e.what() << std::endl;
-    }
-}
-
 void Log::scrap()
 {
     try {
@@ -226,3 +206,54 @@ void Log::scrap()
         std::cerr << "Log::scrap() failed — " << e.what() << std::endl;
     }
 }
+
+unsigned Log::multiCut(unsigned amt_quarters, std::string type)
+{
+    if (amt_quarters > len_quarters_) {
+        std::cerr << "Log::multiCut() failed — amount exceeds log length" << std::endl;
+        return 0;
+    }
+
+    try {
+        SQLite::Database db{kDbFile, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+        SQLite::Statement stmt{db,
+            "INSERT INTO partial_cuts (from_log, len_quarters, type) VALUES (?, ?, ?)"};
+
+        stmt.bind(1, id_);
+        stmt.bind(2, static_cast<int>(amt_quarters));
+        stmt.bind(3, type);
+        stmt.exec();
+
+        unsigned cut_id = static_cast<unsigned>(db.getLastInsertRowid());
+
+        if (kEnableLogging)
+            std::cout << "[Log] multiCut() created cut id=" << cut_id << std::endl;
+
+        return cut_id;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Log::multiCut() failed — " << e.what() << std::endl;
+        return 0;
+    }
+}
+
+// - Deprecated. We calculate the length of logs via items cut from them now
+// void Log::cut_length(unsigned amt_quarters)
+// {
+//     if (amt_quarters > len_quarters_)
+//         amt_quarters = len_quarters_;
+
+//     len_quarters_ -= amt_quarters;
+
+//     try {
+//         SQLite::Database db{kDbFile, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+//         SQLite::Statement stmt{db,
+//             "UPDATE logs SET len_quarters = ? WHERE id = ?"};
+//         stmt.bind(1, static_cast<int>(len_quarters_));
+//         stmt.bind(2, id_);
+//         stmt.exec();
+//     }
+//     catch (const std::exception& e) {
+//         std::cerr << "Log::cut_length() failed — " << e.what() << std::endl;
+//     }
+// }
