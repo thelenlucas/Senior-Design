@@ -1,4 +1,5 @@
 #include "live_edge_slabs.hpp"
+#include "slab_manufacturer.hpp"
 #include "types.hpp"          // DATABASE_FILE, Drying enum
 #include "logs.hpp"            // Log class (for SlabManufacturer::finalize)
 #include <SQLiteCpp/SQLiteCpp.h>
@@ -214,7 +215,7 @@ std::vector<Slab> Slab::manufacture_and_persist_slabs(Log &                     
     if (!ok) return {};
 
     // update log length only after all slabs persisted
-    log.cut_length(total_len_quarters);
+    log.multiCut(total_len_quarters, "Slab");
     if (!log.update()) {
         std::cerr << "Failed to update log length after slab manufacture – data may be inconsistent!\n";
     }

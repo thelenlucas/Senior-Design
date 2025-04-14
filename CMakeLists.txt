@@ -45,6 +45,12 @@ set(
 
 # Create the executable target.
 add_executable(logdb ${SOURCES})
+# New executable for the test harness. Includes everything except main.cpp
+add_executable(Woodworks_test src/main_testing.cpp ${SOURCES})
+target_link_libraries(Woodworks_test PRIVATE Qt5::Widgets SQLiteCpp)
+
+# Define the BUILDING_WOODWORKS_TEST macro to select the right main
+target_compile_definitions(Woodworks_test PRIVATE BUILDING_WOODWORKS_TEST)
 
 # -----------------------------------------------------------------------------
 # Documentation (Doxygen)
@@ -79,11 +85,17 @@ set_target_properties(logdb PROPERTIES
     AUTOMOC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/src"
     AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui"
 )
+set_target_properties(Woodworks_test PROPERTIES
+    AUTOMOC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/src"
+    AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui"
+)
 
 # Specify the include directories.
 target_include_directories(logdb PUBLIC ${includes})
+target_include_directories(Woodworks_test PUBLIC ${includes})
 
 target_link_libraries(logdb PRIVATE SQLiteCpp Qt5::Widgets Qt5::Sql)
+target_link_libraries(Woodworks_test PRIVATE SQLiteCpp Qt5::Widgets Qt5::Sql)
 
 add_compile_options(
     # Standard warnings.

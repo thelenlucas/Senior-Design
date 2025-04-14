@@ -152,7 +152,6 @@ void InventoryPage::onCookieButtonClicked() {
         int enteredQuarters = enteredCut*4;
 
         Cookie cookie = Cookie::make_from_log(log, static_cast<unsigned int>(enteredQuarters)).at(0); 
-        log.cut_length(static_cast<unsigned int>(enteredCut));
         if(!cookie.insert()) {
             std::cout << "ERROR: Failed to insert cookie!" << std::endl;
         }
