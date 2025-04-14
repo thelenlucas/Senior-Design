@@ -1,3 +1,5 @@
+#ifndef BUILDING_WOODWORKS_TEST
+
 #include <string>
 #include <iostream>
 #include <vector>
@@ -57,3 +59,5 @@ int main(int argc, char* argv[])
 
     container->run();
 }
+
+#endif
