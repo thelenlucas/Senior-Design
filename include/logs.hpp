@@ -69,6 +69,7 @@ public:
     // Workflow helpers --------------------------------------------------------------
     void scrap();                               ///< Marks the log as scrapped / unusable.
     unsigned multiCut(unsigned amt_quarters, std::string type); /// Creates a cut for multiple items, returns the partial_cut id
+    void wasteKerf(unsigned keft_width_16ths); ///< Marks the kerf wasted during a cut
 
     // Persistent interface ----------------------------------------------------------
     bool insert() override;                     // defined in logs.cpp

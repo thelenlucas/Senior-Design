@@ -29,6 +29,14 @@ int main(int argc, char* argv[]) {
     assert(log.getAvailableLength() == (log.getLenQuarters() - cutLength));
     cout << "Log cut successful. Remaining length: " << log.getAvailableLength() << endl;
 
+    // Take a foot off of kerf waste
+    unsigned kerfWaste = 12;
+    unsigned kerfWaste4ths = kerfWaste * 4;
+    unsigned kerfWaste16ths = kerfWaste * 16;
+    log.wasteKerf(kerfWaste16ths);
+    cout << "Kerf waste applied. Remaining length: " << log.getAvailableLength() << endl;
+    assert(log.getAvailableLength() == (log.getLenQuarters() - cutLength - kerfWaste4ths));
+
     return 0;
 }
 

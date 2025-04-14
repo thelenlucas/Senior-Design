@@ -237,6 +237,30 @@ unsigned Log::multiCut(unsigned amt_quarters, std::string type)
     }
 }
 
+
+// CREATE TABLE kerf_cuts (
+//     id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+//     taken_len_sixteenths INTEGER NOT NULL,
+//     from_log             INTEGER REFERENCES logs (id) 
+// );
+void Log::wasteKerf(unsigned keft_width_16ths) {
+    try {
+        SQLite::Database db{kDbFile, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
+        SQLite::Statement stmt{db,
+            "INSERT INTO kerf_cuts (from_log, taken_len_sixteenths) VALUES (?, ?)"};
+
+        stmt.bind(1, id_);
+        stmt.bind(2, static_cast<int>(keft_width_16ths));
+        stmt.exec();
+
+        if (kEnableLogging)
+            std::cout << "[Log] wasteKerf() created kerf cut" << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Log::wasteKerf() failed — " << e.what() << std::endl;
+    }
+}
+
 // - Deprecated. We calculate the length of logs via items cut from them now
 // void Log::cut_length(unsigned amt_quarters)
 // {
