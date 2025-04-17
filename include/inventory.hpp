@@ -27,6 +27,7 @@ class InventoryPage : public QWidget
     void onAddLogClicked();
     void onCookieButtonClicked();
     void onSpreadsheetImportClicked();
+    void onImageButtonClicked();
 
   private:
     void refreshModels();

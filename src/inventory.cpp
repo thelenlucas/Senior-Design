@@ -56,6 +56,7 @@ InventoryPage::InventoryPage(QWidget *parent)
     connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
     connect(ui->createCookieButton, &QPushButton::clicked, this, &InventoryPage::onCookieButtonClicked);
+    connect(ui->insertImageButton, &QPushButton::clicked, this, &InventoryPage::onImageButtonClicked);
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
@@ -170,6 +171,17 @@ void InventoryPage::onSpreadsheetImportClicked()
 
     // TODO: Implement spreadsheet import parsing logic in logic module.
     QMessageBox::information(this, "Import Selected", "File selected: " + filename);
+}
+
+void InventoryPage::onImageButtonClicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this, "Import Image", QString(), "Images (*.jpg *.png)");
+
+    if(filename.isEmpty())
+        return;
+
+    // TODO: Implement image importing logic - Patrick I leave the rest to you!
+    QMessageBox::information(this, "Image Selected", "File selected: " + filename);
 }
 
 void InventoryPage::mousePressEvent(QMouseEvent *event)
