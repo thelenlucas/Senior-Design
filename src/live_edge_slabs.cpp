@@ -184,57 +184,18 @@ std::vector<Slab> Slab::make_from_log(Log                     log,
     return {std::move(slab)};
 }
 
-std::vector<Slab> Slab::manufacture_and_persist_slabs(Log &                          log,
-                                                      const std::vector<InProgressSlab>& cuts,
-                                                      int                              total_len_quarters,
-                                                      const std::string&               location,
-                                                      const std::string&               notes)
-{
-    if (total_len_quarters <= 0 || cuts.empty()) return {};
-    if (static_cast<unsigned>(total_len_quarters) > log.getAvailableLength()) return {};
-
-    std::vector<Slab> slabs;
-    slabs.reserve(cuts.size());
-
-    bool ok = true;
-    for (const auto& c : cuts) {
-        if (c.thickness_eighths <= 0 || c.width_eighths <= 0) { ok = false; break; }
-        Slab s{-1,
-                log.getSpecies(),
-                static_cast<unsigned>(c.thickness_eighths),
-                static_cast<unsigned>(total_len_quarters),
-                static_cast<unsigned>(c.width_eighths),
-                log.getDrying(),
-                false,
-                location,
-                notes};
-        if (!s.insert()) { ok = false; break; }
-        slabs.push_back(std::move(s));
-    }
-
-    if (!ok) return {};
-
-    // update log length only after all slabs persisted
-    log.multiCut(total_len_quarters, "Slab");
-    if (!log.update()) {
-        std::cerr << "Failed to update log length after slab manufacture – data may be inconsistent!\n";
-    }
-
-    return slabs;
-}
-
 // ---------------------------------------------------------------------------------------------------------------------
 //  SlabManufacturer::finalize – converts planned cuts to real slabs
 // ---------------------------------------------------------------------------------------------------------------------
 
-std::vector<Slab> SlabManufacturer::finalize(const std::string& location, const std::string& notes)
-{
-    if (!log_ || madeCuts_.empty()) return {};
-    auto slabs = Slab::manufacture_and_persist_slabs(*log_, madeCuts_, log_len_q_, location, notes);
-    if (!slabs.empty()) {
-        madeCuts_.clear();
-        redoQueue_.clear();
-        used_diameter_8_ = 0;
-    }
-    return slabs;
-}
+// std::vector<Slab> SlabManufacturer::finalize(const std::string& location, const std::string& notes)
+// {
+//     if (!log_ || madeCuts_.empty()) return {};
+//     auto slabs = Slab::manufacture_and_persist_slabs(*log_, madeCuts_, log_len_q_, location, notes);
+//     if (!slabs.empty()) {
+//         madeCuts_.clear();
+//         redoQueue_.clear();
+//         used_diameter_8_ = 0;
+//     }
+//     return slabs;
+// }
