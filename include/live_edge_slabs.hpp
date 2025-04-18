@@ -50,6 +50,10 @@
      bool update() override;                      // defined in slabs.cpp
      static std::optional<Slab> get_by_id(int id);  // defined in slabs.cpp
      static std::vector<Slab>   get_all();          // defined in slabs.cpp
+
+     // Persistence for media column
+     QPixmap loadPixmap() const override;
+     bool savePixmap(const QPixmap& pixmap) const override;
  
      // Manufacturable interface ------------------------------------------------------
      static std::vector<Slab> make_from_log(

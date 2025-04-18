@@ -169,6 +169,10 @@ public:
         std::optional<int> diameter_quarters = std::nullopt,
         std::optional<Drying> drying = std::nullopt);
 
+    // Persistence for media column
+    QPixmap loadPixmap() const override;
+    bool savePixmap(const QPixmap& pixmap) const override;
+
 private:
     int id_{-1}; /**< Unique identifier for the cookie. */
     int from_log_{-1}; /**< ID of the log from which the cookie was created. */

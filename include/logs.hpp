@@ -80,6 +80,10 @@ public:
     static std::optional<Log> get_by_id(int id);          // logs.cpp
     static std::vector<Log>   get_all();                  // logs.cpp
 
+    // Persistence for media column
+    QPixmap loadPixmap() const override;
+    bool savePixmap(const QPixmap& pixmap) const override;
+
 private:
     int          id_{-1};
     std::string  species_;

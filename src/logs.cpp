@@ -6,6 +6,10 @@
 #include "wwhg_datamodel.hpp"
 
 #include <SQLiteCpp/SQLiteCpp.h>
+#include <QSqlQuery>
+#include <QBuffer>
+#include <QPixmap>
+#include <QVariant>
 
 #include <iostream>
 #include <stdexcept>
@@ -267,6 +271,30 @@ wwhg::WwhgBoard Log::toWwhg() {
     double length_ft = getAvailableLength() / 4.0 / 12.0;
     std::string size = std::to_string(diameter_quarters_ / 4.0) + "in";
     return wwhg::WwhgBoard(id_, species_, size, static_cast<unsigned>(length_ft), wwhg::WwhgSurfacing::RGH, 0.0);
+}
+
+QPixmap Log::loadPixmap() const {
+    QSqlQuery query;
+    query.prepare("SELECT media FROM logs WHERE id = :id");
+    query.bindValue(":id", get_id());
+    if (!query.exec() || !query.next())
+        return QPixmap();
+    QByteArray blob = query.value(0).toByteArray();
+    QPixmap pix;
+    pix.loadFromData(blob, "JPEG");
+    return pix;
+}
+
+bool Log::savePixmap(const QPixmap& pixmap) const {
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    pixmap.save(&buffer, "JPEG");
+    QSqlQuery query;
+    query.bindValue(":media", QVariant::fromValue(ba));
+    query.bindValue(":media", QVariant(ba));
+    query.bindValue(":id", get_id());
+    return query.exec();
 }
 
 // - Deprecated. We calculate the length of logs via items cut from them now

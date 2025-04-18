@@ -8,6 +8,8 @@
 #include <optional>
 #include "types.hpp" // Assuming types.hpp defines necessary types, otherwise remove/change
 #include <vector>
+#include <QPixmap>
+#include <QSqlQuery>
 
 /**
  * @brief Interface for classes that can be persisted to and retrieved from a database.
@@ -41,6 +43,19 @@ public:
      * @return True if the update was successful, false otherwise.
      */
     virtual bool update() = 0;
+
+    /**
+     * @brief Load pixmap from 'media' blob column in the database.
+     * @return QPixmap loaded from data or blank pixmap if not found.
+     */
+    virtual QPixmap loadPixmap() const = 0;
+
+    /**
+     * @brief Save pixmap to 'media' blob column in the database.
+     * @param pixmap The QPixmap to save.
+     * @return True if the save was successful, false otherwise.
+     */
+    virtual bool savePixmap(const QPixmap& pixmap) const = 0;
 
     /**
      * @brief Retrieve an object from the database by its unique identifier.

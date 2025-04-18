@@ -9,6 +9,10 @@
 #include <vector>
 #include <optional>
 #include "wwhg_datamodel.hpp"
+#include <QSqlQuery>
+#include <QBuffer>
+#include <QPixmap>
+#include <QVariant>
 
 // ---------------------------------------------------------------------------------------------------------------------
 //  Slab – ctor & simple getters
@@ -191,4 +195,28 @@ std::vector<Slab> Slab::make_from_log(Log                     log,
 
 
     return {std::move(slab)};
+}
+
+QPixmap Slab::loadPixmap() const {
+    QSqlQuery query;
+    query.prepare("SELECT media FROM slabs WHERE id = :id");
+    query.bindValue(":id", get_id());
+    if (!query.exec() || !query.next())
+        return QPixmap();
+    QByteArray blob = query.value(0).toByteArray();
+    QPixmap pix;
+    pix.loadFromData(blob, "JPEG");
+    return pix;
+}
+
+bool Slab::savePixmap(const QPixmap& pixmap) const {
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    pixmap.save(&buffer, "JPEG");
+    QSqlQuery query;
+    query.bindValue(":media", QVariant::fromValue(ba));
+    query.bindValue(":media", QVariant(ba));
+    query.bindValue(":id", get_id());
+    return query.exec();
 }

@@ -166,6 +166,21 @@ public:
         std::optional<int> width_quarters = std::nullopt,
         std::optional<Drying> drying = std::nullopt);
 
+    /**
+     * @brief Loads a pixmap for the firewood object.
+     * 
+     * @return The loaded QPixmap object.
+     */
+    QPixmap loadPixmap() const override;
+
+    /**
+     * @brief Saves a pixmap for the firewood object.
+     * 
+     * @param pixmap The QPixmap object to save.
+     * @return True if the pixmap was saved successfully, false otherwise.
+     */
+    bool savePixmap(const QPixmap& pixmap) const override;
+
 private:
     /**
      * @brief The unique identifier for the firewood.
