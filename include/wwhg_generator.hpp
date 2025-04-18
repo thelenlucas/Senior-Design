@@ -43,7 +43,6 @@ public:
         return addProduct(std::make_unique<WwhgFirewoodBundle>(std::forward<Args>(args)...));
     }
 
-
     /* --- Build / save ------------------------------------------- */
     [[nodiscard]] std::string buildHtml() const
     {

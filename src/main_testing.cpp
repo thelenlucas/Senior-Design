@@ -83,12 +83,10 @@ int main(int argc, char* argv[]) {
     }
 
     wwhg::WwhgGenerator gen("./public");
-    gen.emplaceCookie(101, "Oak", 3.0, 16.0, 45.00)
-       .emplaceCookie(102, "Walnut", 2.0, 14.0, 38.00)
-       .emplaceBoard (201, "Pine", "2x6", 8,  wwhg::WwhgSurfacing::S2S, 3.50)
-       .emplaceSlab  (301, "Walnut", 22.0, 7, 2.0, wwhg::WwhgFinish::S1S, 35.0)
-       .emplaceFirewood(401, "Mixed Hardwood", 0.75, "Seasoned", 8.0);
-
+    gen.emplaceCookie(cookie.toWwhg());
+    for (const auto& slab : slabs) {
+        gen.emplaceSlab(slab.toWwhg());
+    }
     gen.save();
     return 0;
 }
