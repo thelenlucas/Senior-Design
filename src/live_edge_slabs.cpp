@@ -168,34 +168,18 @@ std::vector<Slab> Slab::make_from_log(Log                     log,
                                       std::optional<int>      width_eighths,
                                       std::optional<Drying>   drying)
 {
-    if (!thickness_eighths || *thickness_eighths <= 0 || len_quarters <= 0)
-        return {};
-
-    const unsigned w8 = width_eighths && *width_eighths > 0 ? *width_eighths : 1;
     Slab slab{-1,
               log.getSpecies(),
               static_cast<unsigned>(*thickness_eighths),
               static_cast<unsigned>(len_quarters),
-              w8,
+              width_eighths.value(),
               drying.value_or(log.getDrying()),
               false,
               {},
               {}};
+
+    slab.insert();
+
+
     return {std::move(slab)};
 }
-
-// ---------------------------------------------------------------------------------------------------------------------
-//  SlabManufacturer::finalize – converts planned cuts to real slabs
-// ---------------------------------------------------------------------------------------------------------------------
-
-// std::vector<Slab> SlabManufacturer::finalize(const std::string& location, const std::string& notes)
-// {
-//     if (!log_ || madeCuts_.empty()) return {};
-//     auto slabs = Slab::manufacture_and_persist_slabs(*log_, madeCuts_, log_len_q_, location, notes);
-//     if (!slabs.empty()) {
-//         madeCuts_.clear();
-//         redoQueue_.clear();
-//         used_diameter_8_ = 0;
-//     }
-//     return slabs;
-// }

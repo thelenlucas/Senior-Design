@@ -7,6 +7,7 @@
 #include "logs.hpp"
 #include "types.hpp"
 #include "cookies.hpp"
+#include "slab_manufacturer.hpp"
 
 using namespace std;
 
@@ -54,8 +55,28 @@ int main(int argc, char* argv[]) {
     cout << "Cookie ID: " << cookie.get_id() << endl;
     cout << "Cookie tests passed" << endl;
 
-    
+    // Test slab manufacturing
+    Log slabLog(-1, "Oak", 12*12*4, 6*4, 100, 3, Drying::WET, "", "");
+    slabLog.insert();
+    assert(slabLog.get_id() != -1);
+    cout << "Slab Log ID: " << slabLog.get_id() << endl;
+    SlabManufacturer slabManuf(slabLog);
+    cout << "Available diameter: " << slabManuf.availableDiameterEighths() << endl;
+    assert(slabManuf.availableDiameterEighths() == 48);
+    assert(slabManuf.makeSlice(4, 1));
+    assert(slabManuf.makeSlice(8, 1));
+    assert(slabManuf.makeSlice(6, 1));
+    assert(slabManuf.makeSlice(20, 1));
+    vector<Slab> slabs = slabManuf.finalize(24, "","");
 
+    for (const auto& slab : slabs) {
+        cout << "Slab ID: " << slab.get_id();
+        cout << ", Species: " << slab.getSpecies();
+        cout << ", Thickness: " << slab.getThickness8() << " eighths";
+        cout << ", Length: " << slab.getLenQ() << " quarters";
+        cout << ", Width: " << slab.getWidth8() << " eighths";
+        cout << endl;
+    }
 
     return 0;
 }
