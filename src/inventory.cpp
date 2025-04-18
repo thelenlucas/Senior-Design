@@ -9,6 +9,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QTimer>
+#include <QStringList>
 
 #include "cookies.hpp"
 #include "inventory.hpp"
@@ -164,13 +165,23 @@ void InventoryPage::onCookieButtonClicked() {
 
 void InventoryPage::onSpreadsheetImportClicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv *.xls *.xlsx)");
-
+    QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv)");
+    // .csv only, import one sheet at a time
     if (filename.isEmpty())
         return;
+    QStringList options;
+    options << "Logs" << "Firewood" << "Slabs" << "Cookies" << "Lumber" << "Products";
+    bool ok = false;
+    QString userChoice = QInputDialog::getItem(this, QObject::tr("Sheet Picker"), QObject::tr("Please select which sheet you're importing:"), options, 0, false, &ok);
 
+    if(!ok){
+        std::cout << "User canceled input." << std::endl;
+        return;
+    }
     // TODO: Implement spreadsheet import parsing logic in logic module.
-    QMessageBox::information(this, "Import Selected", "File selected: " + filename);
+    QMessageBox::information(this, "Import Selected", "File selected: " + filename + "\nSheet Type: " + userChoice);
+
+
 }
 
 void InventoryPage::onImageButtonClicked()
