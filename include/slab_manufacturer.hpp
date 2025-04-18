@@ -12,6 +12,7 @@
 #include <string>
 #include <cmath>
 #include <cstdlib>
+#include "multi_cut.hpp"
 
 // ---------------------------------------------------------------------------------------------------------------------
 //  Helper types for live‑edge slab planning
@@ -24,7 +25,7 @@ struct InProgressSlab
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
-//  SlabManufacturer – geometry & workflow helper (header‑only)
+//  SlabManufacturer – geometry & workflow helper
 // ---------------------------------------------------------------------------------------------------------------------
 class SlabManufacturer
 {
@@ -42,7 +43,32 @@ public:
     [[nodiscard]] const std::vector<InProgressSlab>&  getRedoQueue() const { return redoQueue_; }
 
     // Commit all cuts to real Slab objects and persist (defined in slabs.cpp)
-    std::vector<Slab> finalize(const std::string& location = {}, const std::string& notes = {});
+    std::vector<Slab> finalize(const unsigned int len_quarters, const std::string& location = {}, const std::string& notes = {}) {
+        // Get the number of cuts made
+        const int numCuts = static_cast<int>(madeCuts_.size());
+        if (numCuts == 0) return {};
+
+        // Create a vector of Slab objects
+        std::vector<Slab> slabs;
+        slabs.reserve(numCuts);
+        for (const auto& cut : madeCuts_) {
+            Slab slab = Slab::make_from_log(
+                *log_,
+                len_quarters,
+                cut.thickness_eighths,
+                cut.width_eighths,
+                log_->getDrying()
+            )[0];
+
+            slabs.push_back(slab);
+        }
+
+        // Create a multicut for the slabs
+        MultiCut multiCut(log_->get_id(), log_len_q_, log_diameter_8_, location, numCuts);
+        multiCut.insert();
+
+        return slabs;
+    }
 
 private:
     // Geometry helpers (inline) ------------------------------------------------------
@@ -79,15 +105,22 @@ inline int SlabManufacturer::widthAtOffset(int offset_8) const
 
 inline int SlabManufacturer::nextCutWidth(int thickness_8) const
 {
-    const int w0 = widthAtOffset(0);
-    const int w1 = widthAtOffset(thickness_8);
-    return (w0 && w1) ? (w0 + w1) / 2 : 0;
+    const int w0 = widthAtOffset(this->used_diameter_8_);
+    const int w1 = widthAtOffset(this->used_diameter_8_ + thickness_8);
+    // Average of the two widths
+    const int w = (w0 + w1) / 2;
+    // Round to the nearest 1/8 inch, rounding up
+    const int w_8 = static_cast<int>(std::ceil(w / 8.0)) * 8;
+    return w_8;
 }
 
 inline bool SlabManufacturer::makeSlice(int thickness_8, int kerf_8)
 {
-    if (thickness_8 <= 0 || thickness_8 + kerf_8 > availableDiameterEighths()) return false;
+    if (thickness_8 + kerf_8 >= availableDiameterEighths()) return false;
     const int w = nextCutWidth(thickness_8);
+    #ifdef BUILDING_WOODWORKS_TEST
+    std::cout << "Width: " << w << std::endl;
+    #endif
     if (w == 0) return false;
     madeCuts_.push_back({w, thickness_8, kerf_8});
     used_diameter_8_ += thickness_8 + kerf_8;
