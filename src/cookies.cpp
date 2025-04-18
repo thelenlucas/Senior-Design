@@ -3,8 +3,13 @@
 // ---------------------------------------------------------------------------------------------------------------------
 
 #include "cookies.hpp"
+#include "wwhg_datamodel.hpp"
 
 #include <SQLiteCpp/SQLiteCpp.h>
+#include <QSqlQuery>
+#include <QBuffer>
+#include <QPixmap>
+#include <QVariant>
 
 #include <iostream>
 #include <stdexcept>
@@ -175,4 +180,38 @@ std::vector<Cookie> Cookie::make_from_log(Log                     log,
                      drying.value_or(log.getDrying()),        // If not specified, default to the logs
                      /* location */ "", /* notes */ "");
     return out;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//  Converter to WWHG datamodel
+// ---------------------------------------------------------------------------------------------------------------------
+
+wwhg::WwhgCookie Cookie::toWwhg() {
+    double thickness_in = thickness_quarters_ / 4.0;
+    double diameter_in = diameter_quarters_ / 4.0;
+    return wwhg::WwhgCookie(id_, species_, thickness_in, diameter_in, 0.0);
+}
+
+QPixmap Cookie::loadPixmap() const {
+    QSqlQuery query;
+    query.prepare("SELECT media FROM cookies WHERE id = :id");
+    query.bindValue(":id", QVariant(get_id()));
+    if (!query.exec() || !query.next())
+        return QPixmap();
+    QByteArray blob = query.value(0).toByteArray();
+    QPixmap pix;
+    pix.loadFromData(blob, "JPEG");
+    return pix;
+}
+
+bool Cookie::savePixmap(const QPixmap& pixmap) const {
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    pixmap.save(&buffer, "JPEG");
+    QSqlQuery query;
+    query.prepare("UPDATE cookies SET media = :media WHERE id = :id");
+    query.bindValue(":media", ba);
+    query.bindValue(":id", get_id());
+    return query.exec();
 }

@@ -15,6 +15,7 @@
 #include "types.hpp"        // Drying enum
 #include "logs.hpp"         // Forward declarations for related helpers (if any)
 #include "interfaces.hpp"   // Persistent<>
+#include "wwhg_datamodel.hpp"
 
 /**
  * @brief Controls verbose logging specific to Log class operations. Set to false to disable.
@@ -71,11 +72,17 @@ public:
     unsigned multiCut(unsigned amt_quarters, std::string type); /// Creates a cut for multiple items, returns the partial_cut id
     void wasteKerf(unsigned keft_width_16ths); ///< Marks the kerf wasted during a cut
 
+    wwhg::WwhgBoard toWwhg();
+
     // Persistent interface ----------------------------------------------------------
     bool insert() override;                     // defined in logs.cpp
     bool update() override;                     // defined in logs.cpp
     static std::optional<Log> get_by_id(int id);          // logs.cpp
     static std::vector<Log>   get_all();                  // logs.cpp
+
+    // Persistence for media column
+    QPixmap loadPixmap() const override;
+    bool savePixmap(const QPixmap& pixmap) const override;
 
 private:
     int          id_{-1};

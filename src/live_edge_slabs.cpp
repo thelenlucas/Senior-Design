@@ -8,6 +8,11 @@
 #include <utility>
 #include <vector>
 #include <optional>
+#include "wwhg_datamodel.hpp"
+#include <QSqlQuery>
+#include <QBuffer>
+#include <QPixmap>
+#include <QVariant>
 
 // ---------------------------------------------------------------------------------------------------------------------
 //  Slab – ctor & simple getters
@@ -33,6 +38,14 @@ Slab::Slab(int                id,
       notes_{std::move(notes)} {}
 
 int Slab::get_id() const noexcept { return id_; }
+
+// Converter to WWHG datamodel
+wwhg::WwhgSlab Slab::toWwhg() const {
+    double width_in = width_eighths_ / 8.0;
+    unsigned length_ft = static_cast<unsigned>(len_quarters_ / 4.0 / 12.0);
+    double thickness_in = thickness_eighths_ / 8.0;
+    return wwhg::WwhgSlab(id_, species_, width_in, length_ft, thickness_in, wwhg::WwhgFinish::RGH, 0.0);
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //  Persistent interface – SQLite helpers
@@ -182,4 +195,28 @@ std::vector<Slab> Slab::make_from_log(Log                     log,
 
 
     return {std::move(slab)};
+}
+
+QPixmap Slab::loadPixmap() const {
+    QSqlQuery query;
+    query.prepare("SELECT media FROM slabs WHERE id = :id");
+    query.bindValue(":id", get_id());
+    if (!query.exec() || !query.next())
+        return QPixmap();
+    QByteArray blob = query.value(0).toByteArray();
+    QPixmap pix;
+    pix.loadFromData(blob, "JPEG");
+    return pix;
+}
+
+bool Slab::savePixmap(const QPixmap& pixmap) const {
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    pixmap.save(&buffer, "JPEG");
+    QSqlQuery query;
+    query.bindValue(":media", QVariant::fromValue(ba));
+    query.bindValue(":media", QVariant(ba));
+    query.bindValue(":id", get_id());
+    return query.exec();
 }

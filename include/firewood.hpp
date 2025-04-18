@@ -14,6 +14,7 @@
 #include "logs.hpp"         // Log class
 #include "interfaces.hpp"   // Persistent<>
 #include "manufacturable.hpp"
+#include "wwhg_datamodel.hpp"
 
 #define FIREWOOD_LOGGING true
 
@@ -142,6 +143,13 @@ public:
     static std::vector<Firewood> get_all();
 
     /**
+     * @brief Converts the Firewood object to a WwhgFirewoodBundle object.
+     * 
+     * @return A WwhgFirewoodBundle object representing the firewood.
+     */
+    wwhg::WwhgFirewoodBundle toWwhg();
+
+    /**
      * @brief Manufactures firewood from a log.
      * 
      * @param log The log to manufacture firewood from.
@@ -157,6 +165,21 @@ public:
         std::optional<int> thickness_quarters = std::nullopt,
         std::optional<int> width_quarters = std::nullopt,
         std::optional<Drying> drying = std::nullopt);
+
+    /**
+     * @brief Loads a pixmap for the firewood object.
+     * 
+     * @return The loaded QPixmap object.
+     */
+    QPixmap loadPixmap() const override;
+
+    /**
+     * @brief Saves a pixmap for the firewood object.
+     * 
+     * @param pixmap The QPixmap object to save.
+     * @return True if the pixmap was saved successfully, false otherwise.
+     */
+    bool savePixmap(const QPixmap& pixmap) const override;
 
 private:
     /**

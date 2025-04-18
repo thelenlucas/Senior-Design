@@ -9,6 +9,10 @@
 #include "cookies.hpp"
 #include "slab_manufacturer.hpp"
 
+#include "wwhg_constants.hpp"
+#include "wwhg_datamodel.hpp"
+#include "wwhg_generator.hpp"
+
 using namespace std;
 
 int main(int argc, char* argv[]) {
@@ -78,6 +82,12 @@ int main(int argc, char* argv[]) {
         cout << endl;
     }
 
+    wwhg::WwhgGenerator gen("./public");
+    gen.emplaceCookie(cookie.toWwhg());
+    for (const auto& slab : slabs) {
+        gen.emplaceSlab(slab.toWwhg());
+    }
+    gen.save();
     return 0;
 }
 
