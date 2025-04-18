@@ -3,6 +3,7 @@
 #include "types.hpp"
 #include "logs.hpp"
 #include <SQLiteCpp/SQLiteCpp.h>
+#include "wwhg_datamodel.hpp"
 
 // DDL
 // CREATE TABLE lumber (
@@ -171,4 +172,11 @@ std::vector<Lumber> Lumber::get_all() {
         std::cerr << "SQLite error (get_all): " << e.what() << "\n";
     }
     return lumberList;
+}
+
+// Converter to WWHG datamodel
+wwhg::WwhgBoard Lumber::toWwhg() {
+    double length_ft = len_quarters_ / 4.0 / 12.0;
+    std::string size = std::to_string(thickness_quarters_ / 4.0) + "x" + std::to_string(width_quarters_ / 4.0);
+    return wwhg::WwhgBoard(id_, species_, size, static_cast<unsigned>(length_ft), wwhg::WwhgSurfacing::RGH, 0.0);
 }

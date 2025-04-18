@@ -35,7 +35,8 @@
  
      // Getters -----------------------------------------------------------------------
      [[nodiscard]] int                get_id()          const noexcept override;
-     [[nodiscard]] const std::string& getSpecies()      const noexcept { return species_; }
+     wwhg::WwhgSlab toWwhg() const;
+     [[nodiscard]] const std::string &getSpecies() const noexcept { return species_; }
      [[nodiscard]] unsigned           getThickness8()   const noexcept { return thickness_eighths_; }
      [[nodiscard]] unsigned           getLenQ()         const noexcept { return len_quarters_; }
      [[nodiscard]] unsigned           getWidth8()       const noexcept { return width_eighths_; }

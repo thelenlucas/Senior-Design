@@ -15,6 +15,7 @@
 #include "logs.hpp"         // Log class
 #include "interfaces.hpp"   // Persistent<>
 #include "manufacturable.hpp"
+#include "wwhg_datamodel.hpp"
 
 #define COOKIES_LOGGING true
 
@@ -146,6 +147,12 @@ public:
      * @return A vector containing all cookies.
      */
     static std::vector<Cookie> get_all();
+
+    /**
+     * @brief Converts the cookie to a WWHG datamodel representation.
+     * @return The WWHG representation of the cookie.
+     */
+    wwhg::WwhgCookie toWwhg();
 
     /**
      * @brief Creates cookies from a log with specified attributes.

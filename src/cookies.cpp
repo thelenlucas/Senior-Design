@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 
 #include "cookies.hpp"
+#include "wwhg_datamodel.hpp"
 
 #include <SQLiteCpp/SQLiteCpp.h>
 
@@ -175,4 +176,14 @@ std::vector<Cookie> Cookie::make_from_log(Log                     log,
                      drying.value_or(log.getDrying()),        // If not specified, default to the logs
                      /* location */ "", /* notes */ "");
     return out;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//  Converter to WWHG datamodel
+// ---------------------------------------------------------------------------------------------------------------------
+
+wwhg::WwhgCookie Cookie::toWwhg() {
+    double thickness_in = thickness_quarters_ / 4.0;
+    double diameter_in = diameter_quarters_ / 4.0;
+    return wwhg::WwhgCookie(id_, species_, thickness_in, diameter_in, 0.0);
 }

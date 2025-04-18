@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 
 #include "firewood.hpp"
+#include "wwhg_datamodel.hpp"
 
 #include <SQLiteCpp/SQLiteCpp.h>
 
@@ -180,4 +181,9 @@ std::vector<Firewood> Firewood::make_from_log(Log                     log,
                      static_cast<unsigned>(len_quarters),
                      /* location */ "", /* notes */ "");
     return out;
+}
+
+// Converter to WWHG datamodel
+wwhg::WwhgFirewoodBundle Firewood::toWwhg() {
+    return wwhg::WwhgFirewoodBundle(id_, species_, static_cast<double>(cubic_feet_), /*moisture*/"", /*price*/0.0);
 }

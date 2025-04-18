@@ -14,6 +14,7 @@
 #include "logs.hpp"         // Log class
 #include "interfaces.hpp"   // Persistent<>
 #include "manufacturable.hpp"
+#include "wwhg_datamodel.hpp"
 
 #define FIREWOOD_LOGGING true
 
@@ -140,6 +141,13 @@ public:
      * @return A vector containing all Firewood objects.
      */
     static std::vector<Firewood> get_all();
+
+    /**
+     * @brief Converts the Firewood object to a WwhgFirewoodBundle object.
+     * 
+     * @return A WwhgFirewoodBundle object representing the firewood.
+     */
+    wwhg::WwhgFirewoodBundle toWwhg();
 
     /**
      * @brief Manufactures firewood from a log.

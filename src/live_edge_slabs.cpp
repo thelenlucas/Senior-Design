@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 #include <optional>
+#include "wwhg_datamodel.hpp"
 
 // ---------------------------------------------------------------------------------------------------------------------
 //  Slab – ctor & simple getters
@@ -33,6 +34,14 @@ Slab::Slab(int                id,
       notes_{std::move(notes)} {}
 
 int Slab::get_id() const noexcept { return id_; }
+
+// Converter to WWHG datamodel
+wwhg::WwhgSlab Slab::toWwhg() const {
+    double width_in = width_eighths_ / 8.0;
+    unsigned length_ft = static_cast<unsigned>(len_quarters_ / 4.0 / 12.0);
+    double thickness_in = thickness_eighths_ / 8.0;
+    return wwhg::WwhgSlab(id_, species_, width_in, length_ft, thickness_in, wwhg::WwhgFinish::RGH, 0.0);
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //  Persistent interface – SQLite helpers

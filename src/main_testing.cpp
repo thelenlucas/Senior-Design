@@ -9,6 +9,10 @@
 #include "cookies.hpp"
 #include "slab_manufacturer.hpp"
 
+#include "wwhg_constants.hpp"
+#include "wwhg_datamodel.hpp"
+#include "wwhg_generator.hpp"
+
 using namespace std;
 
 int main(int argc, char* argv[]) {
@@ -78,6 +82,14 @@ int main(int argc, char* argv[]) {
         cout << endl;
     }
 
+    wwhg::WwhgGenerator gen("./public");
+    gen.emplaceCookie(101, "Oak", 3.0, 16.0, 45.00)
+       .emplaceCookie(102, "Walnut", 2.0, 14.0, 38.00)
+       .emplaceBoard (201, "Pine", "2x6", 8,  wwhg::WwhgSurfacing::S2S, 3.50)
+       .emplaceSlab  (301, "Walnut", 22.0, 7, 2.0, wwhg::WwhgFinish::S1S, 35.0)
+       .emplaceFirewood(401, "Mixed Hardwood", 0.75, "Seasoned", 8.0);
+
+    gen.save();
     return 0;
 }
 
