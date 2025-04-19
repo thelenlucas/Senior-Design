@@ -19,12 +19,18 @@ std::vector<std::string> Importer::digestLine(const std::string& line){
 Drying Importer::returnDryingType(std::string dryStr)
 {
     std::transform(dryStr.begin(), dryStr.end(), dryStr.begin(), ::toupper);
-    if(dryStr == "AIR DRIED") return AIR_DRIED;
-    else if(dryStr == "KILN DRIED") return KILN_DRIED;
+    if(dryStr == "AIR DRIED" || dryStr == "AIR") return AIR_DRIED;
+    else if(dryStr == "KILN DRIED" || dryStr == "KILN") return KILN_DRIED;
     else if(dryStr == "AIR AND KILN DRIED") return AIR_AND_KILN_DRIED;
     else return WET;
 }
 
+bool Importer::returnSmoothed(std::string smd)
+{
+    std::transform(smd.begin(), smd.end(), smd.begin(), ::toupper);
+    if(smd == "Y" || smd == "YES") return true;
+    else return false;
+}
 
 void Importer::importLogs(const std::string& filePath){
     //id, species, length (quarters), diameter (quarters), cost (cent/quarter), quality, drying, location, notes
@@ -81,14 +87,38 @@ void Importer::importFirewood(const std::string& filePath){
         uint taken_lenQ         = 150;
 
         Firewood newFirewood(0, species, drying, ft3, taken_lenQ, location, notes);
-        // from_log attribute failure - pending question
         newFirewood.insert();
     }
 }
 
 void Importer::importSlabs(const std::string& filePath){
-    //id, species, thickness (eighths), width (eighths), drying, smoothed, location, notes
+    //id, species, thickness (eighths), length (quarters), width (eighths), drying, smoothed, location, notes
     //int, string, uint, uint, uint, Drying, bool, string, string
+    std::ifstream file(filePath);
+    if(!file){
+        std::cout << "File could not open at: " << filePath << std::endl;
+        return;
+    }
+
+    std::string line;
+    if(!std::getline(file, line)){return;}
+
+    while(std::getline(file, line)){
+        if(line.empty()){continue;}
+        auto cols = digestLine(line);
+
+        std::string species     = cols[1];
+        uint thickE             = std::stoul(cols[2]);
+        uint lenQ               = std::stoul(cols[3]);
+        uint widthE             = std::stoul(cols[4]);
+        Drying drying           = returnDryingType(cols[5]);
+        bool smoothed           = returnSmoothed(cols[6]);
+        std::string location    = (cols.size() > 7 && !cols[7].empty()) ? cols[7] : "";
+        std::string notes       = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";
+
+        Slab newSlab(-1, species, thickE, lenQ, widthE, drying, smoothed, location, notes);
+        newSlab.insert();
+    }
 }
 
 void Importer::importCookies(const std::string& filePath){
@@ -103,9 +133,9 @@ void Importer::importLumber(const std::string& filePath){
 
 }
 
-/*
+
 void Importer::importProducts(const std::string& filePath){
     //no clue, figure it out after cutlist is finished?
 
 }
-*/
+
