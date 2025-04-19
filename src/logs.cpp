@@ -266,13 +266,6 @@ void Log::wasteKerf(unsigned keft_width_16ths) {
     }
 }
 
-// Converter to WWHG datamodel
-wwhg::WwhgBoard Log::toWwhg() {
-    double length_ft = getAvailableLength() / 4.0 / 12.0;
-    std::string size = std::to_string(diameter_quarters_ / 4.0) + "in";
-    return wwhg::WwhgBoard(id_, species_, size, static_cast<unsigned>(length_ft), wwhg::WwhgSurfacing::RGH, 0.0);
-}
-
 QPixmap Log::loadPixmap() const {
     QSqlQuery query;
     query.prepare("SELECT media FROM logs WHERE id = :id");
