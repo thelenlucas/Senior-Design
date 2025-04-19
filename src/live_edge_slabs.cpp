@@ -8,6 +8,11 @@
 #include <utility>
 #include <vector>
 #include <optional>
+#include "wwhg_datamodel.hpp"
+#include <QSqlQuery>
+#include <QBuffer>
+#include <QPixmap>
+#include <QVariant>
 
 // ---------------------------------------------------------------------------------------------------------------------
 //  Slab – ctor & simple getters
@@ -33,6 +38,14 @@ Slab::Slab(int                id,
       notes_{std::move(notes)} {}
 
 int Slab::get_id() const noexcept { return id_; }
+
+// Converter to WWHG datamodel
+wwhg::WwhgSlab Slab::toWwhg() const {
+    double width_in = width_eighths_ / 8.0;
+    unsigned length_ft = static_cast<unsigned>(len_quarters_ / 4.0 / 12.0);
+    double thickness_in = thickness_eighths_ / 8.0;
+    return wwhg::WwhgSlab(id_, species_, width_in, length_ft, thickness_in, wwhg::WwhgFinish::RGH, 0.0);
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //  Persistent interface – SQLite helpers
@@ -168,34 +181,42 @@ std::vector<Slab> Slab::make_from_log(Log                     log,
                                       std::optional<int>      width_eighths,
                                       std::optional<Drying>   drying)
 {
-    if (!thickness_eighths || *thickness_eighths <= 0 || len_quarters <= 0)
-        return {};
-
-    const unsigned w8 = width_eighths && *width_eighths > 0 ? *width_eighths : 1;
     Slab slab{-1,
               log.getSpecies(),
               static_cast<unsigned>(*thickness_eighths),
               static_cast<unsigned>(len_quarters),
-              w8,
+              width_eighths.value(),
               drying.value_or(log.getDrying()),
               false,
               {},
               {}};
+
+    slab.insert();
+
+
     return {std::move(slab)};
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
-//  SlabManufacturer::finalize – converts planned cuts to real slabs
-// ---------------------------------------------------------------------------------------------------------------------
+QPixmap Slab::loadPixmap() const {
+    QSqlQuery query;
+    query.prepare("SELECT media FROM slabs WHERE id = :id");
+    query.bindValue(":id", get_id());
+    if (!query.exec() || !query.next())
+        return QPixmap();
+    QByteArray blob = query.value(0).toByteArray();
+    QPixmap pix;
+    pix.loadFromData(blob, "JPEG");
+    return pix;
+}
 
-// std::vector<Slab> SlabManufacturer::finalize(const std::string& location, const std::string& notes)
-// {
-//     if (!log_ || madeCuts_.empty()) return {};
-//     auto slabs = Slab::manufacture_and_persist_slabs(*log_, madeCuts_, log_len_q_, location, notes);
-//     if (!slabs.empty()) {
-//         madeCuts_.clear();
-//         redoQueue_.clear();
-//         used_diameter_8_ = 0;
-//     }
-//     return slabs;
-// }
+bool Slab::savePixmap(const QPixmap& pixmap) const {
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    pixmap.save(&buffer, "JPEG");
+    QSqlQuery query;
+    query.bindValue(":media", QVariant::fromValue(ba));
+    query.bindValue(":media", QVariant(ba));
+    query.bindValue(":id", get_id());
+    return query.exec();
+}

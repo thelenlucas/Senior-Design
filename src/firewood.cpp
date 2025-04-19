@@ -3,8 +3,13 @@
 // ---------------------------------------------------------------------------------------------------------------------
 
 #include "firewood.hpp"
+#include "wwhg_datamodel.hpp"
 
 #include <SQLiteCpp/SQLiteCpp.h>
+#include <QSqlQuery>
+#include <QBuffer>
+#include <QPixmap>
+#include <QVariant>
 
 #include <cmath>
 #include <iostream>
@@ -180,4 +185,33 @@ std::vector<Firewood> Firewood::make_from_log(Log                     log,
                      static_cast<unsigned>(len_quarters),
                      /* location */ "", /* notes */ "");
     return out;
+}
+
+// Converter to WWHG datamodel
+wwhg::WwhgFirewoodBundle Firewood::toWwhg() {
+    return wwhg::WwhgFirewoodBundle(id_, species_, static_cast<double>(cubic_feet_), /*moisture*/"", /*price*/0.0);
+}
+
+QPixmap Firewood::loadPixmap() const {
+    QSqlQuery query;
+    query.prepare("SELECT media FROM firewood WHERE id = :id");
+    query.bindValue(":id", get_id());
+    if (!query.exec() || !query.next())
+        return QPixmap();
+    QByteArray blob = query.value(0).toByteArray();
+    QPixmap pix;
+    pix.loadFromData(blob, "JPEG");
+    return pix;
+}
+
+bool Firewood::savePixmap(const QPixmap& pixmap) const {
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    pixmap.save(&buffer, "JPEG");
+    QSqlQuery query;
+    query.prepare("UPDATE firewood SET media = :media WHERE id = :id");
+    query.bindValue(":media", QVariant(ba));
+    query.bindValue(":id", get_id());
+    return query.exec();
 }

@@ -21,6 +21,7 @@
 #include "inventory.hpp"
 #include "cutlist.hpp"
 #include "sales.hpp"
+#include <cookies.hpp>
 
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
@@ -37,6 +38,11 @@ MainWindow::MainWindow(QWidget *parent)
     // Load UI layout and set the central widget
     ui->setupUi(this);
     setCentralWidget(ui->centralwidget);
+
+    //! Testing only!
+    // Cookie with ID 5 has been provided with an image
+    Cookie cookieWithImage = Cookie::get_by_id(5).value();
+    cookieWithImage.viewPixmap();
 
     // Enable docking options globally for the main window
     setDockOptions(QMainWindow::AnimatedDocks |

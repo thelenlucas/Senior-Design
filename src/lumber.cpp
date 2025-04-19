@@ -3,6 +3,11 @@
 #include "types.hpp"
 #include "logs.hpp"
 #include <SQLiteCpp/SQLiteCpp.h>
+#include "wwhg_datamodel.hpp"
+#include <QSqlQuery>
+#include <QBuffer>
+#include <QPixmap>
+#include <QVariant>
 
 // DDL
 // CREATE TABLE lumber (
@@ -171,4 +176,35 @@ std::vector<Lumber> Lumber::get_all() {
         std::cerr << "SQLite error (get_all): " << e.what() << "\n";
     }
     return lumberList;
+}
+
+// Converter to WWHG datamodel
+wwhg::WwhgBoard Lumber::toWwhg() {
+    double length_ft = len_quarters_ / 4.0 / 12.0;
+    std::string size = std::to_string(thickness_quarters_ / 4.0) + "x" + std::to_string(width_quarters_ / 4.0);
+    return wwhg::WwhgBoard(id_, species_, size, static_cast<unsigned>(length_ft), wwhg::WWhgLumberFinish::RGH, 0.0);
+}
+
+QPixmap Lumber::loadPixmap() const {
+    QSqlQuery query;
+    query.prepare("SELECT media FROM lumber WHERE id = :id");
+    query.bindValue(":id", QVariant(get_id()));
+    if (!query.exec() || !query.next())
+        return QPixmap();
+    QByteArray blob = query.value(0).toByteArray();
+    QPixmap pix;
+    pix.loadFromData(blob, "JPEG");
+    return pix;
+}
+
+bool Lumber::savePixmap(const QPixmap& pixmap) const {
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    pixmap.save(&buffer, "JPEG");
+    QSqlQuery query;
+    query.prepare("UPDATE lumber SET media = :media WHERE id = :id");
+    query.bindValue(":media", QVariant(ba));
+    query.bindValue(":id", get_id());
+    return query.exec();
 }

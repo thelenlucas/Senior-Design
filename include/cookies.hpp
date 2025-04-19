@@ -15,6 +15,7 @@
 #include "logs.hpp"         // Log class
 #include "interfaces.hpp"   // Persistent<>
 #include "manufacturable.hpp"
+#include "wwhg_datamodel.hpp"
 
 #define COOKIES_LOGGING true
 
@@ -148,6 +149,12 @@ public:
     static std::vector<Cookie> get_all();
 
     /**
+     * @brief Converts the cookie to a WWHG datamodel representation.
+     * @return The WWHG representation of the cookie.
+     */
+    wwhg::WwhgCookie toWwhg();
+
+    /**
      * @brief Creates cookies from a log with specified attributes.
      * 
      * @param log The log from which cookies are created.
@@ -161,6 +168,10 @@ public:
         unsigned thickness_quarters,
         std::optional<int> diameter_quarters = std::nullopt,
         std::optional<Drying> drying = std::nullopt);
+
+    // Persistence for media column
+    QPixmap loadPixmap() const override;
+    bool savePixmap(const QPixmap& pixmap) const override;
 
 private:
     int id_{-1}; /**< Unique identifier for the cookie. */

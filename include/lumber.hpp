@@ -50,7 +50,11 @@ public:
     bool update() override;                      // defined in lumber.cpp
     static std::optional<Lumber> get_by_id(int id);  // defined in lumber.cpp
     static std::vector<Lumber>   get_all();          // defined in lumber.cpp
+    wwhg::WwhgBoard toWwhg();
 
+    // Persistence for media column
+    QPixmap loadPixmap() const override;
+    bool savePixmap(const QPixmap& pixmap) const override;
 
 private:
     int          id_{-1};
