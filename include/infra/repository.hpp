@@ -8,11 +8,21 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 
+// STD output
+#include <iostream>
+
 namespace woodworks::infra {
     template<typename T>
     class QtSqlRepository {
         public:
-            explicit QtSqlRepository(QSqlDatabase& db) : db_(db) {}
+            explicit QtSqlRepository(QSqlDatabase& db) : db_(db) {
+                // Create the repo if it does not exist
+                QSqlQuery q(db_);
+                q.prepare(T::createDbSQL());
+                if (!q.exec()) {
+                    throw std::runtime_error("Failed to create table: " + q.lastError().text().toStdString());
+                }
+            }
 
             std::optional<T> get(int id) {
                 QSqlQuery q(db_);
@@ -39,10 +49,12 @@ namespace woodworks::infra {
 
             void add(const T& item) {
                 QSqlQuery q(db_);
-                q.prepare(T::insertSQL());
+                if (!q.prepare(T::insertSQL())) {
+                    throw std::runtime_error("Failed to prepare insert statement" + q.lastError().text().toStdString());
+                }
                 T::bindForInsert(q, item);
                 if (!q.exec()) {
-                    throw std::runtime_error("Failed to insert item" + q.lastError().text().toStdString());
+                    throw std::runtime_error(std::string("Failed to insert item: ") + q.lastError().text().toStdString());
                 }
             }
 
