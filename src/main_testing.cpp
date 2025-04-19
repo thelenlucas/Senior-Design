@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 
     // Test cutting a length from a log of 12 inches
     unsigned cutLength = 12*4;
-    log.multiCut(cutLength, "TestCut");
+    log.multiCut(cutLength);
     assert(log.getAvailableLength() == (log.getLenQuarters() - cutLength));
     cout << "Log cut successful. Remaining length: " << log.getAvailableLength() << endl;
 

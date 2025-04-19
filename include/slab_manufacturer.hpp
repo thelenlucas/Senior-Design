@@ -64,7 +64,7 @@ public:
         }
 
         // Create a multicut for the slabs
-        MultiCut multiCut(log_->get_id(), len_quarters, log_diameter_8_, location, numCuts);
+        MultiCut multiCut(log_->get_id(), len_quarters, log_diameter_8_, numCuts);
         multiCut.insert();
 
         return slabs;
