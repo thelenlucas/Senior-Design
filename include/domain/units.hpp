@@ -2,7 +2,7 @@
 #include <cmath>
 #include <string>
 
-namespace imperial {
+namespace woodworks::domain::imperial {
 
     // A length in imperial units - stored as 1/16th inches internally. 
     class Length
