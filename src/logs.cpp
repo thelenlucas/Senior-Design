@@ -212,7 +212,7 @@ void Log::scrap()
     }
 }
 
-unsigned Log::multiCut(unsigned amt_quarters, std::string type)
+unsigned Log::multiCut(unsigned amt_quarters)
 {
     if (amt_quarters > len_quarters_) {
         std::cerr << "Log::multiCut() failed — amount exceeds log length" << std::endl;
@@ -222,11 +222,10 @@ unsigned Log::multiCut(unsigned amt_quarters, std::string type)
     try {
         SQLite::Database db{kDbFile, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE};
         SQLite::Statement stmt{db,
-            "INSERT INTO partial_cuts (from_log, len_quarters, type) VALUES (?, ?, ?)"};
+            "INSERT INTO partial_cuts (from_log, len_quarters) VALUES (?, ?)"};
 
         stmt.bind(1, id_);
         stmt.bind(2, static_cast<int>(amt_quarters));
-        stmt.bind(3, type);
         stmt.exec();
 
         unsigned cut_id = static_cast<unsigned>(db.getLastInsertRowid());

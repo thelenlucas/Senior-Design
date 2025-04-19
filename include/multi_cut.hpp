@@ -19,38 +19,36 @@
 //                               NOT NULL,
 //     len_quarters      INTEGER NOT NULL
 //                               CHECK ( (len_quarters > 0) ),
-//     type              TEXT    NOT NULL,
 //     num_products_made INTEGER NOT NULL
 //                               DEFAULT ( (1) ) 
 // );
 
 namespace {
     constexpr const char* INSERT_SQL_MULTI =
-        "INSERT INTO partial_cuts (from_log, len_quarters, type, num_products_made) "
-        "VALUES (?, ?, ?, ?);";
+        "INSERT INTO partial_cuts (from_log, len_quarters, num_products_made) "
+        "VALUES (?, ?, ?);";
     
     constexpr const char* UPDATE_SQL_MULTI =
-        "UPDATE partial_cuts SET from_log = ?, len_quarters = ?, type = ?, num_products_made = ? WHERE id = ?;";
+        "UPDATE partial_cuts SET from_log = ?, len_quarters = ?, num_products_made = ? WHERE id = ?;";
 
     constexpr const char* SELECT_ONE_SQL_MULTI =
-        "SELECT id, from_log, len_quarters, type, num_products_made "
+        "SELECT id, from_log, len_quarters, num_products_made "
         "FROM partial_cuts WHERE id = ?;";
 
     constexpr const char* SELECT_ALL_SQL_MULTI = 
-        "SELECT id, from_log, len_quarters, type, num_products_made "
+        "SELECT id, from_log, len_quarters, num_products_made "
         "FROM partial_cuts;";
 }
 
 class MultiCut {
     public:
         MultiCut() = default;
-        MultiCut(int id, int from_log_id, int len_quarters, std::string type, int num_products_made)
-            : id_{id}, from_log_id_{from_log_id}, len_quarters_{len_quarters}, type_{std::move(type)}, num_products_made_{num_products_made} {}
+        MultiCut(int id, int from_log_id, int len_quarters, int num_products_made)
+            : id_{id}, from_log_id_{from_log_id}, len_quarters_{len_quarters}, num_products_made_{num_products_made} {}
 
         [[nodiscard]] int get_id() const noexcept { return id_; }
         [[nodiscard]] int get_from_log_id() const noexcept { return from_log_id_; }
         [[nodiscard]] int get_len_quarters() const noexcept { return len_quarters_; }
-        [[nodiscard]] const std::string& get_type() const noexcept { return type_; }
         [[nodiscard]] int get_num_products_made() const noexcept { return num_products_made_; }
 
         bool insert() {
@@ -60,8 +58,7 @@ class MultiCut {
 
                 stmt.bind(1, from_log_id_);
                 stmt.bind(2, len_quarters_);
-                stmt.bind(3, type_);
-                stmt.bind(4, num_products_made_);
+                stmt.bind(3, num_products_made_);
 
                 if (stmt.exec() > 0) {
                     id_ = static_cast<int>(db.getLastInsertRowid());
@@ -79,9 +76,8 @@ class MultiCut {
 
                 stmt.bind(1, from_log_id_);
                 stmt.bind(2, len_quarters_);
-                stmt.bind(3, type_);
-                stmt.bind(4, num_products_made_);
-                stmt.bind(5, id_);
+                stmt.bind(3, num_products_made_);
+                stmt.bind(4, id_);
 
                 return (stmt.exec() > 0);
             } catch (const SQLite::Exception& e) {
@@ -96,6 +92,5 @@ private:
     int id_{-1};
     int from_log_id_{-1};
     int len_quarters_{0};
-    std::string type_;
     int num_products_made_{1};
 };
