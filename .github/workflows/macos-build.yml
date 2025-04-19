@@ -1,0 +1,40 @@
+name: Build macOS Executable
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Homebrew dependencies
+        run: |
+          brew update
+          brew install qt@5 cmake
+
+      - name: Configure with CMake
+        run: |
+          mkdir build
+          cd build
+          cmake .. \
+            -DCMAKE_PREFIX_PATH="$(brew --prefix qt@5)" \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build
+        run: |
+          cd build
+          make -j$(sysctl -n hw.logicalcpu)
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          # Artifact name
+          name: build/logdb

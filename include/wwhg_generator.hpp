@@ -92,7 +92,11 @@ private:
             out << "    <section id=\"" << key << "\">\n"
                 << "      <h2>" << vec.front()->sectionTitle() << "</h2>\n"
                 << "      <div class=\"product-grid\">\n";
-            for (const auto* p : vec) out << p->cardHtml();
+
+            int item_number = 1;
+            for (const auto* p : vec) {
+                out << p->cardHtml(item_number++);
+            }
             out << "      </div>\n    </section>\n";
         }
         return out.str();
