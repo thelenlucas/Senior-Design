@@ -26,7 +26,7 @@ namespace woodworks::domain {
 
     inline QString Log::updateSQL()
     {
-        return "UPDATE logs SET species = ?, length = ?, diameter = ?, quality = ?, drying = ?, location = ?, notes = ? WHERE id = ?";
+        return "UPDATE logs SET species = :species, length = :length, diameter = :diameter, quality = :quality, drying = :drying, location = :location, notes = :notes WHERE id = :id";
     }
 
     inline QString Log::selectOneSQL() { return u8R"(SELECT * FROM logs WHERE id=:id)"; }
@@ -46,14 +46,14 @@ namespace woodworks::domain {
 
     inline void Log::bindForUpdate(QSqlQuery& q, const Log& log)
     {
-        q.bindValue(0, QString::fromStdString(log.species.name));
-        q.bindValue(1, log.length.toInches());
-        q.bindValue(2, log.diameter.toInches());
-        q.bindValue(3, log.quality.value);
-        q.bindValue(4, static_cast<int>(log.drying));
-        q.bindValue(5, QString::fromStdString(log.location));
-        q.bindValue(6, QString::fromStdString(log.notes));
-        q.bindValue(7, log.id.id);
+        q.bindValue(":species", QString::fromStdString(log.species.name));
+        q.bindValue(":length", log.length.toInches());
+        q.bindValue(":diameter", log.diameter.toInches());
+        q.bindValue(":quality", log.quality.value);
+        q.bindValue(":drying", static_cast<int>(log.drying));
+        q.bindValue(":location", QString::fromStdString(log.location));
+        q.bindValue(":notes", QString::fromStdString(log.notes));
+        q.bindValue(":id", log.id.id);
     }
 
     inline Log Log::fromRecord(const QSqlRecord& record)
