@@ -37,4 +37,5 @@ jobs:
         uses: actions/upload-artifact@v4.6.2
         with:
           # Artifact name
-          name: build/logdb
+          name: macos
+          path: build/logdb
