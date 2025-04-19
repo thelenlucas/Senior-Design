@@ -9,10 +9,12 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QTimer>
+#include <QStringList>
 
 #include "cookies.hpp"
 #include "inventory.hpp"
 #include "logs.hpp"
+#include "csv_importer.hpp"
 #include "ui_inventory.h"
 
 InventoryPage::InventoryPage(QWidget *parent)
@@ -56,6 +58,7 @@ InventoryPage::InventoryPage(QWidget *parent)
     connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
     connect(ui->createCookieButton, &QPushButton::clicked, this, &InventoryPage::onCookieButtonClicked);
+    connect(ui->insertImageButton, &QPushButton::clicked, this, &InventoryPage::onImageButtonClicked);
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
@@ -163,13 +166,43 @@ void InventoryPage::onCookieButtonClicked() {
 
 void InventoryPage::onSpreadsheetImportClicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv *.xls *.xlsx)");
-
+    QMessageBox::information(this, "Warning", "\nPlease ensure that it is in the following format: CSV (Comma delimited)");
+    QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv)");
+    // .csv only, import one sheet at a time
     if (filename.isEmpty())
         return;
+    QStringList options;
+    options << "Logs" << "Firewood" << "Slabs" << "Cookies" << "Lumber";
+    bool ok = false;
+    QString userChoice = QInputDialog::getItem(this, QObject::tr("Sheet Picker"), QObject::tr("Please select which sheet you're importing:"), options, 0, false, &ok);
 
+    if(!ok){
+        std::cout << "User canceled input." << std::endl;
+        return;
+    }
     // TODO: Implement spreadsheet import parsing logic in logic module.
-    QMessageBox::information(this, "Import Selected", "File selected: " + filename);
+    QMessageBox::information(this, "Import Selected", "File selected: " + filename + "\nSheet Type: " + userChoice);
+    std::string filePath = filename.toStdString();
+    Importer import;
+
+    if(userChoice == "Logs"){import.importLogs(filePath);}
+    else if(userChoice == "Firewood"){import.importFirewood(filePath);}
+    else if(userChoice == "Slabs"){import.importSlabs(filePath);}
+    else if(userChoice == "Cookies"){import.importCookies(filePath);}
+    else if(userChoice == "Lumber"){import.importLumber(filePath);}
+
+    refreshModels();
+}
+
+void InventoryPage::onImageButtonClicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this, "Import Image", QString(), "Images (*.jpg *.png)");
+
+    if(filename.isEmpty())
+        return;
+
+    // TODO: Implement image importing logic - Patrick I leave the rest to you!
+    QMessageBox::information(this, "Image Selected", "File selected: " + filename);
 }
 
 void InventoryPage::mousePressEvent(QMouseEvent *event)

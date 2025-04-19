@@ -124,6 +124,13 @@
       <item row="6" column="2">
        <widget class="QComboBox" name="dryingComboBox"/>
       </item>
+      <item row="6" column="4">
+       <widget class="QToolButton" name="insertImageButton">
+        <property name="text">
+         <string>Insert Image</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
