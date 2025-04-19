@@ -14,6 +14,7 @@
 #include "cookies.hpp"
 #include "inventory.hpp"
 #include "logs.hpp"
+#include "csv_importer.hpp"
 #include "ui_inventory.h"
 
 InventoryPage::InventoryPage(QWidget *parent)
@@ -180,8 +181,13 @@ void InventoryPage::onSpreadsheetImportClicked()
     }
     // TODO: Implement spreadsheet import parsing logic in logic module.
     QMessageBox::information(this, "Import Selected", "File selected: " + filename + "\nSheet Type: " + userChoice);
+    std::string filePath = filename.toStdString();
+    Importer import;
 
-
+    if(userChoice == "Logs"){import.importLogs(filePath);}
+    else if(userChoice == "Firewood"){import.importFirewood(filePath);}
+    
+    refreshModels();
 }
 
 void InventoryPage::onImageButtonClicked()

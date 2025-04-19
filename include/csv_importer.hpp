@@ -22,4 +22,5 @@ class Importer
 
     private:
         static std::vector<std::string> digestLine(const std::string& line);
+        Drying returnDryingType(std::string dryStr);
 };
