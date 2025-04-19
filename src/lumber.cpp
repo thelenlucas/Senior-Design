@@ -182,7 +182,7 @@ std::vector<Lumber> Lumber::get_all() {
 wwhg::WwhgBoard Lumber::toWwhg() {
     double length_ft = len_quarters_ / 4.0 / 12.0;
     std::string size = std::to_string(thickness_quarters_ / 4.0) + "x" + std::to_string(width_quarters_ / 4.0);
-    return wwhg::WwhgBoard(id_, species_, size, static_cast<unsigned>(length_ft), wwhg::WwhgSurfacing::RGH, 0.0);
+    return wwhg::WwhgBoard(id_, species_, size, static_cast<unsigned>(length_ft), wwhg::WWhgLumberFinish::RGH, 0.0);
 }
 
 QPixmap Lumber::loadPixmap() const {

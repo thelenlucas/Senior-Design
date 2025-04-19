@@ -33,11 +33,13 @@ namespace wwhg
     };
 
     /* ───────────────── Enumerations ──────────────────────────────────── */
-    enum class WwhgSurfacing
+    enum class WWhgLumberFinish
     {
         RGH,
+        S1S,
         S2S,
-        S3S
+        S3S,
+        S4S
     };
     enum class WwhgFinish
     {
@@ -62,23 +64,17 @@ namespace wwhg
         int numericId() const override { return id; }
         std::string cardHtml() const override
         {
-            const std::string &imgSrc = imagePath_.has_value() ? *imagePath_ : "https://picsum.photos/seed/cookie" + std::to_string(id) + "/1920/1080";
+            const std::string imgSrc = imagePath_.has_value() ? *imagePath_ : "https://picsum.photos/seed/cookie" + std::to_string(id) + "/1920/1080";
             std::ostringstream os;
-            os << R"(        <article class="product-card">)"
-                  "\n"
-                  "          <img src=\"" << imgSrc << "\" alt=\"" << species << " cookie\">\n"
-                                                    "          <div class=\"content\">\n"
-                                                    "            <h3>Cookie #"
-               << id << " – " << species << "</h3>\n"
-                                            "            <p>Thickness: "
-               << thickness_in << "&nbsp;in</p>\n"
-                                  "            <p>Diameter: "
-               << diameter_in << "&nbsp;in</p>\n"
-                                 "            <p class=\"price\">$"
-               << dollars(price_cookie)
-               << "&nbsp;/ Cookie</p>\n"
-                  "          </div>\n"
-                  "        </article>\n";
+            os << "<article class=\"product-card\">\n"
+                  "  <img src=\"" << imgSrc << "\" alt=\"" << species << " cookie\">\n"
+                  "  <div class=\"content\">\n"
+                  "    <h3>Cookie #" << id << " – " << species << "</h3>\n"
+                  "    <p>Thickness: " << thickness_in << " in</p>\n"
+                  "    <p>Diameter: " << diameter_in << " in</p>\n"
+                  "    <p class=\"price\">$" << dollars(price_cookie) << " / Cookie</p>\n"
+                  "  </div>\n"
+                  "</article>\n";
             return os.str();
         }
 
@@ -94,7 +90,7 @@ namespace wwhg
         std::string species;
         std::string size; ///< "2x4"
         unsigned length_ft{};
-        WwhgSurfacing surfacing{};
+        WWhgLumberFinish surfacing{};
         double price_ft{};
 
         std::string sectionId() const override { return "lumber"; }
@@ -102,31 +98,24 @@ namespace wwhg
         int numericId() const override { return id; }
         std::string cardHtml() const override
         {
-            const char *surf =
-                surfacing == WwhgSurfacing::S2S ? "S2S" : surfacing == WwhgSurfacing::S3S ? "S3S"
-                                                                                          : "RGH";
-
-            const std::string &imgSrc = imagePath_.has_value() ? *imagePath_ : "https://picsum.photos/seed/lumber" + std::to_string(id) + "/1920/1080";
+            const char* surf = surfacing == WWhgLumberFinish::S2S ? "S2S" : surfacing == WWhgLumberFinish::S3S ? "S3S" : surfacing == WWhgLumberFinish::S4S ? "S4S" : "RGH";
+            const std::string imgSrc = imagePath_.has_value() ? *imagePath_ : "https://picsum.photos/seed/lumber" + std::to_string(id) + "/1920/1080";
             std::ostringstream os;
-            os << R"(        <article class="product-card">)"
-                  "\n"
-                  "          <img src=\"" << imgSrc << "\" alt=\"" << species << " lumber\">\n"
-                                                    "          <div class=\"content\">\n"
-                                                    "            <h3>Board #"
-               << id << " – " << species << "</h3>\n"
-                                            "            <p>Size: "
-                               "            <p>Surfacing: "
-               << surf << "</p>\n"
-                          "            <p class=\"price\">$"
-               << dollars(price_ft)
-               << "&nbsp;/ ft</p>\n"
-                  "          </div>\n"
-                  "        </article>\n";
+            os << "<article class=\"product-card\">\n"
+                  "  <img src=\"" << imgSrc << "\" alt=\"" << species << " lumber\">\n"
+                  "  <div class=\"content\">\n"
+                  "    <h3>Board #" << id << " – " << species << "</h3>\n"
+                  "    <p>Size: " << size << "</p>\n"
+                  "    <p>Length: " << length_ft << " ft</p>\n"
+                  "    <p>Surfacing: " << surf << "</p>\n"
+                  "    <p class=\"price\">$" << dollars(price_ft) << " / ft</p>\n"
+                  "  </div>\n"
+                  "</article>\n";
             return os.str();
         }
 
         WwhgBoard(int id_, std::string species_, std::string size_,
-                  unsigned len_ft, WwhgSurfacing surf, double price, std::optional<std::string> imagePath = std::nullopt)
+                  unsigned len_ft, WWhgLumberFinish surf, double price, std::optional<std::string> imagePath = std::nullopt)
             : WwhgProduct(imagePath), id{id_}, species{std::move(species_)}, size{std::move(size_)},
               length_ft{len_ft}, surfacing{surf}, price_ft{price} {}
     };
@@ -147,29 +136,20 @@ namespace wwhg
         int numericId() const override { return id; }
         std::string cardHtml() const override
         {
-            const char *fin =
-                finish == WwhgFinish::S1S ? "S1S" : finish == WwhgFinish::S2S ? "S2S"
-                                                                              : "RGH";
-
-            const std::string &imgSrc = imagePath_.has_value() ? *imagePath_ : "https://picsum.photos/seed/slab" + std::to_string(id) + "/1920/1080";
+            const char* fin = finish == WwhgFinish::S1S ? "S1S" : finish == WwhgFinish::S2S ? "S2S" : "RGH";
+            const std::string imgSrc = imagePath_.has_value() ? *imagePath_ : "https://picsum.photos/seed/slab" + std::to_string(id) + "/1920/1080";
             std::ostringstream os;
-            os << R"(        <article class="product-card">)"
-                  "\n"
-                  "          <img src=\"" << imgSrc << "\" alt=\"" << species << " slab\">\n"
-                                                    "          <div class=\"content\">\n"
-                                                    "            <h3>Slab #"
-               << id << " – " << species << "</h3>\n"
-                                            "            <p>Width: "
-               << width_in << "&nbsp;in</p>\n"
-                               "            <p>Thickness: "
-               << thickness_in << "&nbsp;in</p>\n"
-                                  "            <p>Finish: "
-               << fin << "</p>\n"
-                         "            <p class=\"price\">$"
-               << dollars(price_ft)
-               << "&nbsp;/ ft</p>\n"
-                  "          </div>\n"
-                  "        </article>\n";
+            os << "<article class=\"product-card\">\n"
+                  "  <img src=\"" << imgSrc << "\" alt=\"" << species << " slab\">\n"
+                  "  <div class=\"content\">\n"
+                  "    <h3>Slab #" << id << " – " << species << "</h3>\n"
+                  "    <p>Width: " << width_in << " in</p>\n"
+                  "    <p>Thickness: " << thickness_in << " in</p>\n"
+                  "    <p>Length: " << length_ft << " ft</p>\n"
+                  "    <p>Finish: " << fin << "</p>\n"
+                  "    <p class=\"price\">$" << dollars(price_ft) << " / ft</p>\n"
+                  "  </div>\n"
+                  "</article>\n";
             return os.str();
         }
 
@@ -193,22 +173,17 @@ namespace wwhg
         int numericId() const override { return id; }
         std::string cardHtml() const override
         {
-            const std::string &imgSrc = imagePath_.has_value() ? *imagePath_ : "https://picsum.photos/seed/firewood" + std::to_string(id) + "/1920/1080";
+            const std::string imgSrc = imagePath_.has_value() ? *imagePath_ : "https://picsum.photos/seed/firewood" + std::to_string(id) + "/1920/1080";
             std::ostringstream os;
-            os << R"(        <article class="product-card">)"
-                  "\n"
-                  "          <img src=\"" << imgSrc << "\" alt=\"" << label << " firewood\">\n"
-                                                  "          <div class=\"content\">\n"
-                                                  "            <h3>Bundle #"
-               << id << " – " << label << "</h3>\n"
-                                          "            <p>Volume: "
-               << volume_ft3 << "&nbsp;ft³</p>\n"
-                                "            <p>Moisture: "
-               << moisture << "</p>\n"
-                              "            <p class=\"price\">$"
-               << dollars(price_bundle) << "</p>\n"
-                                           "          </div>\n"
-                                           "        </article>\n";
+            os << "<article class=\"product-card\">\n"
+                  "  <img src=\"" << imgSrc << "\" alt=\"" << label << " firewood\">\n"
+                  "  <div class=\"content\">\n"
+                  "    <h3>Bundle #" << id << " – " << label << "</h3>\n"
+                  "    <p>Volume: " << volume_ft3 << " ft³</p>\n"
+                  "    <p>Moisture: " << moisture << "</p>\n"
+                  "    <p class=\"price\">$" << dollars(price_bundle) << "</p>\n"
+                  "  </div>\n"
+                  "</article>\n";
             return os.str();
         }
 
