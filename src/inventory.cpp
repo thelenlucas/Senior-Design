@@ -166,6 +166,7 @@ void InventoryPage::onCookieButtonClicked() {
 
 void InventoryPage::onSpreadsheetImportClicked()
 {
+    QMessageBox::information(this, "Warning", "\nPlease ensure that it is in the following format: CSV (Comma delimited)");
     QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv)");
     // .csv only, import one sheet at a time
     if (filename.isEmpty())
