@@ -76,6 +76,7 @@ namespace woodworks::domain::types {
             case SlabSurfacing::S1S: return LumberSurfacing::S1S;
             case SlabSurfacing::S2S: return LumberSurfacing::S2S;
         }
+        throw std::invalid_argument("Invalid surfacing state");
     }
 
     // Formatting for drying

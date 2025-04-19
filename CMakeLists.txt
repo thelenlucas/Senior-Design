@@ -33,7 +33,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SQLiteCpp)
 
 # Specify the source files for the executable.
-file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB SRC_TOP        "${CMAKE_SOURCE_DIR}/src/*.cpp")          # new
+file(GLOB_RECURSE SRC_REST CONFIGURE_DEPENDS
+     "${CMAKE_SOURCE_DIR}/src/**/*.cpp")
+
+set(SRC_FILES  ${SRC_TOP} ${SRC_REST})
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.hpp")
 file(GLOB_RECURSE H_FILES "${CMAKE_SOURCE_DIR}/include/*.h")
 set(

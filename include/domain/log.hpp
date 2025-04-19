@@ -6,8 +6,8 @@
 #include <string>
 #include <QSqlQuery>
 
-using namespace domain::types;
-using namespace domain::imperial;
+using namespace woodworks::domain::types;
+using namespace woodworks::domain::imperial;
 
 namespace woodworks::domain {
     struct Log {
@@ -25,6 +25,12 @@ namespace woodworks::domain {
         Drying drying;
         std::string location;
         std::string notes;
+
+        // Validity check
+        bool isValid() const noexcept
+        {
+            return !species.name.empty() && length.toTicks() > 0 && diameter.toTicks() > 0 && quality.isValid();
+        }
 
         // ---- Mapping -----
         static QString insertSQL();
