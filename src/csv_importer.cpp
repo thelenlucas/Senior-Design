@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -6,7 +5,6 @@
 #include <algorithm>
 
 #include "csv_importer.hpp"
-
 
 std::vector<std::string> Importer::digestLine(const std::string& line){
     std::vector<std::string> parts;
@@ -148,7 +146,6 @@ void Importer::importCookies(const std::string& filePath){
         Cookie newCookie(-1, -1, species, thickQ, diamQ, drying, location, notes);
         newCookie.insert();
     }
-
 }
 
 void Importer::importLumber(const std::string& filePath){
@@ -181,11 +178,3 @@ void Importer::importLumber(const std::string& filePath){
         newLumber.insert();
     }
 }
-
-
-void Importer::importProducts(const std::string& filePath){
-    //id, species, units, location, notes, length, width, thickness, cost
-    //
-
-}
-

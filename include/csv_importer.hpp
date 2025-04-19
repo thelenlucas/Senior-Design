@@ -18,7 +18,6 @@ class Importer
         void importSlabs(const std::string& filePath);
         void importCookies(const std::string& filePath);
         void importLumber(const std::string& filePath);
-        void importProducts(const std::string& filePath);
 
     private:
         static std::vector<std::string> digestLine(const std::string& line);

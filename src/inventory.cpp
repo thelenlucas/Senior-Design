@@ -172,7 +172,7 @@ void InventoryPage::onSpreadsheetImportClicked()
     if (filename.isEmpty())
         return;
     QStringList options;
-    options << "Logs" << "Firewood" << "Slabs" << "Cookies" << "Lumber" << "Products";
+    options << "Logs" << "Firewood" << "Slabs" << "Cookies" << "Lumber";
     bool ok = false;
     QString userChoice = QInputDialog::getItem(this, QObject::tr("Sheet Picker"), QObject::tr("Please select which sheet you're importing:"), options, 0, false, &ok);
 
@@ -190,8 +190,6 @@ void InventoryPage::onSpreadsheetImportClicked()
     else if(userChoice == "Slabs"){import.importSlabs(filePath);}
     else if(userChoice == "Cookies"){import.importCookies(filePath);}
     else if(userChoice == "Lumber"){import.importLumber(filePath);}
-    else if(userChoice == "Products"){import.importProducts(filePath);}
-    else {std::cout << "How did you get here?" << std::endl;}
 
     refreshModels();
 }
