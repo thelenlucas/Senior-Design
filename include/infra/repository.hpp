@@ -11,6 +11,8 @@
 // STD output
 #include <iostream>
 
+#include "infra/connection.hpp"
+
 #include "infra/mappers/log_mapper.hpp"
 #include "infra/mappers/cookie_mapper.hpp"
 #include "infra/mappers/live_edge_slab_mapper.hpp"
@@ -40,7 +42,7 @@ namespace woodworks::infra {
             }
 
             // Create a repository without a connection
-            explicit static QtSqlRepository<T> spawn() {
+            static QtSqlRepository<T> spawn() {
                 auto& db = woodworks::infra::DbConnection::instance();
                 return QtSqlRepository<T>(db);
             }

@@ -77,12 +77,10 @@ endif()
 
 # Set the AUTOUIC_SEARCH_PATHS property to the source directory.
 set_target_properties(logdb PROPERTIES
-    AUTOMOC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/src"
-    AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui"
+    AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui;${CMAKE_SOURCE_DIR}/ui/widgets"
 )
 set_target_properties(Woodworks_test PROPERTIES
-    AUTOMOC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/src"
-    AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui"
+    AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui;${CMAKE_SOURCE_DIR}/ui/widgets"
 )
 
 # Specify the include directories.
