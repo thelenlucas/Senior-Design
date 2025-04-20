@@ -24,14 +24,13 @@ namespace woodworks::domain {
 
     inline QString Lumber::individualViewSQL() {
         return woodworks::infra::mappers::makeIndividualViewSQL(
-            "display_lumber", "lumbers",
+            "display_lumber", "lumber",
             QStringList{
                 "id AS 'ID'",
                 "species AS 'Species'",
                 "ROUND(length/16.0,2) AS 'Length (in)'",
                 "ROUND(thickness/16.0,2) AS 'Thickness (in)'",
-                "quality AS 'Quality'",
-                "printf('%.2f',cost/100.0) AS 'Cost ($)'",
+                "printf('%.2f',worth/100.0) AS 'Cost ($)'",
                 "location AS 'Location'",
                 "notes AS 'Notes'"
             }
@@ -40,20 +39,18 @@ namespace woodworks::domain {
 
     inline QString Lumber::groupedViewSQL() {
         return woodworks::infra::mappers::makeGroupedViewSQL(
-            "display_lumber_grouped", "lumbers",
+            "display_lumber_grouped", "lumber",
             QStringList{
                 "COUNT(*) AS 'Count'",
                 "species AS 'Species'",
                 "ROUND(length/16.0,2) AS 'Length (in)'",
                 "ROUND(thickness/16.0,2) AS 'Thickness (in)'",
-                "quality AS 'Quality'",
-                "ROUND(AVG(cost)/100.0,2) AS 'Avg Cost ($)'"
+                "ROUND(AVG(worth)/100.0,2) AS 'Avg Cost ($)'"
             },
             QStringList{
                 "species",
                 "ROUND(length/16.0,2)",
                 "ROUND(thickness/16.0,2)",
-                "quality"
             }
         );
     }
