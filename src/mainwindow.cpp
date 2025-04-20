@@ -19,6 +19,7 @@
 #include "inventory.hpp"
 #include "cutlist.hpp"
 #include "sales.hpp"
+#include "infra/mappers/view_helpers.hpp"
 
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
@@ -41,20 +42,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::refreshModel()
 {
-    // Set up the model for the individual logs table
-    QSqlQueryModel *model = new QSqlQueryModel(this);
-    model->setQuery("SELECT * FROM display_logs", QSqlDatabase::database());
-    if (model->lastError().isValid()) {
-        qDebug() << "Query error:" << model->lastError().text();
-    }
+    QSqlQueryModel *model = woodworks::infra::mappers::makeViewModel("display_logs", this);
     ui->individualLogTableView->setModel(model);
 
-    // Set up the model for the grouped logs table
-    QSqlQueryModel *groupedModel = new QSqlQueryModel(this);
-    groupedModel->setQuery("SELECT * FROM display_logs_grouped", QSqlDatabase::database());
-    if (groupedModel->lastError().isValid()) {
-        qDebug() << "Query error:" << groupedModel->lastError().text();
-    }
+    QSqlQueryModel *groupedModel = woodworks::infra::mappers::makeViewModel("display_logs_grouped", this);
     ui->groupedLogsTableView->setModel(groupedModel);
 }
 
