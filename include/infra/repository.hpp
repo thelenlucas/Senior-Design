@@ -62,7 +62,7 @@ namespace woodworks::infra {
                 return result;
             }
 
-            void add(const T& item) {
+            int add(const T& item) {
                 QSqlQuery q(db_);
                 if (!q.prepare(T::insertSQL())) {
                     throw std::runtime_error("Failed to prepare insert statement" + q.lastError().text().toStdString());
@@ -71,11 +71,16 @@ namespace woodworks::infra {
                 if (!q.exec()) {
                     throw std::runtime_error(std::string("Failed to insert item: ") + q.lastError().text().toStdString());
                 }
+                return q.lastInsertId().toInt();
             }
 
             void update(const T& item) {
                 QSqlQuery q(db_);
                 q.prepare(T::updateSQL());
+                std::cout << "Updating item with id: " << item.id.id << std::endl;
+                if (!q.exec()) {
+                    throw std::runtime_error("Failed to prepare update statement" + q.lastError().text().toStdString());
+                }
                 T::bindForUpdate(q, item);
                 if (!q.exec()) {
                     throw std::runtime_error("Failed to update item");

@@ -76,8 +76,8 @@ namespace woodworks::domain {
     inline void Cookie::bindForInsert(QSqlQuery& q, const Cookie& cookie)
     {
         q.bindValue(":species", QString::fromStdString(cookie.species.name));
-        q.bindValue(":length", cookie.length.toInches());
-        q.bindValue(":diameter", cookie.diameter.toInches());
+        q.bindValue(":length", cookie.length.toTicks());
+        q.bindValue(":diameter", cookie.diameter.toTicks());
         q.bindValue(":drying", static_cast<int>(cookie.drying));
         q.bindValue(":worth", cookie.worth.cents);
         q.bindValue(":location", QString::fromStdString(cookie.location));
@@ -87,8 +87,8 @@ namespace woodworks::domain {
     inline void Cookie::bindForUpdate(QSqlQuery& q, const Cookie& cookie)
     {
         q.bindValue(":species", QString::fromStdString(cookie.species.name));
-        q.bindValue(":length", cookie.length.toInches());
-        q.bindValue(":diameter", cookie.diameter.toInches());
+        q.bindValue(":length", cookie.length.toTicks());
+        q.bindValue(":diameter", cookie.diameter.toTicks());
         q.bindValue(":drying", static_cast<int>(cookie.drying));
         q.bindValue(":worth", cookie.worth.cents);
         q.bindValue(":location", QString::fromStdString(cookie.location));
@@ -101,8 +101,8 @@ namespace woodworks::domain {
         return {
             .id = {record.value("id").toInt()},
             .species = {record.value("species").toString().toStdString()},
-            .length = Length::fromInches(record.value("length").toDouble()),
-            .diameter = Length::fromInches(record.value("diameter").toDouble()),
+            .length = Length::fromTicks(record.value("length").toDouble()),
+            .diameter = Length::fromTicks(record.value("diameter").toDouble()),
             .drying = static_cast<Drying>(record.value("drying").toInt()),
             .worth = Dollar{record.value("worth").toInt()},
             .location = record.value("location").toString().toStdString(),

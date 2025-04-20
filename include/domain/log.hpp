@@ -5,6 +5,7 @@
 #include <QString>
 #include <string>
 #include <QSqlQuery>
+#include "domain/cookie.hpp"
 
 using namespace woodworks::domain::types;
 using namespace woodworks::domain::imperial;
@@ -33,6 +34,13 @@ namespace woodworks::domain {
         {
             return !species.name.empty() && length.toTicks() > 0 && diameter.toTicks() > 0 && quality.isValid();
         }
+
+        // Cuts a length off the log and updates the remaining length. Deletes the log if the length is zero. Returns the worth of the cut length.
+        Dollar cut(Length cutLength);
+        // Cuts a cookie from the log, inserts it into the database, and updates the log.
+        Cookie cutCookie(Length cutLength);
+        // Cuts a length of firewood from the log, inserts it into the database, and updates the log.
+        void cutFirewood(Length cutLength);
 
         // ---- Mapping -----
         static QString createDbSQL();

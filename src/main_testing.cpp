@@ -124,6 +124,24 @@ int main(int argc, char* argv[]) {
     assert(firewood2->species.name == "Birch");
     assert(firewood2->cubicFeet == 10.0);
     assert(firewood2->toChords() == 10.0 / 128.0);
+
+    // Create a log and cut a cookie
+    UnitOfWork uow6(db);
+    woodworks::domain::Log log3 {
+        .id = {-1},
+        .species = {"Oak"},
+        .length = woodworks::domain::imperial::Length::fromFeet(10),
+        .diameter = woodworks::domain::imperial::Length::fromInches(12),
+        .quality = {5},
+        .drying = woodworks::domain::types::Drying::KILN_DRIED,
+        .cost = {5000},
+        .location = "Storage",
+        .notes = "Cookie cutting log"
+    };
+    int id = logs.add(log3);
+    uow6.commit();
+    auto log3_2 = logs.get(id).value();
+    auto cookie3 = log3_2.cutCookie(woodworks::domain::imperial::Length::fromInches(6));
 }
 
 #endif
