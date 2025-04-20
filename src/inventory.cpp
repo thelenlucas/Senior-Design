@@ -107,6 +107,10 @@ InventoryPage::InventoryPage(QWidget *parent)
     connect(ui->lumberLengthMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
     connect(ui->lumberThicknessCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
     connect(ui->lumberSurfacingCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->lumberLengthMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->lumberLengthMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->firewoodSpeciesCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->firewoodDryingCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
 
     connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
@@ -130,11 +134,13 @@ void InventoryPage::buildFilterWidgets() {
     ui->cookiesSpeciesCombo->addItems(species);
     ui->slabsSpeciesCombo->addItems(species);
     ui->lumberSpeciesCombo->addItems(species);
+    ui->firewoodSpeciesCombo->addItems(species);
     // Set to "All" by default
     ui->logSpeciesComboBox->setCurrentIndex(0);
     ui->cookiesSpeciesCombo->setCurrentIndex(0);
     ui->slabsSpeciesCombo->setCurrentIndex(0);
     ui->lumberSpeciesCombo->setCurrentIndex(0);
+    ui->firewoodSpeciesCombo->setCurrentIndex(0);
 
     QStringList dryings = getUniqueDryingOptions();
     dryings.prepend("All");
@@ -142,11 +148,13 @@ void InventoryPage::buildFilterWidgets() {
     ui->cookieDryingCombo->addItems(dryings);
     ui->slabDryingCombo->addItems(dryings);
     ui->lumberDryingCombo->addItems(dryings);
+    ui->firewoodDryingCombo->addItems(dryings);
     // Set to "All" by default
     ui->logDryingComboBox->setCurrentIndex(0);
     ui->cookieDryingCombo->setCurrentIndex(0);
     ui->slabDryingCombo->setCurrentIndex(0);
     ui->lumberDryingCombo->setCurrentIndex(0);
+    ui->firewoodDryingCombo->setCurrentIndex(0);
 
     // Surfacing options for the slabs are different than the ones for the lumber
     ui->slabSurfacingCombo->addItem("All");
@@ -168,6 +176,7 @@ void InventoryPage::refreshModels()
     QVector<FieldFilter> cookieFilters;
     QVector<FieldFilter> slabsFilter;
     QVector<FieldFilter> lumberFilters;
+    QVector<FieldFilter> firewoodFilters;
 
     if (ui->logSpeciesComboBox->currentText() != "All") {
         logFilters.push_back(FieldFilter().exact("species", ui->logSpeciesComboBox->currentText()));
@@ -272,6 +281,13 @@ void InventoryPage::refreshModels()
         lumberFilters.push_back(FieldFilter().exact("surfacing", ui->lumberSurfacingCombo->currentText()));
     }
 
+    if (ui->firewoodSpeciesCombo->currentText() != "All") {
+        firewoodFilters.push_back(FieldFilter().exact("species", ui->firewoodSpeciesCombo->currentText()));
+    }
+    if (ui->firewoodDryingCombo->currentText() != "All") {
+        firewoodFilters.push_back(FieldFilter().exact("drying", ui->firewoodDryingCombo->currentText()));
+    }
+
     if (ui->detailedViewCheckBox->isChecked()) {
         ui->logsTableView->setModel(makeFilteredModel("display_logs", logFilters, this));
         ui->cookiesTableView->setModel(makeFilteredModel("display_cookies", cookieFilters, this));
@@ -283,7 +299,7 @@ void InventoryPage::refreshModels()
         ui->slabsTableView->setModel(makeFilteredModel("display_slabs_grouped", slabsFilter, this));
         ui->lumberTableView->setModel(makeFilteredModel("display_lumber_grouped", lumberFilters, this));
     }
-    ui->firewoodTableView->setModel(makeViewModel("display_firewood_grouped", this));
+    ui->firewoodTableView->setModel(makeFilteredModel("display_firewood_grouped", firewoodFilters, this));
     
     ui->logsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->cookiesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -382,8 +398,7 @@ void InventoryPage::onImageButtonClicked()
         return;
 
     // TODO: Implement spreadsheet import parsing logic in logic module.
-    QMessageBox::information(this, "Import Selected",
-                             "File selected: " + filename);
+    QMessageBox::information(this, "Import Selected", "File selected: " + filename);
 }
 
 void InventoryPage::mousePressEvent(QMouseEvent *event)

@@ -40,15 +40,14 @@ namespace woodworks::domain {
         return woodworks::infra::makeGroupedViewSQL(
             "display_firewood_grouped", "firewood",
             QStringList{
-                "COUNT(*) AS 'Count'",
                 "species AS 'Species'",
                 "ROUND(cubicFeet,2) AS 'Cubic Feet'",
+                "ROUND(cubicFeet/128.0,2) AS 'Chords'",
                 "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
-                "ROUND(AVG(cost)/100.0,2) AS 'Avg Cost ($)'"
+                "ROUND(SUM(cost)/100.0,2) AS 'Cost ($)'"
             },
             QStringList{
                 "species",
-                "ROUND(cubicFeet,2)",
                 "drying"
             }
         );
