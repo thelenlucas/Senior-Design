@@ -56,6 +56,7 @@ int main(int argc, char* argv[])
     woodworks::infra::QtSqlRepository<woodworks::domain::Cookie> cookieRepo(debee);
     woodworks::infra::QtSqlRepository<woodworks::domain::LiveEdgeSlab> liveEdgeSlabRepo(debee);
     woodworks::infra::QtSqlRepository<woodworks::domain::Lumber> lumberRepo(debee);
+    woodworks::infra::QtSqlRepository<woodworks::domain::Firewood> firewoodRepo(debee);
 
     QApplication app(argc, argv);
 

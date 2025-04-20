@@ -90,6 +90,23 @@ InventoryPage::InventoryPage(QWidget *parent)
     connect(ui->cookieDiameterMinSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
     connect(ui->cookieDiameterMaxSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
     connect(ui->cookieDryingCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->slabDryingCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->slabsSpeciesCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->slabLengthMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->slabLengthMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->slabWidthMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->slabWidthMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->slabThicknessMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->slabThicknessMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->lumberSpeciesCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->lumberThicknessCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->lumberDryingCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->lumberWidthMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->lumberWidthMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->lumberLengthMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->lumberLengthMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->lumberThicknessCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->lumberSurfacingCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
 
     connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
@@ -112,31 +129,45 @@ void InventoryPage::buildFilterWidgets() {
     ui->logSpeciesComboBox->addItems(species);
     ui->cookiesSpeciesCombo->addItems(species);
     ui->slabsSpeciesCombo->addItems(species);
+    ui->lumberSpeciesCombo->addItems(species);
     // Set to "All" by default
     ui->logSpeciesComboBox->setCurrentIndex(0);
     ui->cookiesSpeciesCombo->setCurrentIndex(0);
     ui->slabsSpeciesCombo->setCurrentIndex(0);
+    ui->lumberSpeciesCombo->setCurrentIndex(0);
 
     QStringList dryings = getUniqueDryingOptions();
     dryings.prepend("All");
     ui->logDryingComboBox->addItems(dryings);
     ui->cookieDryingCombo->addItems(dryings);
     ui->slabDryingCombo->addItems(dryings);
+    ui->lumberDryingCombo->addItems(dryings);
     // Set to "All" by default
     ui->logDryingComboBox->setCurrentIndex(0);
     ui->cookieDryingCombo->setCurrentIndex(0);
     ui->slabDryingCombo->setCurrentIndex(0);
+    ui->lumberDryingCombo->setCurrentIndex(0);
 
     // Surfacing options for the slabs are different than the ones for the lumber
     ui->slabSurfacingCombo->addItem("All");
     ui->slabSurfacingCombo->addItems(getUniqueValuesOfColumn("display_slabs", "Surfacing"));
     ui->slabSurfacingCombo->setCurrentIndex(0);
+    ui->lumberSurfacingCombo->addItem("All");
+    ui->lumberSurfacingCombo->addItems(getUniqueValuesOfColumn("display_lumber", "Surfacing"));
+    ui->lumberSurfacingCombo->setCurrentIndex(0);
+
+    // Since we're displaying lumber thickness in 'quarters'/4, we combo box it instead
+    ui->lumberThicknessCombo->addItem("All");
+    ui->lumberThicknessCombo->addItems(getUniqueValuesOfColumn("display_lumber", "Thickness"));
+    ui->lumberThicknessCombo->setCurrentIndex(0);
 }
 
 void InventoryPage::refreshModels()
 {
     QVector<FieldFilter> logFilters;
     QVector<FieldFilter> cookieFilters;
+    QVector<FieldFilter> slabsFilter;
+    QVector<FieldFilter> lumberFilters;
 
     if (ui->logSpeciesComboBox->currentText() != "All") {
         logFilters.push_back(FieldFilter().exact("species", ui->logSpeciesComboBox->currentText()));
@@ -184,46 +215,73 @@ void InventoryPage::refreshModels()
     }
 
     if (ui->slabsSpeciesCombo->currentText() != "All") {
-        logFilters.push_back(FieldFilter().exact("species", ui->slabsSpeciesCombo->currentText()));
+        slabsFilter.push_back(FieldFilter().exact("species", ui->slabsSpeciesCombo->currentText()));
     }
     if (ui->slabLengthMin->value() != 0 || ui->slabLengthMax->value() != 0) {
-        logFilters.push_back(FieldFilter().between(
+        slabsFilter.push_back(FieldFilter().between(
             "\"Length (in)\"",
             ui->slabLengthMin->value(),
             ui->slabLengthMax->value()
         ));
     }
     if (ui->slabWidthMax->value() != 0 || ui->slabWidthMin->value() != 0) {
-        logFilters.push_back(FieldFilter().between(
+        slabsFilter.push_back(FieldFilter().between(
             "\"Width (in)\"",
             ui->slabWidthMin->value(),
             ui->slabWidthMax->value()
         ));
     }
     if (ui->slabThicknessMin->value() != 0 || ui->slabThicknessMax->value() != 0) {
-        logFilters.push_back(FieldFilter().between(
+        slabsFilter.push_back(FieldFilter().between(
             "\"Thickness (in)\"",
             ui->slabThicknessMin->value(),
             ui->slabThicknessMax->value()
         ));
     }
     if (ui->slabDryingCombo->currentText() != "All") {
-        logFilters.push_back(FieldFilter().exact("drying", ui->slabDryingCombo->currentText()));
+        slabsFilter.push_back(FieldFilter().exact("drying", ui->slabDryingCombo->currentText()));
     }
     if (ui->slabSurfacingCombo->currentText() != "All") {
-        logFilters.push_back(FieldFilter().exact("surfacing", ui->slabSurfacingCombo->currentText()));
+        slabsFilter.push_back(FieldFilter().exact("surfacing", ui->slabSurfacingCombo->currentText()));
+    }
+
+    if (ui->lumberSpeciesCombo->currentText() != "All") {
+        lumberFilters.push_back(FieldFilter().exact("species", ui->lumberSpeciesCombo->currentText()));
+    }
+    if (ui->lumberLengthMin->value() != 0 || ui->lumberLengthMax->value() != 0) {
+        lumberFilters.push_back(FieldFilter().between(
+            "\"Length (in)\"",
+            ui->lumberLengthMin->value(),
+            ui->lumberLengthMax->value()
+        ));
+    }
+    if (ui->lumberWidthMin->value() != 0 || ui->lumberWidthMax->value() != 0) {
+        lumberFilters.push_back(FieldFilter().between(
+            "\"Width (in)\"",
+            ui->lumberWidthMin->value(),
+            ui->lumberWidthMax->value()
+        ));
+    }
+    if (ui->lumberThicknessCombo->currentText() != "All") {
+        lumberFilters.push_back(FieldFilter().exact("thickness", ui->lumberThicknessCombo->currentText()));
+    }
+    if (ui->lumberDryingCombo->currentText() != "All") {
+        lumberFilters.push_back(FieldFilter().exact("drying", ui->lumberDryingCombo->currentText()));
+    }
+    if (ui->lumberSurfacingCombo->currentText() != "All") {
+        lumberFilters.push_back(FieldFilter().exact("surfacing", ui->lumberSurfacingCombo->currentText()));
     }
 
     if (ui->detailedViewCheckBox->isChecked()) {
         ui->logsTableView->setModel(makeFilteredModel("display_logs", logFilters, this));
         ui->cookiesTableView->setModel(makeFilteredModel("display_cookies", cookieFilters, this));
-        ui->slabsTableView->setModel(makeViewModel("display_slabs", this));
-        ui->lumberTableView->setModel(makeViewModel("display_lumber", this));
+        ui->slabsTableView->setModel(makeFilteredModel("display_slabs", slabsFilter, this));
+        ui->lumberTableView->setModel(makeFilteredModel("display_lumber", lumberFilters, this));
     } else {
         ui->logsTableView->setModel(makeFilteredModel("display_logs_grouped", logFilters, this));
         ui->cookiesTableView->setModel(makeFilteredModel("display_cookies_grouped", cookieFilters, this));
-        ui->slabsTableView->setModel(makeViewModel("display_slabs_grouped", this));
-        ui->lumberTableView->setModel(makeViewModel("display_lumber_grouped", this));
+        ui->slabsTableView->setModel(makeFilteredModel("display_slabs_grouped", slabsFilter, this));
+        ui->lumberTableView->setModel(makeFilteredModel("display_lumber_grouped", lumberFilters, this));
     }
     ui->firewoodTableView->setModel(makeViewModel("display_firewood_grouped", this));
     

@@ -41,12 +41,12 @@ namespace woodworks::infra {
         QStringList dryingList;
         QSqlQuery query(db);
         if (!query.prepare(
-            "SELECT DISTINCT drying FROM ("
-            "SELECT drying FROM cookies UNION "
-            "SELECT drying FROM firewood UNION "
-            "SELECT drying FROM logs UNION "
-            "SELECT drying FROM lumber UNION "
-            "SELECT drying FROM live_edge_slabs)"
+            "SELECT DISTINCT Drying FROM ("
+            "SELECT Drying FROM display_cookies UNION "
+            "SELECT Drying FROM display_firewood UNION "
+            "SELECT Drying FROM display_logs UNION "
+            "SELECT Drying FROM display_lumber UNION "
+            "SELECT Drying FROM display_slabs)"
         )) {
             qDebug() << "Error preparing query for unique drying options:" << query.lastError().text();
             return dryingList;

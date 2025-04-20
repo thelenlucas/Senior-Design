@@ -126,7 +126,7 @@
       <enum>QTabWidget::North</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="logsTab">
       <attribute name="title">
@@ -536,6 +536,139 @@
        <string>Lumber</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_23">
+           <property name="text">
+            <string>Species:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="lumberSpeciesCombo">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_24">
+           <property name="text">
+            <string>Length:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="lumberLengthMin">
+           <property name="suffix">
+            <string> in</string>
+           </property>
+           <property name="maximum">
+            <double>999.990000000000009</double>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="label_25">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>-</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="lumberLengthMax">
+           <property name="suffix">
+            <string> in</string>
+           </property>
+           <property name="maximum">
+            <double>999.990000000000009</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_26">
+           <property name="text">
+            <string>Width:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="lumberWidthMin">
+           <property name="suffix">
+            <string> in</string>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="label_27">
+           <property name="text">
+            <string>-</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="lumberWidthMax">
+           <property name="suffix">
+            <string> in</string>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignRight">
+          <widget class="QLabel" name="label_28">
+           <property name="text">
+            <string>Thickness:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="lumberThicknessCombo"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_30">
+           <property name="text">
+            <string>Drying:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="lumberDryingCombo">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_31">
+           <property name="text">
+            <string>Surfacing:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="lumberSurfacingCombo">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <widget class="QTableView" name="lumberTableView"/>
        </item>
