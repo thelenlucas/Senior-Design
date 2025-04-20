@@ -67,6 +67,7 @@ int main(int argc, char* argv[]) {
         .width = woodworks::domain::imperial::Length::fromInches(10),
         .thickness = woodworks::domain::imperial::Length::fromInches(2),
         .drying = woodworks::domain::types::Drying::KILN_DRIED,
+        .surfacing = SlabSurfacing::RGH,
         .location = "Shop",
         .notes = "Test slab"
     };

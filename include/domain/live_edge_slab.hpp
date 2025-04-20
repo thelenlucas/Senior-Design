@@ -22,6 +22,8 @@ namespace woodworks::domain {
         Length thickness;
         // Drying
         Drying drying;
+        // Surfacing
+        SlabSurfacing surfacing;
         // Location
         std::string location;
         // Notes
