@@ -1,0 +1,66 @@
+# Deploy API documentation (generated with CMake → Doxygen) to GitHub Pages
+name: Docs → GitHub Pages
+
+on:
+  # Rebuild & publish whenever main is updated
+  push:
+    branches: [ "main" ]
+
+  # Allow manual runs from the Actions tab
+  workflow_dispatch:
+
+# Grant the runner the minimum permissions Pages needs
+permissions:
+  contents: write
+  pages:    write
+  id-token: write
+
+# Prevent overlapping deployments
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      # 1 — Fetch code
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2 — Toolchain for docs
+      # 2 — Toolchain for docs
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4.1.1
+        with:
+          cache: true            # speeds up subsequent runs
+      - name: Install Doxygen + Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      # 3 — Configure & build the “doc” target (defined in CMakeLists.txt)
+      - name: Configure with CMake
+        run: cmake -B build -S . -DBUILD_DOCS=ON
+
+      - name: Build Doxygen docs
+        run: cmake --build build --target doc
+
+      # 4 — Prepare Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 5 — Upload only the generated HTML
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/html
+
+      # 6 — Publish
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

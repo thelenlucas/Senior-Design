@@ -9,10 +9,10 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QTimer>
+#include <QStringList>
 
-#include "cookies.hpp"
 #include "inventory.hpp"
-#include "logs.hpp"
+#include "csv_importer.hpp"
 #include "ui_inventory.h"
 
 InventoryPage::InventoryPage(QWidget* parent)
@@ -24,7 +24,7 @@ InventoryPage::InventoryPage(QWidget* parent)
       cookiesModel(new QSqlQueryModel(this)),
       firewoodModel(new QSqlQueryModel(this))
 {
-    ui->setupUi(this);
+    // ui->setupUi(this);
 
     // Dynamically resize window to 60% of screen size and center.
     QScreen* screen = QGuiApplication::primaryScreen();
@@ -37,15 +37,15 @@ InventoryPage::InventoryPage(QWidget* parent)
              (screenSize.height() - windowSize.height()) / 2);
     }
 
-    // Setup the logical models for our mvc.
-    ui->individualLogsTable->setModel(individualLogsModel);
-    ui->groupedLogsTable->setModel(groupedLogsModel);
-    ui->lumberTable->setModel(lumberModel);
-    ui->slabsTable->setModel(slabsModel);
-    ui->cookiesTable->setModel(cookiesModel);
-    ui->firewoodTable->setModel(firewoodModel);
+    // // Setup the logical models for our mvc.
+    // ui->individualLogsTable->setModel(individualLogsModel);
+    // ui->groupedLogsTable->setModel(groupedLogsModel);
+    // ui->cookiesTable->setModel(cookiesModel);
+    // ui->lumberTable->setModel(lumberModel);
+    // ui->slabsTable->setModel(slabsModel);
+    // ui->firewoodTable->setModel(firewoodModel);
 
-    RefreshModels();
+    // refreshModels();
 
     connect(ui->addLogButton, &QPushButton::clicked, this,
             &InventoryPage::onAddLogClicked);
@@ -58,15 +58,18 @@ InventoryPage::InventoryPage(QWidget* parent)
 
     SetupFilterSignals();
 
-    setFocusPolicy(Qt::StrongFocus);
-    setWindowTitle("Inventory Management");
-    setAttribute(Qt::WA_DeleteOnClose);
-    setWindowFlags(Qt::Window);
+    // setFocusPolicy(Qt::StrongFocus);
+    // setWindowTitle("Inventory Management");
+    // setAttribute(Qt::WA_DeleteOnClose);
+    // setWindowFlags(Qt::Window);
 }
 
-InventoryPage::~InventoryPage() { delete ui; }
+InventoryPage::~InventoryPage()
+{
+    delete ui;
+}
 
-void InventoryPage::RefreshModels()
+void InventoryPage::refreshModels()
 {
     individualLogsModel->setQuery("SELECT * FROM logs_view",
                                   QSqlDatabase::database());
@@ -81,51 +84,57 @@ void InventoryPage::RefreshModels()
     firewoodModel->setQuery("SELECT * FROM display_firewood",
                             QSqlDatabase::database());
 
-    if (individualLogsModel->lastError().isValid())
-        qDebug() << "Individual logs query error:"
-                 << individualLogsModel->lastError().text();
+    // if (individualLogsModel->lastError().isValid())
+    //     qDebug() << "Individual logs query error:"
+    //              << individualLogsModel->lastError().text();
 
-    if (groupedLogsModel->lastError().isValid())
-        qDebug() << "Grouped logs query error:"
-                 << groupedLogsModel->lastError().text();
+    // if (groupedLogsModel->lastError().isValid())
+    //     qDebug() << "Grouped logs query error:"
+    //              << groupedLogsModel->lastError().text();
 
-    if (lumberModel->lastError().isValid())
-        qDebug() << "Lumber model query error:"
-                 << lumberModel->lastError().text();
+    // if (lumberModel->lastError().isValid())
+    //     qDebug() << "Lumber model query error:"
+    //              << lumberModel->lastError().text();
 
-    if (slabsModel->lastError().isValid())
-        qDebug() << "Slabs model query error:"
-                 << slabsModel->lastError().text();
+    // if (slabsModel->lastError().isValid())
+    //     qDebug() << "Slabs model query error:"
+    //              << slabsModel->lastError().text();
 
-    if (cookiesModel->lastError().isValid())
-        qDebug() << "Cookies model query error:"
-                 << cookiesModel->lastError().text();
+    // if (cookiesModel->lastError().isValid())
+    //     qDebug() << "Cookies model query error:"
+    //              << cookiesModel->lastError().text();
 
-    if (firewoodModel->lastError().isValid())
-        qDebug() << "Firewood model query error:"
-                 << firewoodModel->lastError().text();
+    // if (firewoodModel->lastError().isValid())
+    //     qDebug() << "Firewood model query error:"
+    //              << firewoodModel->lastError().text();
 }
 void InventoryPage::onAddLogClicked()
 {
-    QString species = ui->speciesEntry->text();
-    int lenFt = ui->lengthFt->value();
-    int lenIn = ui->lengthIn->value();
-    int diamIn = ui->diameterIn->value();
-    double costVal = ui->costValue->value();
-    int quality = ui->qualityValue->value();
-    std::string location = ui->locationEntry->text().toStdString();
+    // QString species = ui->speciesEntry->text();
+    // int lenFt = ui->lengthFt->value();
+    // int lenIn = ui->lengthIn->value();
+    // int diamIn = ui->diameterIn->value();
+    // double costVal = ui->costValue->value();
+    // int quality = ui->qualityValue->value();
+    // std::string location = ui->locationEntry->text().toStdString();
 
-    int lenQuarters = (lenFt * 12 + lenIn) * 4;
-    int diamQuarters = diamIn * 4;
+    // int lenQuarters = (lenFt * 12 + lenIn) * 4;
+    // int diamQuarters = diamIn * 4;
 
-    int costCents = static_cast<int>(costVal * 100);
-    int costQuarters = costCents / lenQuarters;
+    // int costCents = static_cast<int>(costVal * 100);
+    // int costQuarters = costCents / lenQuarters;
 
-    Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters,
-            quality, location);
-    log.insert();
+    // // Get the drying by casting back from the QComboBox value
+    // // int dryingVal = ui->dryingComboBox->currentData().toInt();
+    // // Drying drying = static_cast<Drying>(dryingVal);
+    // // // Create a new log
+    // // Log newLog(0, species.toStdString(), lenQuarters, diamQuarters,
+    // //            costQuarters, quality, drying, location);
+    // // // Insert the log into the database
+    // // newLog.insert();
 
-    RefreshModels();
+    // // Refresh the models to show the new log
+    // refreshModels();
 }
 
 void InventoryPage::onCookieButtonClicked()
@@ -143,7 +152,7 @@ void InventoryPage::onCookieButtonClicked()
         return;
     }
 
-    Log log = opt.value();
+    // Log log = opt.value();
 
     // Dialog for the user to enter a uint for cookie thickness
     bool ok;
@@ -162,7 +171,8 @@ void InventoryPage::onCookieButtonClicked()
     Cookie::make_from_log(log, static_cast<unsigned int>(enteredCut));
     log.cut_length(static_cast<unsigned int>(enteredCut));
 
-    RefreshModels();
+    // refreshModels();
+    // std::cout << "Cookies done! Models refreshed!" << std::endl;
 }
 
 void InventoryPage::onSpreadsheetImportClicked()
@@ -172,6 +182,39 @@ void InventoryPage::onSpreadsheetImportClicked()
                                      "Spreadsheets (*.csv *.xls *.xlsx)");
 
     if (filename.isEmpty())
+    // QMessageBox::information(this, "Warning", "\nPlease ensure that it is in the following format: CSV (Comma delimited)");
+    // QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv)");
+    // // .csv only, import one sheet at a time
+    // if (filename.isEmpty())
+    //     return;
+    // QStringList options;
+    // options << "Logs" << "Firewood" << "Slabs" << "Cookies" << "Lumber";
+    // bool ok = false;
+    // QString userChoice = QInputDialog::getItem(this, QObject::tr("Sheet Picker"), QObject::tr("Please select which sheet you're importing:"), options, 0, false, &ok);
+
+    // if(!ok){
+    //     std::cout << "User canceled input." << std::endl;
+    //     return;
+    // }
+    // // TODO: Implement spreadsheet import parsing logic in logic module.
+    // QMessageBox::information(this, "Import Selected", "File selected: " + filename + "\nSheet Type: " + userChoice);
+    // std::string filePath = filename.toStdString();
+    // Importer import;
+
+    // if(userChoice == "Logs"){import.importLogs(filePath);}
+    // else if(userChoice == "Firewood"){import.importFirewood(filePath);}
+    // else if(userChoice == "Slabs"){import.importSlabs(filePath);}
+    // else if(userChoice == "Cookies"){import.importCookies(filePath);}
+    // else if(userChoice == "Lumber"){import.importLumber(filePath);}
+
+    refreshModels();
+}
+
+void InventoryPage::onImageButtonClicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this, "Import Image", QString(), "Images (*.jpg *.png)");
+
+    if(filename.isEmpty())
         return;
 
     // TODO: Implement spreadsheet import parsing logic in logic module.
@@ -181,18 +224,18 @@ void InventoryPage::onSpreadsheetImportClicked()
 
 void InventoryPage::mousePressEvent(QMouseEvent* event)
 {
-    qDebug() << "InventoryPage clicked at:" << event->pos()
-             << "Mouse click on widgetAt:"
-             << QApplication::widgetAt(QCursor::pos());
+    qDebug() << "InventoryPage clicked at:" << event->pos() 
+    << "Mouse click on widgetAt:" 
+    << QApplication::widgetAt(QCursor::pos());
 
     QWidget::mousePressEvent(event);
 }
 
 bool InventoryPage::eventFilter(QObject* obj, QEvent* event)
 {
-    qDebug() << "EVENT TYPE:" << event->type()
-             << "on:" << obj->metaObject()->className()
-             << "named:" << obj->objectName();
+    qDebug() << "EVENT TYPE:" << event->type() 
+    << "on:" << obj->metaObject()->className() 
+    << "named:" << obj->objectName();
 
     if (event->type() == QEvent::MouseButtonPress)
     {

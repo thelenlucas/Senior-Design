@@ -18,9 +18,14 @@
 #include "logs.hpp"
 #include "mainwindow.hpp"
 #include "project_editor.hpp"
-#include "sales.hpp"
 #include "types.hpp"
+
+#include "mainwindow.hpp"
 #include "ui_mainwindow.h"
+#include "inventory.hpp"
+#include "cutlist.hpp"
+#include "sales.hpp"
+#include "infra/mappers/view_helpers.hpp"
 
 #include <iomanip>
 #include <iostream>
@@ -28,6 +33,8 @@
 
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
+
+// TODO: Remove this outdated window, replace with landing page
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow),

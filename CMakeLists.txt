@@ -33,7 +33,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SQLiteCpp)
 
 # Specify the source files for the executable.
-file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB SRC_TOP        "${CMAKE_SOURCE_DIR}/src/*.cpp")          # new
+file(GLOB_RECURSE SRC_REST CONFIGURE_DEPENDS
+     "${CMAKE_SOURCE_DIR}/src/**/*.cpp")
+
+set(SRC_FILES  ${SRC_TOP} ${SRC_REST})
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.hpp")
 file(GLOB_RECURSE H_FILES "${CMAKE_SOURCE_DIR}/include/*.h")
 set(
@@ -59,17 +63,57 @@ list(APPEND SOURCES ${UI_FILES})
 
 # Create the executable target.
 add_executable(logdb ${SOURCES})
+# New executable for the test harness. Includes everything except main.cpp
+add_executable(Woodworks_test src/main_testing.cpp ${SOURCES})
+target_link_libraries(Woodworks_test PRIVATE Qt5::Widgets SQLiteCpp)
+
+# Define the BUILDING_WOODWORKS_TEST macro to select the right main
+target_compile_definitions(Woodworks_test PRIVATE BUILDING_WOODWORKS_TEST)
+
+# -----------------------------------------------------------------------------
+# Documentation (Doxygen)
+# -----------------------------------------------------------------------------
+
+option(BUILD_DOCS "Generate API documentation with Doxygen" OFF)
+
+if (BUILD_DOCS)
+    # Attempt to locate Doxygen quietly; documentation is optional.
+    find_package(Doxygen QUIET COMPONENTS dot)
+
+    if (DOXYGEN_FOUND)
+        # configure_file copies our checked‑in Doxyfile, replaces variables, and
+        # writes a build‑dir version called Doxyfile
+        set(DOXYGEN_IN  ${CMAKE_SOURCE_DIR}/Doxyfile)
+        set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/Doxyfile)
+
+        configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} COPYONLY)
+
+        add_custom_target(doc
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/..
+            COMMENT "Generating API documentation with Doxygen"
+            VERBATIM)
+    else()
+        message(WARNING "Doxygen not found; documentation target will be skipped.")
+    endif()
+endif()
 
 # Set the AUTOUIC_SEARCH_PATHS property to the source directory.
 set_target_properties(logdb PROPERTIES
     AUTOMOC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/src"
     AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui"
 )
+set_target_properties(Woodworks_test PROPERTIES
+    AUTOMOC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/src"
+    AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui"
+)
 
 # Specify the include directories.
 target_include_directories(logdb PUBLIC ${includes})
+target_include_directories(Woodworks_test PUBLIC ${includes})
 
 target_link_libraries(logdb PRIVATE SQLiteCpp Qt5::Widgets Qt5::Sql)
+target_link_libraries(Woodworks_test PRIVATE SQLiteCpp Qt5::Widgets Qt5::Sql)
 
 add_compile_options(
     # Standard warnings.

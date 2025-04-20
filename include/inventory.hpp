@@ -27,13 +27,16 @@ class InventoryPage : public QWidget
     void onAddLogClicked();
     void onCookieButtonClicked();
     void onSpreadsheetImportClicked();
+    void onImageButtonClicked();
+    void ApplyActiveFilters();                          // Applies filters live when filter widgets change.
+    void ClearAllFilters();                             // Clears all filter fields.
 
 
     void ApplyActiveFilters();                          // Applies filters live when filter widgets change.
     void ClearAllFilters();                             // Clears all filter fields.
 
   private:
-    void RefreshModels();                               // Refreshes all models from the DB.
+    void refreshModels();                               // Refreshes all models from the DB.
     void SetupFilterSignals();                          // Connects signals for filter UI.
     void ResetFilterColors();                           // Resets colors for all filter fields.
     void UpdateFieldColor(QWidget* widget, bool valid); // Styles widget color for feedback.

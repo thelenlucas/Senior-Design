@@ -209,6 +209,31 @@
                                         </property>
                                     </widget>
                                 </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="standardCutButtonsLayout">
+                                        <item>
+                                            <widget class="QPushButton" name="cookieCutButton">
+                                                <property name="text">
+                                                    <string>Cut Cookies...</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QPushButton" name="slabCutButton">
+                                                <property name="text">
+                                                    <string>Cut Slabs...</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QPushButton" name="lumberCutButton">
+                                                <property name="text">
+                                                    <string>Cut Lumber...</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
                             </layout>
                         </item>
                         <item>
@@ -237,7 +262,8 @@
                             </layout>
                         </item>
                     </layout>
-                </widget>
+                </widget> <!--
+                mdiArea -->
             </item>
         </layout>
     </widget>
