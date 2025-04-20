@@ -5,11 +5,13 @@
 #include <stdio.h>
 #include "domain/log.hpp"
 #include "domain/cookie.hpp"
+#include "domain/live_edge_slab.hpp"
 #include "infra/repository.hpp"
 #include "infra/unit_of_work.hpp"
 #include "infra/connection.hpp"
 #include "infra/mappers/log_mapper.hpp"
 #include "infra/mappers/cookie_mapper.hpp"
+#include "infra/mappers/live_edge_slab_mapper.hpp"
 
 using namespace woodworks::domain;
 using namespace woodworks::domain::imperial;
@@ -54,6 +56,26 @@ int main(int argc, char* argv[]) {
     auto cookie2 = cookies.get(1);
     assert(cookie2.has_value());
     assert(cookie2->species.name == "Maple");
+
+    // LiveEdgeSlab insertion test
+    UnitOfWork uow3(db);
+    QtSqlRepository<LiveEdgeSlab> slabs(db);
+    woodworks::domain::LiveEdgeSlab slab {
+        .id = {-1},
+        .species = {"Walnut"},
+        .length = woodworks::domain::imperial::Length::fromFeet(8),
+        .width = woodworks::domain::imperial::Length::fromInches(10),
+        .thickness = woodworks::domain::imperial::Length::fromInches(2),
+        .drying = woodworks::domain::types::Drying::KILN_DRIED,
+        .location = "Shop",
+        .notes = "Test slab"
+    };
+    slabs.add(slab);
+    uow3.commit();
+    auto slab2 = slabs.get(1);
+    assert(slab2.has_value());
+    assert(slab2->species.name == "Walnut");
+    assert(slab2->length.toInches() == 8 * 12);
 }
 
 #endif
