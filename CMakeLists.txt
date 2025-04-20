@@ -128,15 +128,3 @@ add_compile_options(
     -Wimplicit-fallthrough
     -Wcast-align
 )
-
-# Copy in the database file
-add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/test.db
-    COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/example.db
-            ${CMAKE_BINARY_DIR}/test.db
-    DEPENDS ${CMAKE_SOURCE_DIR}/example.db
-    COMMENT "Copying example.db to test.db in build directory"
-)
-
-add_custom_target(copy_database ALL DEPENDS ${CMAKE_BINARY_DIR}/test.db)
