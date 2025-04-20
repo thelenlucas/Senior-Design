@@ -31,10 +31,6 @@ class InventoryPage : public QWidget
     void ApplyActiveFilters();                          // Applies filters live when filter widgets change.
     void ClearAllFilters();                             // Clears all filter fields.
 
-
-    void ApplyActiveFilters();                          // Applies filters live when filter widgets change.
-    void ClearAllFilters();                             // Clears all filter fields.
-
   private:
     void refreshModels();                               // Refreshes all models from the DB.
     void SetupFilterSignals();                          // Connects signals for filter UI.

@@ -21,8 +21,6 @@ CutlistPage::CutlistPage(QWidget* parent)
       orderEntryModel(new QSqlQueryModel(this)),
       orderMarkerModel(new QSqlQueryModel(this)),
       partsModel(new QSqlQueryModel(this)), logsModel(new QSqlQueryModel(this))
-      orderMarkerModel(new QSqlQueryModel(this)),
-      partsModel(new QSqlQueryModel(this)), logsModel(new QSqlQueryModel(this))
 {
     ui->setupUi(this);
 

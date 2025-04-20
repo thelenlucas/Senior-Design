@@ -10,6 +10,7 @@
 #include <QSqlQuery>
 #include <QTimer>
 #include <QStringList>
+#include <QVariant>
 
 #include "inventory.hpp"
 #include "csv_importer.hpp"
@@ -39,6 +40,7 @@ using namespace woodworks::domain;
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
 using namespace woodworks::domain;
+using namespace woodworks::infra;
 
 InventoryPage::InventoryPage(QWidget* parent)
     : QWidget(parent), ui(new Ui::InventoryPage),
@@ -69,6 +71,12 @@ InventoryPage::InventoryPage(QWidget* parent)
     // ui->lumberTable->setModel(lumberModel);
     // ui->slabsTable->setModel(slabsModel);
     // ui->firewoodTable->setModel(firewoodModel);
+
+    // Add drying options to the combo box
+    ui->dryingComboBox->addItem("Green", QVariant(static_cast<int>(Drying::GREEN)));
+    ui->dryingComboBox->addItem("Air Dried", QVariant(static_cast<int>(Drying::AIR_DRIED)));
+    ui->dryingComboBox->addItem("Kiln Dried", QVariant(static_cast<int>(Drying::KILN_DRIED)));
+    ui->dryingComboBox->addItem("Air & Kiln Dried", QVariant(static_cast<int>(Drying::KILN_AND_AIR_DRIED)));
 
     // refreshModels();
 
@@ -158,12 +166,9 @@ void InventoryPage::onAddLogClicked()
 
 void InventoryPage::onCookieButtonClicked()
 {
+    int logId = ui->individualLogsTable->currentIndex().siblingAtColumn(0).data().toInt();
     // Get the selected log id
-    std::optional<Log> opt =
-        Log::get_by_id(ui->individualLogsTable->currentIndex()
-                           .siblingAtColumn(0)
-                           .data()
-                           .toInt());
+    std::optional<Log> opt = QtSqlRepository<Log>::spawn().get(logId);
 
     if (!opt)
     {
@@ -171,14 +176,14 @@ void InventoryPage::onCookieButtonClicked()
         return;
     }
 
-    // Log log = opt.value();
+    Log log = opt.value();
 
     // Dialog for the user to enter a uint for cookie thickness
     bool ok;
     int enteredCut = QInputDialog::getInt(
         this, QObject::tr("Cookie Cutter"),
         QObject::tr("Please enter the desired cookie thickness (inches):"),
-        0.01, 0.01, log.getLenQuarters(), ok);
+        0.01, 0.01, log.length.toInches(), ok);
 
     if (!ok)
     {
@@ -187,8 +192,7 @@ void InventoryPage::onCookieButtonClicked()
     }
 
     std::cout << "Cutting Cookie!" << std::endl;
-    Cookie::make_from_log(log, static_cast<unsigned int>(enteredCut));
-    log.cut_length(static_cast<unsigned int>(enteredCut));
+    auto cookie = log.cutCookie(Length::fromInches(enteredCut));
 
     // refreshModels();
     // std::cout << "Cookies done! Models refreshed!" << std::endl;
