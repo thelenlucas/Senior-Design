@@ -17,10 +17,15 @@ namespace woodworks::infra {
         public:
             explicit QtSqlRepository(QSqlDatabase& db) : db_(db) {
                 // Create the repo if it does not exist
+                std::cout << "Creating repository for " << typeid(T).name() << std::endl;
                 QSqlQuery q(db_);
                 q.prepare(T::createDbSQL());
                 if (!q.exec()) {
                     throw std::runtime_error("Failed to create table: " + q.lastError().text().toStdString());
+                }
+                q.prepare(T::individualViewSQL());
+                if (!q.exec()) {
+                    throw std::runtime_error("Failed to create view: " + q.lastError().text().toStdString());
                 }
             }
 
