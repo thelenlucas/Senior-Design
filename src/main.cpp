@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 {
 
     auto db = qsd::addDatabase("QSQLITE");
-    db.setDatabaseName("test.db");
+    db.setDatabaseName("woodworks.db");
     if (!db.open()) 
         qDebug() << "Failed to open database:" << db.lastError().text();
 

@@ -39,87 +39,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setCentralWidget(ui->centralwidget);
 
-    //! Testing only!
-    // Cookie with ID 5 has been provided with an image
-    Cookie cookieWithImage = Cookie::get_by_id(5).value();
-    cookieWithImage.viewPixmap();
-
-    // Enable docking options globally for the main window
-    setDockOptions(QMainWindow::AnimatedDocks |
-                   QMainWindow::AllowNestedDocks |
-                   QMainWindow::AllowTabbedDocks);
-
-    // Add the menu and actions for switching between pages
-    QMenu *menu = menuBar()->addMenu("WoodWorks");
-    QAction *inventoryAction = new QAction("Inventory", this);
-    QAction *cutlistAction = new QAction("Cutlist", this);
-    QAction *salesAction = new QAction("Sales", this);
-
-    menu->addAction(inventoryAction);
-    menu->addAction(cutlistAction);
-    menu->addAction(salesAction);
-
-    // Connect action triggers to handlers
-    connect(inventoryAction, &QAction::triggered, this, &MainWindow::showInventoryPage);
-    connect(cutlistAction, &QAction::triggered, this, &MainWindow::showCutlistPage);
-    connect(salesAction, &QAction::triggered, this, &MainWindow::showSalesPage);
-
-    // Set up the database connection
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(DATABASE_FILE);
-    if (!db.open()) {
-        qDebug() << "Database error:" << db.lastError().text();
-        return;
-    }
-
-    // Load and bind models
-    auto *groupedModel = new QSqlQueryModel(this);
-    auto *logsModel = new QSqlQueryModel(this);
-    groupedModel->setQuery(GROUPED_LOGS_QUERY, db);
-    logsModel->setQuery(LOGS_QUERY, db);
-
-    if (groupedModel->lastError().isValid())
-        qDebug() << "Query error:" << groupedModel->lastError().text();
-    if (logsModel->lastError().isValid())
-        qDebug() << "Query error:" << logsModel->lastError().text();
-
-    ui->groupedLogsTableView->setModel(groupedModel);
-    ui->individualLogTableView->setModel(logsModel);
     refreshModel();
-
-    ui->groupedLogsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->individualLogTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-    connect(ui->enterLogButton, &QPushButton::clicked, this, &MainWindow::onEnterLogButtonClicked);
-    connect(ui->scrapLogButton, &QPushButton::clicked, this, &MainWindow::onScrapLogButtonClicked);
-    connect(ui->makeFirewoodButton, &QPushButton::clicked, this, &MainWindow::onFirewoodButtonClicked);
-    connect(ui->individualLogTableView, &QTableView::doubleClicked, this, &MainWindow::onTableCellDoubleClicked);
-    connect(ui->projectsEditorAction, &QAction::triggered, this, &MainWindow::onProjectEditActionTriggered);
 }
 
 void MainWindow::refreshModel()
 {
-    // Get the current model from the table view.
-    auto *groupedModel = qobject_cast<QSqlQueryModel*>(ui->groupedLogsTableView->model());
-    if (!groupedModel)
-        return;
-    auto *logsModel = qobject_cast<QSqlQueryModel*>(ui->individualLogTableView->model());
-
-    // Define the query string (could also be a member variable)
-    QString queryStr = GROUPED_LOGS_QUERY;
-    QString logsQueryStr = LOGS_QUERY;
-
-    // Re-run the query.
-    groupedModel->setQuery(queryStr, QSqlDatabase::database());
-    logsModel->setQuery(logsQueryStr, QSqlDatabase::database());
-
-    // Optional: Check for errors.
-    if (groupedModel->lastError().isValid()) {
-        qDebug() << "Query error:" << groupedModel->lastError().text();
+    // Set up the model for the individual logs table
+    QSqlQueryModel *model = new QSqlQueryModel(this);
+    model->setQuery("SELECT * FROM display_logs", QSqlDatabase::database());
+    if (model->lastError().isValid()) {
+        qDebug() << "Query error:" << model->lastError().text();
     }
-    if (logsModel->lastError().isValid()) {
-        qDebug() << "Query error:" << logsModel->lastError().text();
-    }
+    ui->individualLogTableView->setModel(model);
 }
 
 void MainWindow::onEnterLogButtonClicked() {

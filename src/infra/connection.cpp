@@ -12,7 +12,7 @@ namespace woodworks::infra {
     {
         std::call_once(initFlag_, []{
             db_ = QSqlDatabase::addDatabase("QSQLITE");
-            db_.setDatabaseName("woodwoorks.db");
+            db_.setDatabaseName("woodworks.db");
             if (!db_.open()) {
                 throw std::runtime_error("Failed to open database" + db_.lastError().text().toStdString());
             }
