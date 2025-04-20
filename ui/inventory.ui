@@ -95,7 +95,11 @@
        <widget class="QSpinBox" name="lengthFt"/>
       </item>
       <item row="3" column="2">
-       <widget class="QDoubleSpinBox" name="costValue"/>
+       <widget class="QDoubleSpinBox" name="costValue">
+        <property name="maximum">
+         <double>9999999999999.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="0" column="2">
        <widget class="QLineEdit" name="speciesEntry"/>
@@ -139,13 +143,20 @@
      <property name="tabPosition">
       <enum>QTabWidget::North</enum>
      </property>
+     <property name="currentIndex">
+      <number>5</number>
+     </property>
      <widget class="QWidget" name="logsTab">
       <attribute name="title">
        <string>Logs</string>
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QTableView" name="individualLogsTable"/>
+        <widget class="QTableView" name="individualLogsTable">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -155,7 +166,11 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QTableView" name="groupedLogsTable"/>
+        <widget class="QTableView" name="groupedLogsTable">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -165,7 +180,11 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QTableView" name="lumberTable"/>
+        <widget class="QTableView" name="lumberTable">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -175,7 +194,11 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QTableView" name="slabsTable"/>
+        <widget class="QTableView" name="slabsTable">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -185,7 +208,11 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QTableView" name="cookiesTable"/>
+        <widget class="QTableView" name="cookiesTable">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -195,7 +222,11 @@
       </attribute>
       <layout class="QVBoxLayout">
        <item>
-        <widget class="QTableView" name="firewoodTable"/>
+        <widget class="QTableView" name="firewoodTable">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

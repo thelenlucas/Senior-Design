@@ -16,7 +16,8 @@ namespace woodworks::domain {
                 surfacing INTEGER NOT NULL,
                 worth INTEGER NOT NULL,
                 location TEXT,
-                notes TEXT
+                notes TEXT,
+                image BLOB
             )
         )";
     }
@@ -33,41 +34,46 @@ namespace woodworks::domain {
 
     inline QString LiveEdgeSlab::insertSQL()
     {
-        return "INSERT INTO live_edge_slabs (species, length, width, thickness, drying, surfacing, worth, location, notes) VALUES (:species, :length, :width, :thickness, :drying, :surfacing, :worth, :location, :notes)";
+        return "INSERT INTO live_edge_slabs (species, length, width, thickness, drying, surfacing, worth, location, notes, image) VALUES (:species, :length, :width, :thickness, :drying, :surfacing, :worth, :location, :notes, :image)";
     }
 
     inline QString LiveEdgeSlab::updateSQL()
     {
-        return "UPDATE live_edge_slabs SET species = :species, length = :length, width = :width, thickness = :thickness, drying = :drying, surfacing = :surfacing, worth = :worth, location = :location, notes = :notes WHERE id = :id";
+        return "UPDATE live_edge_slabs SET species = :species, length = :length, width = :width, thickness = :thickness, drying = :drying, surfacing = :surfacing, worth = :worth, location = :location, notes = :notes, image = :image WHERE id = :id";
     }
 
     inline QString LiveEdgeSlab::selectOneSQL() { return u8R"(SELECT * FROM live_edge_slabs WHERE id=:id)"; }
     inline QString LiveEdgeSlab::selectAllSQL() { return u8R"(SELECT * FROM live_edge_slabs)"; }
 
+    // Add delete SQL
+    inline QString LiveEdgeSlab::deleteSQL() { return u8R"(DELETE FROM live_edge_slabs WHERE id=:id)"; }
+
     inline void LiveEdgeSlab::bindForInsert(QSqlQuery& q, const LiveEdgeSlab& slab)
     {
         q.bindValue(":species", QString::fromStdString(slab.species.name));
-        q.bindValue(":length", slab.length.toInches());
-        q.bindValue(":width", slab.width.toInches());
-        q.bindValue(":thickness", slab.thickness.toInches());
+        q.bindValue(":length", slab.length.toTicks());
+        q.bindValue(":width", slab.width.toTicks());
+        q.bindValue(":thickness", slab.thickness.toTicks());
         q.bindValue(":drying", static_cast<int>(slab.drying));
         q.bindValue(":surfacing", static_cast<int>(slab.surfacing));
         q.bindValue(":worth", static_cast<int>(slab.worth.toCents()));
         q.bindValue(":location", QString::fromStdString(slab.location));
         q.bindValue(":notes", QString::fromStdString(slab.notes));
+        q.bindValue(":image", slab.imageBuffer);
     }
 
     inline void LiveEdgeSlab::bindForUpdate(QSqlQuery& q, const LiveEdgeSlab& slab)
     {
         q.bindValue(":species", QString::fromStdString(slab.species.name));
-        q.bindValue(":length", slab.length.toInches());
-        q.bindValue(":width", slab.width.toInches());
-        q.bindValue(":thickness", slab.thickness.toInches());
+        q.bindValue(":length", slab.length.toTicks());
+        q.bindValue(":width", slab.width.toTicks());
+        q.bindValue(":thickness", slab.thickness.toTicks());
         q.bindValue(":drying", static_cast<int>(slab.drying));
         q.bindValue(":surfacing", static_cast<int>(slab.surfacing));
         q.bindValue(":worth", static_cast<int>(slab.worth.toCents()));
         q.bindValue(":location", QString::fromStdString(slab.location));
         q.bindValue(":notes", QString::fromStdString(slab.notes));
+        q.bindValue(":image", slab.imageBuffer);
         q.bindValue(":id", slab.id.id);
     }
 
@@ -76,14 +82,15 @@ namespace woodworks::domain {
         return {
             .id = {record.value("id").toInt()},
             .species = {record.value("species").toString().toStdString()},
-            .length = Length::fromInches(record.value("length").toDouble()),
-            .width = Length::fromInches(record.value("width").toDouble()),
-            .thickness = Length::fromInches(record.value("thickness").toDouble()),
+            .length = Length::fromTicks(record.value("length").toDouble()),
+            .width = Length::fromTicks(record.value("width").toDouble()),
+            .thickness = Length::fromTicks(record.value("thickness").toDouble()),
             .drying = static_cast<Drying>(record.value("drying").toInt()),
             .surfacing = static_cast<SlabSurfacing>(record.value("surfacing").toInt()),
             .worth = { record.value("worth").toInt() },
             .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString()
+            .notes = record.value("notes").toString().toStdString(),
+            .imageBuffer = record.value("image").toByteArray()
         };
     }
 }

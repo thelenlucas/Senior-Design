@@ -10,6 +10,7 @@
 #include <QDockWidget>
 #include <QSqlRecord>
 #include <QScreen>
+#include <QVBoxLayout>
 
 #include "project_editor.hpp"
 #include "types.hpp"
@@ -20,6 +21,15 @@
 #include "cutlist.hpp"
 #include "sales.hpp"
 #include "infra/mappers/view_helpers.hpp"
+#include <optional>
+
+#include "domain/log.hpp"
+#include "infra/connection.hpp"
+#include "infra/repository.hpp"
+#include "widgets/log_inventory.hpp"
+
+using namespace woodworks::domain;
+using namespace woodworks::widgets;
 
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
@@ -37,16 +47,19 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setCentralWidget(ui->centralwidget);
 
+    // Set the inventoryLayout vertical layout and insert a log_inventory widget
+    auto *w = new LogInventory(this);
+    auto *layout = new QVBoxLayout;
+    layout->addWidget(w);
+    layout->addStretch();
+    ui->inventoryLayout->setLayout(layout);
+
     refreshModel();
 }
 
 void MainWindow::refreshModel()
 {
-    QSqlQueryModel *model = woodworks::infra::mappers::makeViewModel("display_logs", this);
-    ui->individualLogTableView->setModel(model);
-
-    QSqlQueryModel *groupedModel = woodworks::infra::mappers::makeViewModel("display_logs_grouped", this);
-    ui->groupedLogsTableView->setModel(groupedModel);
+    // 
 }
 
 void MainWindow::onEnterLogButtonClicked() {
@@ -74,88 +87,20 @@ void MainWindow::onEnterLogButtonClicked() {
 }
 
 void MainWindow::onScrapLogButtonClicked() {
-    // // Get the selected log ID
-    // QModelIndex index = ui->individualLogTableView->currentIndex();
-    // std::optional<Log> log = Log::get_by_id(index.sibling(index.row(), 0).data().toInt());
+    
 
-    // // If the log is not found, return, after displaying an error message
-    // if (!log) {
-    //     QMessageBox::critical(this, "Error", "Log not found");
-    //     return;
-    // }
-
-    // // Scrap the log
-    // log->scrap();
-
-    // // Update the model
-    // refreshModel();
+    refreshModel();
 }
 
 void MainWindow::onFirewoodButtonClicked() {
-    // // Get the selected log ID, and get log object
-    // std::optional<Log> opt = Log::get_by_id(ui->individualLogTableView->currentIndex().siblingAtColumn(0).data().toInt());
-
-    // if (!opt) {
-    //     QMessageBox::critical(this, "Error", "Log not found");
-    //     return;
-    // }
-
-    // // Confirm that they want to turn the log into firewood
-    // QMessageBox::StandardButton reply = QMessageBox::question(this, "Confirm", "Are you sure you want to turn this entire log into firewood?", QMessageBox::Yes | QMessageBox::No);
-    // if (reply == QMessageBox::No) {
-    //     return;
-    // }
-
-    // std::cout << "Turning log into firewood" << std::endl;
-
-    // // We're going to convert the entire usable length of the log into firewood
-    // Log log = opt.value();
-    // int usableLength = log.getAvailableLength();
-
-    // // Manufacture the log into firewood
-    // auto firewood = Firewood::make_from_log(log, usableLength);
-
-    // refreshModel();
-}
+    }
 
 void MainWindow::onTableCellDoubleClicked() {
-    //get currently selected row
-    QTableView *shownTable;
-    shownTable = ui->individualLogTableView;
-    int tableIndex = shownTable->currentIndex().row();
-
-    //query database for photo of log at selected index
-    QString imageQueryStr = "SELECT * FROM logs";
-    QSqlQueryModel *imageModel = new QSqlQueryModel(this);
-    imageModel->setQuery(imageQueryStr, QSqlDatabase::database());
-    QByteArray imageData = imageModel->record(tableIndex).value("media").toByteArray();
-
-    //turn binary data into image data
-    QPixmap *imagePixmap = new QPixmap();
-    imagePixmap->loadFromData(imageData);
-
-    //open a new window & display image
-    QMainWindow *imageWindow = new QMainWindow(this);
-    QLabel *imageLabel = new QLabel(imageWindow);
-    if (imagePixmap->width() > QGuiApplication::primaryScreen()->availableGeometry().width()) {
-        *imagePixmap = imagePixmap->scaledToWidth(QGuiApplication::primaryScreen()->availableGeometry().width() - 100);
-    }
-    else if(imagePixmap->height() > QGuiApplication::primaryScreen()->availableGeometry().height()) {
-        *imagePixmap = imagePixmap->scaledToHeight(QGuiApplication::primaryScreen()->availableGeometry().height() - 100);
-    }
-    imageLabel->setPixmap(*imagePixmap);
-    imageLabel->adjustSize();
-    imageWindow->resize(imageLabel->size());
-    QString imageWindowTitle = "Log #";
-    int logID = imageModel->record(tableIndex).value("ID").toInt();
-    imageWindowTitle.append(QString::number(logID));
-    imageWindow->setWindowTitle(imageWindowTitle);
-    imageWindow->show();
+    
 }
 
 void MainWindow::onProjectEditActionTriggered() {
-   ProjectEditorWindow *projectEditor = new ProjectEditorWindow(this);
-   projectEditor->show();
+   
 }
 
 MainWindow::~MainWindow() 

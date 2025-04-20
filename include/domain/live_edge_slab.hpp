@@ -4,6 +4,7 @@
 #include "units.hpp"
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QByteArray>
 
 using namespace woodworks::domain::types;
 using namespace woodworks::domain::imperial;
@@ -30,6 +31,7 @@ namespace woodworks::domain {
         std::string location;
         // Notes
         std::string notes;
+        QByteArray imageBuffer;  // image data buffer
 
         // ---- Mapping -----
         static QString createDbSQL();
@@ -39,6 +41,7 @@ namespace woodworks::domain {
         static QString updateSQL();
         static QString selectOneSQL();
         static QString selectAllSQL();
+        static QString deleteSQL();
 
         static void bindForInsert(QSqlQuery&, const LiveEdgeSlab&);
         static void bindForUpdate(QSqlQuery&, const LiveEdgeSlab&);

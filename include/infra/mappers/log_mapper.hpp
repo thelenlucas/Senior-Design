@@ -16,7 +16,8 @@ namespace woodworks::domain {
                 drying INTEGER NOT NULL,
                 cost INTEGER NOT NULL,
                 location TEXT,
-                notes TEXT
+                notes TEXT,
+                image BLOB
             )
         )";
     }
@@ -62,40 +63,44 @@ namespace woodworks::domain {
 
     inline QString Log::insertSQL()
     {
-        return "INSERT INTO logs (species, length, diameter, quality, drying, cost, location, notes) VALUES (:species, :length, :diameter, :quality, :drying, :cost, :location, :notes)";
+        return "INSERT INTO logs (species, length, diameter, quality, drying, cost, location, notes, image) VALUES (:species, :length, :diameter, :quality, :drying, :cost, :location, :notes, :image)";
     }
 
     inline QString Log::updateSQL()
     {
-        return "UPDATE logs SET species = :species, length = :length, diameter = :diameter, quality = :quality, drying = :drying, cost = :cost, location = :location, notes = :notes WHERE id = :id";
+        return "UPDATE logs SET species = :species, length = :length, diameter = :diameter, quality = :quality, drying = :drying, cost = :cost, location = :location, notes = :notes, image = :image WHERE id = :id";
     }
 
     inline QString Log::selectOneSQL() { return u8R"(SELECT * FROM logs WHERE id=:id)"; }
 
     inline QString Log::selectAllSQL() { return u8R"(SELECT * FROM logs)"; }
 
+    inline QString Log::deleteSQL() { return u8R"(DELETE FROM logs WHERE id=:id)"; }
+
     inline void Log::bindForInsert(QSqlQuery& q, const Log& log)
     {
         q.bindValue(":species", QString::fromStdString(log.species.name));
-        q.bindValue(":length", log.length.toInches());
-        q.bindValue(":diameter", log.diameter.toInches());
+        q.bindValue(":length", log.length.toTicks());
+        q.bindValue(":diameter", log.diameter.toTicks());
         q.bindValue(":quality", log.quality.value);
         q.bindValue(":drying", static_cast<int>(log.drying));
         q.bindValue(":cost", log.cost.cents);
         q.bindValue(":location", QString::fromStdString(log.location));
         q.bindValue(":notes", QString::fromStdString(log.notes));
+        q.bindValue(":image", log.imageBuffer);
     }
 
     inline void Log::bindForUpdate(QSqlQuery& q, const Log& log)
     {
         q.bindValue(":species", QString::fromStdString(log.species.name));
-        q.bindValue(":length", log.length.toInches());
-        q.bindValue(":diameter", log.diameter.toInches());
+        q.bindValue(":length", log.length.toTicks());
+        q.bindValue(":diameter", log.diameter.toTicks());
         q.bindValue(":quality", log.quality.value);
         q.bindValue(":drying", static_cast<int>(log.drying));
         q.bindValue(":cost", log.cost.cents);
         q.bindValue(":location", QString::fromStdString(log.location));
         q.bindValue(":notes", QString::fromStdString(log.notes));
+        q.bindValue(":image", log.imageBuffer);
         q.bindValue(":id", log.id.id);
     }
 
@@ -104,13 +109,14 @@ namespace woodworks::domain {
         Log log {
             .id = {record.value("id").toInt()},
             .species = {record.value("species").toString().toStdString()},
-            .length = Length::fromInches(record.value("length").toDouble()),
-            .diameter = Length::fromInches(record.value("diameter").toDouble()),
+            .length = Length::fromTicks(record.value("length").toDouble()),
+            .diameter = Length::fromTicks(record.value("diameter").toDouble()),
             .quality = Quality(record.value("quality").toInt()),
             .drying = static_cast<Drying>(record.value("drying").toInt()),
             .cost = {Dollar(record.value("cost").toInt())},
             .location = record.value("location").toString().toStdString(),
             .notes = record.value("notes").toString().toStdString(),
+            .imageBuffer = record.value("image").toByteArray(),
         };
         
         return log;

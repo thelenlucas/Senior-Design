@@ -15,6 +15,18 @@
 #include "csv_importer.hpp"
 #include "ui_inventory.h"
 
+#include "infra/mappers/view_helpers.hpp"
+#include "domain/units.hpp"
+#include "domain/types.hpp"
+#include "domain/log.hpp"
+
+#include "infra/connection.hpp"
+#include "infra/repository.hpp"
+
+using namespace woodworks::domain::imperial;
+using namespace woodworks::domain::types;
+using namespace woodworks::domain;
+
 InventoryPage::InventoryPage(QWidget *parent)
     : QWidget(parent), ui(new Ui::InventoryPage),
       individualLogsModel(new QSqlQueryModel(this)),
@@ -24,37 +36,36 @@ InventoryPage::InventoryPage(QWidget *parent)
       cookiesModel(new QSqlQueryModel(this)),
       firewoodModel(new QSqlQueryModel(this))
 {
-    // ui->setupUi(this);
+    ui->setupUi(this);
 
-    // // Dynamically resize window to 60% of screen size and center
-    // QScreen *screen = QGuiApplication::primaryScreen();
-    // if (screen)
-    // {
-    //     QSize screenSize = screen->availableGeometry().size();
-    //     QSize windowSize(screenSize.width() * 0.6, screenSize.height() * 0.6);
-    //     resize(windowSize);
-    //     move((screenSize.width() - windowSize.width()) / 2, (screenSize.height() - windowSize.height()) / 2);
-    // }
+    // Dynamically resize window to 60% of screen size and center
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (screen)
+    {
+        QSize screenSize = screen->availableGeometry().size();
+        QSize windowSize(screenSize.width() * 0.6, screenSize.height() * 0.6);
+        resize(windowSize);
+        move((screenSize.width() - windowSize.width()) / 2, (screenSize.height() - windowSize.height()) / 2);
+    }
 
-    // // Setup the logical models for our mvc.
-    // ui->individualLogsTable->setModel(individualLogsModel);
-    // ui->groupedLogsTable->setModel(groupedLogsModel);
-    // ui->cookiesTable->setModel(cookiesModel);
-    // ui->lumberTable->setModel(lumberModel);
-    // ui->slabsTable->setModel(slabsModel);
-    // ui->firewoodTable->setModel(firewoodModel);
+    // Set up the drying dropdown
+    ui->dryingComboBox->addItem("Green", QVariant::fromValue(Drying::GREEN));
+    ui->dryingComboBox->addItem("Kiln Dried", QVariant::fromValue(Drying::KILN_DRIED));
+    ui->dryingComboBox->addItem("Air Dried", QVariant::fromValue(Drying::AIR_DRIED));
+    ui->dryingComboBox->addItem("Kiln & Air Dried", QVariant::fromValue(Drying::KILN_AND_AIR_DRIED));
+    ui->dryingComboBox->setCurrentIndex(0);
 
-    // refreshModels();
+    refreshModels();
 
-    // connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
-    // connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
-    // connect(ui->createCookieButton, &QPushButton::clicked, this, &InventoryPage::onCookieButtonClicked);
-    // connect(ui->insertImageButton, &QPushButton::clicked, this, &InventoryPage::onImageButtonClicked);
+    connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
+    connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
+    connect(ui->createCookieButton, &QPushButton::clicked, this, &InventoryPage::onCookieButtonClicked);
+    connect(ui->insertImageButton, &QPushButton::clicked, this, &InventoryPage::onImageButtonClicked);
 
-    // setFocusPolicy(Qt::StrongFocus);
-    // setWindowTitle("Inventory Management");
-    // setAttribute(Qt::WA_DeleteOnClose);
-    // setWindowFlags(Qt::Window);
+    setFocusPolicy(Qt::StrongFocus);
+    setWindowTitle("Inventory Management");
+    setAttribute(Qt::WA_DeleteOnClose);
+    setWindowFlags(Qt::Window);
 }
 
 InventoryPage::~InventoryPage()
@@ -64,66 +75,65 @@ InventoryPage::~InventoryPage()
 
 void InventoryPage::refreshModels()
 {
-    // individualLogsModel->setQuery("SELECT * FROM logs_view", QSqlDatabase::database());
-    // groupedLogsModel->setQuery("SELECT * FROM logs_view_grouped", QSqlDatabase::database());
+    auto* individualLogsModel = woodworks::infra::mappers::makeViewModel("display_logs", this);
+    auto* groupedLogsModel = woodworks::infra::mappers::makeViewModel("display_logs_grouped", this);
+    auto* cookiesModel = woodworks::infra::mappers::makeViewModel("display_cookies", this);
+    auto* lumberModel = woodworks::infra::mappers::makeViewModel("display_lumber", this);
+    auto* slabsModel = woodworks::infra::mappers::makeViewModel("display_slabs", this);
+    auto* firewoodModel = woodworks::infra::mappers::makeViewModel("display_firewood", this);
 
-    // lumberModel->setQuery("SELECT * FROM display_lumber", QSqlDatabase::database());
-    // slabsModel->setQuery("SELECT * FROM display_slabs", QSqlDatabase::database());
-    // cookiesModel->setQuery("SELECT * FROM display_cookies", QSqlDatabase::database());
-    // firewoodModel->setQuery("SELECT * FROM display_firewood", QSqlDatabase::database());
+    ui->individualLogsTable->setModel(individualLogsModel);
+    ui->groupedLogsTable->setModel(groupedLogsModel);
+    ui->cookiesTable->setModel(cookiesModel);
+    ui->lumberTable->setModel(lumberModel);
+    ui->slabsTable->setModel(slabsModel);
+    ui->firewoodTable->setModel(firewoodModel);
 
-    // if (individualLogsModel->lastError().isValid())
-    //     qDebug() << "Individual logs query error:"
-    //              << individualLogsModel->lastError().text();
-
-    // if (groupedLogsModel->lastError().isValid())
-    //     qDebug() << "Grouped logs query error:"
-    //              << groupedLogsModel->lastError().text();
-
-    // if (lumberModel->lastError().isValid())
-    //     qDebug() << "Lumber model query error:"
-    //              << lumberModel->lastError().text();
-
-    // if (slabsModel->lastError().isValid())
-    //     qDebug() << "Slabs model query error:"
-    //              << slabsModel->lastError().text();
-
-    // if (cookiesModel->lastError().isValid())
-    //     qDebug() << "Cookies model query error:"
-    //              << cookiesModel->lastError().text();
-
-    // if (firewoodModel->lastError().isValid())
-    //     qDebug() << "Firewood model query error:"
-    //              << firewoodModel->lastError().text();
+    ui->individualLogsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->groupedLogsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->cookiesTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->lumberTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->slabsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->firewoodTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 void InventoryPage::onAddLogClicked()
 {
-    // QString species = ui->speciesEntry->text();
-    // int lenFt = ui->lengthFt->value();
-    // int lenIn = ui->lengthIn->value();
-    // int diamIn = ui->diameterIn->value();
-    // double costVal = ui->costValue->value();
-    // int quality = ui->qualityValue->value();
-    // std::string location = ui->locationEntry->text().toStdString();
+    Length logLen = Length::fromFeet(ui->lengthFt->value()) + Length::fromInches(ui->lengthIn->value());
+    Length logDiam = Length::fromInches(ui->diameterIn->value());
+    Species logSpecies = {ui->speciesEntry->text().toStdString()};  
+    Quality logQuality = {ui->qualityValue->value()};
+    Drying logDrying = ui->dryingComboBox->currentData().value<Drying>();
+    Dollar logCost = {static_cast<int>(ui->costValue->value() * 100)};
+    std::string location = ui->locationEntry->text().toStdString();
 
-    // int lenQuarters = (lenFt * 12 + lenIn) * 4;
-    // int diamQuarters = diamIn * 4;
+    Log log = Log::uninitialized();
 
-    // int costCents = static_cast<int>(costVal * 100);
-    // int costQuarters = costCents / lenQuarters;
+    log.length = logLen;
+    log.diameter = logDiam;
+    log.species = logSpecies;
+    log.quality = logQuality;
+    log.drying = logDrying;
+    log.cost = logCost;
+    log.location = location;
 
-    // // Get the drying by casting back from the QComboBox value
-    // // int dryingVal = ui->dryingComboBox->currentData().toInt();
-    // // Drying drying = static_cast<Drying>(dryingVal);
-    // // // Create a new log
-    // // Log newLog(0, species.toStdString(), lenQuarters, diamQuarters,
-    // //            costQuarters, quality, drying, location);
-    // // // Insert the log into the database
-    // // newLog.insert();
+    if (!log.isValid())
+    {
+        QMessageBox::critical(this, "Error", "Invalid log data");
+        return;
+    }
 
-    // // Refresh the models to show the new log
-    // refreshModels();
+    // Insert the log into the database
+    auto& deebee = woodworks::infra::DbConnection::instance();
+    auto repo = woodworks::infra::QtSqlRepository<Log>(deebee);
+
+    if (!repo.add(log))
+    {
+        QMessageBox::critical(this, "Error", "Failed to insert log: " + deebee.lastError().text());
+        return;
+    }
+
+    refreshModels();
 }
 
 void InventoryPage::onCookieButtonClicked() {
