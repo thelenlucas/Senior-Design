@@ -38,7 +38,7 @@ class CutlistPage : public QWidget
     void OnAdjustCutLength();
 
   private:
-    void refreshModels();
+    void RefreshModels();
     void ResizeToDisplayPercentage(double width_ratio, double height_ratio);
     void ResizeSubWindowsProportionally(unsigned int count);
 
