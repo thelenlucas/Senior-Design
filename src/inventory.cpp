@@ -24,37 +24,37 @@ InventoryPage::InventoryPage(QWidget *parent)
       cookiesModel(new QSqlQueryModel(this)),
       firewoodModel(new QSqlQueryModel(this))
 {
-    ui->setupUi(this);
+    // ui->setupUi(this);
 
-    // Dynamically resize window to 60% of screen size and center
-    QScreen *screen = QGuiApplication::primaryScreen();
-    if (screen)
-    {
-        QSize screenSize = screen->availableGeometry().size();
-        QSize windowSize(screenSize.width() * 0.6, screenSize.height() * 0.6);
-        resize(windowSize);
-        move((screenSize.width() - windowSize.width()) / 2, (screenSize.height() - windowSize.height()) / 2);
-    }
+    // // Dynamically resize window to 60% of screen size and center
+    // QScreen *screen = QGuiApplication::primaryScreen();
+    // if (screen)
+    // {
+    //     QSize screenSize = screen->availableGeometry().size();
+    //     QSize windowSize(screenSize.width() * 0.6, screenSize.height() * 0.6);
+    //     resize(windowSize);
+    //     move((screenSize.width() - windowSize.width()) / 2, (screenSize.height() - windowSize.height()) / 2);
+    // }
 
-    // Setup the logical models for our mvc.
-    ui->individualLogsTable->setModel(individualLogsModel);
-    ui->groupedLogsTable->setModel(groupedLogsModel);
-    ui->cookiesTable->setModel(cookiesModel);
-    ui->lumberTable->setModel(lumberModel);
-    ui->slabsTable->setModel(slabsModel);
-    ui->firewoodTable->setModel(firewoodModel);
+    // // Setup the logical models for our mvc.
+    // ui->individualLogsTable->setModel(individualLogsModel);
+    // ui->groupedLogsTable->setModel(groupedLogsModel);
+    // ui->cookiesTable->setModel(cookiesModel);
+    // ui->lumberTable->setModel(lumberModel);
+    // ui->slabsTable->setModel(slabsModel);
+    // ui->firewoodTable->setModel(firewoodModel);
 
-    refreshModels();
+    // refreshModels();
 
-    connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
-    connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
-    connect(ui->createCookieButton, &QPushButton::clicked, this, &InventoryPage::onCookieButtonClicked);
-    connect(ui->insertImageButton, &QPushButton::clicked, this, &InventoryPage::onImageButtonClicked);
+    // connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
+    // connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
+    // connect(ui->createCookieButton, &QPushButton::clicked, this, &InventoryPage::onCookieButtonClicked);
+    // connect(ui->insertImageButton, &QPushButton::clicked, this, &InventoryPage::onImageButtonClicked);
 
-    setFocusPolicy(Qt::StrongFocus);
-    setWindowTitle("Inventory Management");
-    setAttribute(Qt::WA_DeleteOnClose);
-    setWindowFlags(Qt::Window);
+    // setFocusPolicy(Qt::StrongFocus);
+    // setWindowTitle("Inventory Management");
+    // setAttribute(Qt::WA_DeleteOnClose);
+    // setWindowFlags(Qt::Window);
 }
 
 InventoryPage::~InventoryPage()
@@ -64,66 +64,66 @@ InventoryPage::~InventoryPage()
 
 void InventoryPage::refreshModels()
 {
-    individualLogsModel->setQuery("SELECT * FROM logs_view", QSqlDatabase::database());
-    groupedLogsModel->setQuery("SELECT * FROM logs_view_grouped", QSqlDatabase::database());
+    // individualLogsModel->setQuery("SELECT * FROM logs_view", QSqlDatabase::database());
+    // groupedLogsModel->setQuery("SELECT * FROM logs_view_grouped", QSqlDatabase::database());
 
-    lumberModel->setQuery("SELECT * FROM display_lumber", QSqlDatabase::database());
-    slabsModel->setQuery("SELECT * FROM display_slabs", QSqlDatabase::database());
-    cookiesModel->setQuery("SELECT * FROM display_cookies", QSqlDatabase::database());
-    firewoodModel->setQuery("SELECT * FROM display_firewood", QSqlDatabase::database());
+    // lumberModel->setQuery("SELECT * FROM display_lumber", QSqlDatabase::database());
+    // slabsModel->setQuery("SELECT * FROM display_slabs", QSqlDatabase::database());
+    // cookiesModel->setQuery("SELECT * FROM display_cookies", QSqlDatabase::database());
+    // firewoodModel->setQuery("SELECT * FROM display_firewood", QSqlDatabase::database());
 
-    if (individualLogsModel->lastError().isValid())
-        qDebug() << "Individual logs query error:"
-                 << individualLogsModel->lastError().text();
+    // if (individualLogsModel->lastError().isValid())
+    //     qDebug() << "Individual logs query error:"
+    //              << individualLogsModel->lastError().text();
 
-    if (groupedLogsModel->lastError().isValid())
-        qDebug() << "Grouped logs query error:"
-                 << groupedLogsModel->lastError().text();
+    // if (groupedLogsModel->lastError().isValid())
+    //     qDebug() << "Grouped logs query error:"
+    //              << groupedLogsModel->lastError().text();
 
-    if (lumberModel->lastError().isValid())
-        qDebug() << "Lumber model query error:"
-                 << lumberModel->lastError().text();
+    // if (lumberModel->lastError().isValid())
+    //     qDebug() << "Lumber model query error:"
+    //              << lumberModel->lastError().text();
 
-    if (slabsModel->lastError().isValid())
-        qDebug() << "Slabs model query error:"
-                 << slabsModel->lastError().text();
+    // if (slabsModel->lastError().isValid())
+    //     qDebug() << "Slabs model query error:"
+    //              << slabsModel->lastError().text();
 
-    if (cookiesModel->lastError().isValid())
-        qDebug() << "Cookies model query error:"
-                 << cookiesModel->lastError().text();
+    // if (cookiesModel->lastError().isValid())
+    //     qDebug() << "Cookies model query error:"
+    //              << cookiesModel->lastError().text();
 
-    if (firewoodModel->lastError().isValid())
-        qDebug() << "Firewood model query error:"
-                 << firewoodModel->lastError().text();
+    // if (firewoodModel->lastError().isValid())
+    //     qDebug() << "Firewood model query error:"
+    //              << firewoodModel->lastError().text();
 }
 
 void InventoryPage::onAddLogClicked()
 {
-    QString species = ui->speciesEntry->text();
-    int lenFt = ui->lengthFt->value();
-    int lenIn = ui->lengthIn->value();
-    int diamIn = ui->diameterIn->value();
-    double costVal = ui->costValue->value();
-    int quality = ui->qualityValue->value();
-    std::string location = ui->locationEntry->text().toStdString();
+    // QString species = ui->speciesEntry->text();
+    // int lenFt = ui->lengthFt->value();
+    // int lenIn = ui->lengthIn->value();
+    // int diamIn = ui->diameterIn->value();
+    // double costVal = ui->costValue->value();
+    // int quality = ui->qualityValue->value();
+    // std::string location = ui->locationEntry->text().toStdString();
 
-    int lenQuarters = (lenFt * 12 + lenIn) * 4;
-    int diamQuarters = diamIn * 4;
+    // int lenQuarters = (lenFt * 12 + lenIn) * 4;
+    // int diamQuarters = diamIn * 4;
 
-    int costCents = static_cast<int>(costVal * 100);
-    int costQuarters = costCents / lenQuarters;
+    // int costCents = static_cast<int>(costVal * 100);
+    // int costQuarters = costCents / lenQuarters;
 
-    // Get the drying by casting back from the QComboBox value
-    // int dryingVal = ui->dryingComboBox->currentData().toInt();
-    // Drying drying = static_cast<Drying>(dryingVal);
-    // // Create a new log
-    // Log newLog(0, species.toStdString(), lenQuarters, diamQuarters,
-    //            costQuarters, quality, drying, location);
-    // // Insert the log into the database
-    // newLog.insert();
+    // // Get the drying by casting back from the QComboBox value
+    // // int dryingVal = ui->dryingComboBox->currentData().toInt();
+    // // Drying drying = static_cast<Drying>(dryingVal);
+    // // // Create a new log
+    // // Log newLog(0, species.toStdString(), lenQuarters, diamQuarters,
+    // //            costQuarters, quality, drying, location);
+    // // // Insert the log into the database
+    // // newLog.insert();
 
-    // Refresh the models to show the new log
-    refreshModels();
+    // // Refresh the models to show the new log
+    // refreshModels();
 }
 
 void InventoryPage::onCookieButtonClicked() {

@@ -75,7 +75,7 @@ namespace woodworks::domain::types {
     };
 
     // Convert from live-edge to lumber surfacing
-    LumberSurfacing toLumberSurfacing(SlabSurfacing surf)
+    inline LumberSurfacing toLumberSurfacing(SlabSurfacing surf)
     {
         switch (surf)
         {
@@ -87,7 +87,7 @@ namespace woodworks::domain::types {
     }
 
     // Formatting for drying
-    std::string toString(Drying drying)
+    inline std::string toString(Drying drying)
     {
         switch (drying)
         {
@@ -100,7 +100,7 @@ namespace woodworks::domain::types {
     }
 
     // Formatting for slab surfacing
-    std::string toString(SlabSurfacing surf)
+    inline std::string toString(SlabSurfacing surf)
     {
         switch (surf)
         {
@@ -112,7 +112,7 @@ namespace woodworks::domain::types {
     }
 
     // Formatting for lumber surfacing
-    std::string toString(LumberSurfacing surf)
+    inline std::string toString(LumberSurfacing surf)
     {
         switch (surf)
         {
