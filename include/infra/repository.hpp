@@ -39,6 +39,12 @@ namespace woodworks::infra {
                 }
             }
 
+            // Create a repository without a connection
+            explicit static QtSqlRepository<T> spawn() {
+                auto& db = woodworks::infra::DbConnection::instance();
+                return QtSqlRepository<T>(db);
+            }
+
             std::optional<T> get(int id) {
                 QSqlQuery q(db_);
                 q.prepare(T::selectOneSQL());
