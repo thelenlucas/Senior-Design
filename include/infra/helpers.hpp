@@ -35,6 +35,34 @@ namespace woodworks::infra {
         return out;
     }
 
+    // Unique drying options
+    inline QStringList getUniqueDryingOptions() {
+        auto &db = DbConnection::instance();
+        QStringList dryingList;
+        QSqlQuery query(db);
+        if (!query.prepare(
+            "SELECT DISTINCT drying FROM ("
+            "SELECT drying FROM cookies UNION "
+            "SELECT drying FROM firewood UNION "
+            "SELECT drying FROM logs UNION "
+            "SELECT drying FROM lumber UNION "
+            "SELECT drying FROM live_edge_slabs)"
+        )) {
+            qDebug() << "Error preparing query for unique drying options:" << query.lastError().text();
+            return dryingList;
+        }
+
+        auto out = QStringList();
+        if (query.exec()) {
+            while (query.next()) {
+                out << query.value(0).toString();
+            }
+        } else {
+            qDebug() << "Error fetching unique drying options:" << query.lastError().text();
+        }
+        return out;
+    }
+
     // Gets the max of a column in a table
     inline int getMaxOfColumn(const QString &tableName, const QString &columnName) {
         auto &db = DbConnection::instance();

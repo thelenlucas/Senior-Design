@@ -111,16 +111,26 @@ void InventoryPage::buildFilterWidgets() {
     species.prepend("All");
     ui->logSpeciesComboBox->addItems(species);
     ui->cookiesSpeciesCombo->addItems(species);
+    ui->slabsSpeciesCombo->addItems(species);
     // Set to "All" by default
     ui->logSpeciesComboBox->setCurrentIndex(0);
     ui->cookiesSpeciesCombo->setCurrentIndex(0);
+    ui->slabsSpeciesCombo->setCurrentIndex(0);
 
-    QStringList dryings = getUniqueValuesOfColumn("display_logs", "Drying");
+    QStringList dryings = getUniqueDryingOptions();
     dryings.prepend("All");
     ui->logDryingComboBox->addItems(dryings);
     ui->cookieDryingCombo->addItems(dryings);
+    ui->slabDryingCombo->addItems(dryings);
+    // Set to "All" by default
     ui->logDryingComboBox->setCurrentIndex(0);
     ui->cookieDryingCombo->setCurrentIndex(0);
+    ui->slabDryingCombo->setCurrentIndex(0);
+
+    // Surfacing options for the slabs are different than the ones for the lumber
+    ui->slabSurfacingCombo->addItem("All");
+    ui->slabSurfacingCombo->addItems(getUniqueValuesOfColumn("display_slabs", "Surfacing"));
+    ui->slabSurfacingCombo->setCurrentIndex(0);
 }
 
 void InventoryPage::refreshModels()
@@ -171,6 +181,37 @@ void InventoryPage::refreshModels()
     }
     if (ui->cookieDryingCombo->currentText() != "All") {
         cookieFilters.push_back(FieldFilter().exact("drying", ui->cookieDryingCombo->currentText()));
+    }
+
+    if (ui->slabsSpeciesCombo->currentText() != "All") {
+        logFilters.push_back(FieldFilter().exact("species", ui->slabsSpeciesCombo->currentText()));
+    }
+    if (ui->slabLengthMin->value() != 0 || ui->slabLengthMax->value() != 0) {
+        logFilters.push_back(FieldFilter().between(
+            "\"Length (in)\"",
+            ui->slabLengthMin->value(),
+            ui->slabLengthMax->value()
+        ));
+    }
+    if (ui->slabWidthMax->value() != 0 || ui->slabWidthMin->value() != 0) {
+        logFilters.push_back(FieldFilter().between(
+            "\"Width (in)\"",
+            ui->slabWidthMin->value(),
+            ui->slabWidthMax->value()
+        ));
+    }
+    if (ui->slabThicknessMin->value() != 0 || ui->slabThicknessMax->value() != 0) {
+        logFilters.push_back(FieldFilter().between(
+            "\"Thickness (in)\"",
+            ui->slabThicknessMin->value(),
+            ui->slabThicknessMax->value()
+        ));
+    }
+    if (ui->slabDryingCombo->currentText() != "All") {
+        logFilters.push_back(FieldFilter().exact("drying", ui->slabDryingCombo->currentText()));
+    }
+    if (ui->slabSurfacingCombo->currentText() != "All") {
+        logFilters.push_back(FieldFilter().exact("surfacing", ui->slabSurfacingCombo->currentText()));
     }
 
     if (ui->detailedViewCheckBox->isChecked()) {
