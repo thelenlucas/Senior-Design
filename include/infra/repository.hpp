@@ -43,7 +43,7 @@ namespace woodworks::infra {
                 q.prepare(T::selectOneSQL());
                 q.bindValue(0, QVariant(id));
                 if (!q.exec() || !q.next()) {
-                    std::nullopt;
+                    return std::nullopt;
                 }
                 return T::fromRecord(q.record());
             }
