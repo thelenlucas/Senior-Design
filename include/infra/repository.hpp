@@ -15,6 +15,7 @@
 #include "infra/mappers/cookie_mapper.hpp"
 #include "infra/mappers/live_edge_slab_mapper.hpp"
 #include "infra/mappers/lumber_mapper.hpp"
+#include "infra/mappers/firewood_mapper.hpp"
 
 namespace woodworks::infra {
     template<typename T>
