@@ -24,7 +24,7 @@ namespace woodworks::domain {
     }
 
     inline QString Lumber::individualViewSQL() {
-        return woodworks::infra::mappers::makeIndividualViewSQL(
+        return woodworks::infra::makeIndividualViewSQL(
             "display_lumber", "lumber",
             QStringList{
                 "id AS 'ID'",
@@ -39,7 +39,7 @@ namespace woodworks::domain {
     }
 
     inline QString Lumber::groupedViewSQL() {
-        return woodworks::infra::mappers::makeGroupedViewSQL(
+        return woodworks::infra::makeGroupedViewSQL(
             "display_lumber_grouped", "lumber",
             QStringList{
                 "COUNT(*) AS 'Count'",

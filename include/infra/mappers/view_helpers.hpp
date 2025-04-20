@@ -6,7 +6,7 @@
 #include <QSqlError>
 #include <QDebug>
 
-namespace woodworks::infra::mappers {
+namespace woodworks::infra {
 
 inline QString makeIndividualViewSQL(const QString& viewName, const QString& tableName, const QStringList& columns) {
     QString selectCols = columns.join(", ");

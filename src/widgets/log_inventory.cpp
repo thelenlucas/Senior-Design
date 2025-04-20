@@ -30,8 +30,8 @@ void LogInventory::refreshModel()
 {
     auto repo = QtSqlRepository<Log>::spawn();
 
-    auto* individualLogsModel = infra::mappers::makeViewModel("individual_logs", this);
-    auto* groupedLogsModel = infra::mappers::makeViewModel("grouped_logs", this);
+    auto* individualLogsModel = infra::makeViewModel("individual_logs", this);
+    auto* groupedLogsModel = infra::makeViewModel("grouped_logs", this);
 
     ui->individualLogTableView->setModel(individualLogsModel);
     ui->groupedLogsTableView->setModel(groupedLogsModel);

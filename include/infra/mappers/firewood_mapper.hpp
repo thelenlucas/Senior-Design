@@ -22,7 +22,7 @@ namespace woodworks::domain {
 
     // No individual view for firewood, but we still need to define the function
     inline QString Firewood::individualViewSQL() {
-        return woodworks::infra::mappers::makeIndividualViewSQL(
+        return woodworks::infra::makeIndividualViewSQL(
             "display_firewood", "firewood",
             QStringList{
                 "id AS 'ID'",
@@ -37,7 +37,7 @@ namespace woodworks::domain {
     }
 
     inline QString Firewood::groupedViewSQL() {
-        return woodworks::infra::mappers::makeGroupedViewSQL(
+        return woodworks::infra::makeGroupedViewSQL(
             "display_firewood_grouped", "firewood",
             QStringList{
                 "COUNT(*) AS 'Count'",

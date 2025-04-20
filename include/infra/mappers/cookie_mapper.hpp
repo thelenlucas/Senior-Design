@@ -24,7 +24,7 @@ namespace woodworks::domain {
     }
 
     inline QString Cookie::individualViewSQL() {
-        return woodworks::infra::mappers::makeIndividualViewSQL(
+        return woodworks::infra::makeIndividualViewSQL(
             "display_cookies", "cookies",
             QStringList{
                 "id AS 'ID'",
@@ -40,7 +40,7 @@ namespace woodworks::domain {
     }
 
     inline QString Cookie::groupedViewSQL() {
-        return woodworks::infra::mappers::makeGroupedViewSQL(
+        return woodworks::infra::makeGroupedViewSQL(
             "display_cookies_grouped", "cookies",
             QStringList{
                 "COUNT(*) AS 'Count'",

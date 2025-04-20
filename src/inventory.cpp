@@ -35,14 +35,14 @@ using namespace woodworks::domain;
 
 #include "infra/connection.hpp"
 #include "infra/repository.hpp"
-
+#include "infra/mappers/view_helpers.hpp"
 
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
 using namespace woodworks::domain;
 using namespace woodworks::infra;
 
-InventoryPage::InventoryPage(QWidget* parent)
+InventoryPage::InventoryPage(QWidget *parent)
     : QWidget(parent), ui(new Ui::InventoryPage),
       individualLogsModel(new QSqlQueryModel(this)),
       groupedLogsModel(new QSqlQueryModel(this)),
@@ -54,7 +54,7 @@ InventoryPage::InventoryPage(QWidget* parent)
     ui->setupUi(this);
 
     // Dynamically resize window to 60% of screen size and center.
-    QScreen* screen = QGuiApplication::primaryScreen();
+    QScreen *screen = QGuiApplication::primaryScreen();
     if (screen)
     {
         QSize screenSize = screen->availableGeometry().size();
@@ -78,18 +78,16 @@ InventoryPage::InventoryPage(QWidget* parent)
     ui->dryingComboBox->addItem("Kiln Dried", QVariant(static_cast<int>(Drying::KILN_DRIED)));
     ui->dryingComboBox->addItem("Air & Kiln Dried", QVariant(static_cast<int>(Drying::KILN_AND_AIR_DRIED)));
 
-    // refreshModels();
+    refreshModels();
+
+    // When the detailed view is checked, refresh the models.
+    connect(ui->detailedViewCheckBox, &QCheckBox::stateChanged, this,
+            &InventoryPage::refreshModels);
 
     connect(ui->addLogButton, &QPushButton::clicked, this,
             &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this,
             &InventoryPage::onSpreadsheetImportClicked);
-    connect(ui->createCookieButton, &QPushButton::clicked, this,
-            &InventoryPage::onCookieButtonClicked);
-    connect(ui->clearFilterButton, &QPushButton::clicked, this,
-            &InventoryPage::ClearAllFilters);
-
-    SetupFilterSignals();
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
@@ -104,32 +102,35 @@ InventoryPage::~InventoryPage()
 
 void InventoryPage::refreshModels()
 {
-    auto* individualLogsModel = woodworks::infra::mappers::makeViewModel("display_logs", this);
-    auto* groupedLogsModel = woodworks::infra::mappers::makeViewModel("display_logs_grouped", this);
-    auto* cookiesModel = woodworks::infra::mappers::makeViewModel("display_cookies", this);
-    auto* lumberModel = woodworks::infra::mappers::makeViewModel("display_lumber", this);
-    auto* slabsModel = woodworks::infra::mappers::makeViewModel("display_slabs", this);
-    auto* firewoodModel = woodworks::infra::mappers::makeViewModel("display_firewood", this);
-
-    ui->individualLogsTable->setModel(individualLogsModel);
-    ui->groupedLogsTable->setModel(groupedLogsModel);
-    ui->cookiesTable->setModel(cookiesModel);
-    ui->lumberTable->setModel(lumberModel);
-    ui->slabsTable->setModel(slabsModel);
-    ui->firewoodTable->setModel(firewoodModel);
-
-    ui->individualLogsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->groupedLogsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->cookiesTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->lumberTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->slabsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->firewoodTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    if (ui->detailedViewCheckBox->isChecked()) {
+        ui->logsTableView->setModel(makeViewModel("display_logs", this));
+        ui->cookiesTableView->setModel(makeViewModel("display_cookies", this));
+        ui->slabsTableView->setModel(makeViewModel("display_slabs", this));
+        ui->lumberTableView->setModel(makeViewModel("display_lumber", this));
+    } else {
+        ui->logsTableView->setModel(makeViewModel("display_logs_grouped", this));
+        ui->cookiesTableView->setModel(makeViewModel("display_cookies_grouped", this));
+        ui->slabsTableView->setModel(makeViewModel("display_slabs_grouped", this));
+        ui->lumberTableView->setModel(makeViewModel("display_lumber_grouped", this));
+    }
+    ui->firewoodTableView->setModel(makeViewModel("display_firewood_grouped", this)); // All firewood is grouped
+    
+    ui->logsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->cookiesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->slabsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->lumberTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->firewoodTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
+
+void InventoryPage::refreshTableViews() {
+    refreshModels();
+}
+
 void InventoryPage::onAddLogClicked()
 {
     Length logLen = Length::fromFeet(ui->lengthFt->value()) + Length::fromInches(ui->lengthIn->value());
     Length logDiam = Length::fromInches(ui->diameterIn->value());
-    Species logSpecies = {ui->speciesEntry->text().toStdString()};  
+    Species logSpecies = {ui->speciesEntry->text().toStdString()};
     Quality logQuality = {ui->qualityValue->value()};
     Drying logDrying = ui->dryingComboBox->currentData().value<Drying>();
     Dollar logCost = {static_cast<int>(ui->costValue->value() * 100)};
@@ -152,7 +153,7 @@ void InventoryPage::onAddLogClicked()
     }
 
     // Insert the log into the database
-    auto& deebee = woodworks::infra::DbConnection::instance();
+    auto &deebee = woodworks::infra::DbConnection::instance();
     auto repo = woodworks::infra::QtSqlRepository<Log>(deebee);
 
     if (!repo.add(log))
@@ -166,36 +167,6 @@ void InventoryPage::onAddLogClicked()
 
 void InventoryPage::onCookieButtonClicked()
 {
-    int logId = ui->individualLogsTable->currentIndex().siblingAtColumn(0).data().toInt();
-    // Get the selected log id
-    std::optional<Log> opt = QtSqlRepository<Log>::spawn().get(logId);
-
-    if (!opt)
-    {
-        QMessageBox::critical(this, "Error", "Log not found");
-        return;
-    }
-
-    Log log = opt.value();
-
-    // Dialog for the user to enter a uint for cookie thickness
-    bool ok;
-    int enteredCut = QInputDialog::getInt(
-        this, QObject::tr("Cookie Cutter"),
-        QObject::tr("Please enter the desired cookie thickness (inches):"),
-        0.01, 0.01, log.length.toInches(), ok);
-
-    if (!ok)
-    {
-        std::cout << "User canceled input." << std::endl;
-        return;
-    }
-
-    std::cout << "Cutting Cookie!" << std::endl;
-    auto cookie = log.cutCookie(Length::fromInches(enteredCut));
-
-    // refreshModels();
-    // std::cout << "Cookies done! Models refreshed!" << std::endl;
 }
 
 void InventoryPage::onSpreadsheetImportClicked()
@@ -205,39 +176,39 @@ void InventoryPage::onSpreadsheetImportClicked()
                                      "Spreadsheets (*.csv *.xls *.xlsx)");
 
     if (filename.isEmpty())
-    // QMessageBox::information(this, "Warning", "\nPlease ensure that it is in the following format: CSV (Comma delimited)");
-    // QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv)");
-    // // .csv only, import one sheet at a time
-    // if (filename.isEmpty())
-    //     return;
-    // QStringList options;
-    // options << "Logs" << "Firewood" << "Slabs" << "Cookies" << "Lumber";
-    // bool ok = false;
-    // QString userChoice = QInputDialog::getItem(this, QObject::tr("Sheet Picker"), QObject::tr("Please select which sheet you're importing:"), options, 0, false, &ok);
+        // QMessageBox::information(this, "Warning", "\nPlease ensure that it is in the following format: CSV (Comma delimited)");
+        // QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv)");
+        // // .csv only, import one sheet at a time
+        // if (filename.isEmpty())
+        //     return;
+        // QStringList options;
+        // options << "Logs" << "Firewood" << "Slabs" << "Cookies" << "Lumber";
+        // bool ok = false;
+        // QString userChoice = QInputDialog::getItem(this, QObject::tr("Sheet Picker"), QObject::tr("Please select which sheet you're importing:"), options, 0, false, &ok);
 
-    // if(!ok){
-    //     std::cout << "User canceled input." << std::endl;
-    //     return;
-    // }
-    // // TODO: Implement spreadsheet import parsing logic in logic module.
-    // QMessageBox::information(this, "Import Selected", "File selected: " + filename + "\nSheet Type: " + userChoice);
-    // std::string filePath = filename.toStdString();
-    // Importer import;
+        // if(!ok){
+        //     std::cout << "User canceled input." << std::endl;
+        //     return;
+        // }
+        // // TODO: Implement spreadsheet import parsing logic in logic module.
+        // QMessageBox::information(this, "Import Selected", "File selected: " + filename + "\nSheet Type: " + userChoice);
+        // std::string filePath = filename.toStdString();
+        // Importer import;
 
-    // if(userChoice == "Logs"){import.importLogs(filePath);}
-    // else if(userChoice == "Firewood"){import.importFirewood(filePath);}
-    // else if(userChoice == "Slabs"){import.importSlabs(filePath);}
-    // else if(userChoice == "Cookies"){import.importCookies(filePath);}
-    // else if(userChoice == "Lumber"){import.importLumber(filePath);}
+        // if(userChoice == "Logs"){import.importLogs(filePath);}
+        // else if(userChoice == "Firewood"){import.importFirewood(filePath);}
+        // else if(userChoice == "Slabs"){import.importSlabs(filePath);}
+        // else if(userChoice == "Cookies"){import.importCookies(filePath);}
+        // else if(userChoice == "Lumber"){import.importLumber(filePath);}
 
-    refreshModels();
+        refreshModels();
 }
 
 void InventoryPage::onImageButtonClicked()
 {
     QString filename = QFileDialog::getOpenFileName(this, "Import Image", QString(), "Images (*.jpg *.png)");
 
-    if(filename.isEmpty())
+    if (filename.isEmpty())
         return;
 
     // TODO: Implement spreadsheet import parsing logic in logic module.
@@ -245,20 +216,20 @@ void InventoryPage::onImageButtonClicked()
                              "File selected: " + filename);
 }
 
-void InventoryPage::mousePressEvent(QMouseEvent* event)
+void InventoryPage::mousePressEvent(QMouseEvent *event)
 {
-    qDebug() << "InventoryPage clicked at:" << event->pos() 
-    << "Mouse click on widgetAt:" 
-    << QApplication::widgetAt(QCursor::pos());
+    qDebug() << "InventoryPage clicked at:" << event->pos()
+             << "Mouse click on widgetAt:"
+             << QApplication::widgetAt(QCursor::pos());
 
     QWidget::mousePressEvent(event);
 }
 
-bool InventoryPage::eventFilter(QObject* obj, QEvent* event)
+bool InventoryPage::eventFilter(QObject *obj, QEvent *event)
 {
-    qDebug() << "EVENT TYPE:" << event->type() 
-    << "on:" << obj->metaObject()->className() 
-    << "named:" << obj->objectName();
+    qDebug() << "EVENT TYPE:" << event->type()
+             << "on:" << obj->metaObject()->className()
+             << "named:" << obj->objectName();
 
     if (event->type() == QEvent::MouseButtonPress)
     {
@@ -266,159 +237,4 @@ bool InventoryPage::eventFilter(QObject* obj, QEvent* event)
     }
 
     return QWidget::eventFilter(obj, event);
-}
-
-void InventoryPage::ApplyActiveFilters()
-{
-    QString species = ui->speciesFilterEdit->text().trimmed();
-    QString location = ui->locationFilterEdit->text().trimmed();
-    int minLength = ui->minLengthSpin->value();
-    int minDiameter = ui->minDiameterSpin->value();
-    double minCost = ui->minCostSpin->value();
-    int minQuality = ui->minQualitySpin->value();
-
-    QString currentTab = ui->inventoryTabs->currentWidget()->objectName();
-    QSqlQueryModel* targetModel = nullptr;
-    QString baseQuery;
-
-    if (currentTab == "logsTab")
-    {
-        targetModel = individualLogsModel;
-        baseQuery = "SELECT * FROM logs_view";
-    }
-    else if (currentTab == "groupedLogsTab")
-    {
-        targetModel = groupedLogsModel;
-        baseQuery = "SELECT * FROM logs_view_grouped";
-    }
-    else if (currentTab == "lumberTab")
-    {
-        targetModel = lumberModel;
-        baseQuery = "SELECT * FROM display_lumber";
-    }
-    else if (currentTab == "slabsTab")
-    {
-        targetModel = slabsModel;
-        baseQuery = "SELECT * FROM display_slabs";
-    }
-    else if (currentTab == "cookiesTab")
-    {
-        targetModel = cookiesModel;
-        baseQuery = "SELECT * FROM display_cookies";
-    }
-    else if (currentTab == "firewoodTab")
-    {
-        targetModel = firewoodModel;
-        baseQuery = "SELECT * FROM display_firewood";
-    }
-
-    if (!targetModel)
-    {
-        qDebug() << "[InventoryPage] Unknown tab for filtering.";
-        return;
-    }
-
-    QStringList conditions;
-
-    if (!species.isEmpty())
-        conditions << QString("species LIKE '%%1%'").arg(species);
-    if (!location.isEmpty())
-        conditions << QString("location LIKE '%%1%'").arg(location);
-    if (minLength > 0)
-        conditions << QString("length >= %1").arg(minLength);
-    if (minDiameter > 0)
-        conditions << QString("diameter >= %1").arg(minDiameter);
-    if (minCost > 0.0)
-        conditions << QString("cost >= %1").arg(minCost);
-    if (minQuality > 0)
-        conditions << QString("quality >= %1").arg(minQuality);
-
-    QString finalQuery = baseQuery;
-    if (!conditions.isEmpty())
-        finalQuery += " WHERE " + conditions.join(" AND ");
-
-    QSqlQuery testQuery(finalQuery, QSqlDatabase::database());
-    if (!testQuery.exec())
-    {
-        qDebug() << "[InventoryPage] Filter query rejected.";
-        ResetFilterColors();
-        UpdateFieldColor(ui->speciesFilterEdit, species.isEmpty());
-        UpdateFieldColor(ui->locationFilterEdit, location.isEmpty());
-        UpdateFieldColor(ui->minLengthSpin, minLength == 0);
-        UpdateFieldColor(ui->minDiameterSpin, minDiameter == 0);
-        UpdateFieldColor(ui->minCostSpin, minCost == 0.0);
-        UpdateFieldColor(ui->minQualitySpin, minQuality == 0);
-        return;
-    }
-
-    targetModel->setQuery(finalQuery, QSqlDatabase::database());
-    ResetFilterColors();
-
-    if (!species.isEmpty())
-        UpdateFieldColor(ui->speciesFilterEdit, true);
-    if (!location.isEmpty())
-        UpdateFieldColor(ui->locationFilterEdit, true);
-    if (minLength > 0)
-        UpdateFieldColor(ui->minLengthSpin, true);
-    if (minDiameter > 0)
-        UpdateFieldColor(ui->minDiameterSpin, true);
-    if (minCost > 0.0)
-        UpdateFieldColor(ui->minCostSpin, true);
-    if (minQuality > 0)
-        UpdateFieldColor(ui->minQualitySpin, true);
-}
-
-void InventoryPage::SetupFilterSignals()
-{
-    connect(ui->speciesFilterEdit, &QLineEdit::textChanged, this,
-            &InventoryPage::ApplyActiveFilters);
-    connect(ui->locationFilterEdit, &QLineEdit::textChanged, this,
-            &InventoryPage::ApplyActiveFilters);
-    connect(ui->minLengthSpin, QOverload<int>::of(&QSpinBox::valueChanged),
-            this, &InventoryPage::ApplyActiveFilters);
-    connect(ui->minDiameterSpin, QOverload<int>::of(&QSpinBox::valueChanged),
-            this, &InventoryPage::ApplyActiveFilters);
-    connect(ui->minCostSpin,
-            QOverload<double>::of(&QDoubleSpinBox::valueChanged), this,
-            &InventoryPage::ApplyActiveFilters);
-    connect(ui->minQualitySpin, QOverload<int>::of(&QSpinBox::valueChanged),
-            this, &InventoryPage::ApplyActiveFilters);
-    connect(ui->inventoryTabs, &QTabWidget::currentChanged, this,
-            &InventoryPage::ApplyActiveFilters);
-    connect(ui->clearFilterButton, &QPushButton::clicked, this,
-            &InventoryPage::ClearAllFilters);
-}
-
-void InventoryPage::UpdateFieldColor(QWidget* widget, bool valid)
-{
-    if (!widget)
-        return;
-
-    if (valid)
-        widget->setStyleSheet("background-color: #e6f4ff;"); // light blue
-    else
-        widget->setStyleSheet("background-color: #ffe6e6;"); // dull red
-}
-
-void InventoryPage::ResetFilterColors()
-{
-    ui->speciesFilterEdit->setStyleSheet("background-color: white;");
-    ui->locationFilterEdit->setStyleSheet("background-color: white;");
-    ui->minLengthSpin->setStyleSheet("background-color: white;");
-    ui->minDiameterSpin->setStyleSheet("background-color: white;");
-    ui->minCostSpin->setStyleSheet("background-color: white;");
-    ui->minQualitySpin->setStyleSheet("background-color: white;");
-}
-
-void InventoryPage::ClearAllFilters()
-{
-    ui->speciesFilterEdit->clear();
-    ui->locationFilterEdit->clear();
-    ui->minLengthSpin->setValue(0);
-    ui->minDiameterSpin->setValue(0);
-    ui->minCostSpin->setValue(0.0);
-    ui->minQualitySpin->setValue(0);
-
-    ResetFilterColors();
-    ApplyActiveFilters();
 }

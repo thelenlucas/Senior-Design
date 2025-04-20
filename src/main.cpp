@@ -42,7 +42,7 @@ public:
 public:
     void run() 
     {
-        InventoryPage window;
+        MainWindow window;
         window.show();
         app->exec();
     }
@@ -56,16 +56,6 @@ int main(int argc, char* argv[])
     woodworks::infra::QtSqlRepository<woodworks::domain::Cookie> cookieRepo(debee);
     woodworks::infra::QtSqlRepository<woodworks::domain::LiveEdgeSlab> liveEdgeSlabRepo(debee);
     woodworks::infra::QtSqlRepository<woodworks::domain::Lumber> lumberRepo(debee);
-
-    auto db = qsd::addDatabase("QSQLITE");
-    db.setDatabaseName("woodworks.db");
-    if (!db.open()) 
-        qDebug() << "Failed to open database:" << db.lastError().text();
-
-    // QT SQL DEBUG stuff, will be removed eventually.
-    qDebug() << "Current path:" << QDir::currentPath();
-    qDebug() << "DB path:" << db.databaseName();
-    qDebug() << "Available SQL drivers:" << qsd::drivers();
 
     QApplication app(argc, argv);
 
