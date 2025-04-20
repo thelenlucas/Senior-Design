@@ -43,6 +43,20 @@ set(
     ${H_FILES}
 )
 
+# Add UI files explicitly for AUTOUIC to pick up. This is to avoid some issues I ran into with the latest ui design not being picked up by autouic.
+set(UI_FILES
+    ${CMAKE_SOURCE_DIR}/ui/standard_cut_dialog.ui
+    ${CMAKE_SOURCE_DIR}/ui/validate_log_length_dialog.ui
+    ${CMAKE_SOURCE_DIR}/ui/adjust_log_length_dialog.ui
+    ${CMAKE_SOURCE_DIR}/ui/inventory.ui
+    ${CMAKE_SOURCE_DIR}/ui/cutlist.ui
+    ${CMAKE_SOURCE_DIR}/ui/sales.ui
+    ${CMAKE_SOURCE_DIR}/ui/mainwindow.ui
+)
+
+# Add them to the source list
+list(APPEND SOURCES ${UI_FILES})
+
 # Create the executable target.
 add_executable(logdb ${SOURCES})
 

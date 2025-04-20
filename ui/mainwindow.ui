@@ -6,289 +6,124 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>972</width>
-                <height>567</height>
+                <width>960</width>
+                <height>600</height>
             </rect>
         </property>
-        <property name="minimumSize">
-            <size>
-                <width>0</width>
-                <height>0</height>
-            </size>
-        </property>
         <property name="windowTitle">
-            <string>Inventory Management</string>
+            <string>WoodWorks Sawmill Management</string>
         </property>
         <widget class="QWidget" name="centralwidget">
-            <layout class="QVBoxLayout" name="verticalLayout">
+            <layout class="QVBoxLayout" name="landingLayout" stretch="0,0,0,0">
                 <item>
-                    <layout class="QVBoxLayout" name="logEntryLayout">
-                        <item>
-                            <layout class="QHBoxLayout" name="horizontalLayout">
-                                <item>
-                                    <layout class="QVBoxLayout" name="verticalLayout_3">
-                                        <item>
-                                            <widget class="QLabel" name="label_4">
-                                                <property name="text">
-                                                    <string>Species</string>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                        <item>
-                                            <widget class="QLineEdit" name="speciesText">
-                                                <property name="toolTip">
-                                                    <string>Enter the species (&quot;Oak&quot;,
-                                                        &quot;&quot;Aspen&quot;, etc.)</string>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                    </layout>
-                                </item>
-                                <item>
-                                    <layout class="QHBoxLayout" name="horizontalLayout_4">
-                                        <item>
-                                            <layout class="QVBoxLayout" name="verticalLayout_8">
-                                                <item>
-                                                    <widget class="QLabel" name="label_9">
-                                                        <property name="text">
-                                                            <string>Location</string>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                                <item>
-                                                    <widget class="QLineEdit" name="locationEntry" />
-                                                </item>
-                                            </layout>
-                                        </item>
-                                    </layout>
-                                </item>
-                                <item>
-                                    <layout class="QVBoxLayout" name="verticalLayout_2">
-                                        <item>
-                                            <widget class="QLabel" name="label">
-                                                <property name="text">
-                                                    <string>Length:</string>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                        <item>
-                                            <layout class="QHBoxLayout" name="horizontalLayout_2">
-                                                <item>
-                                                    <widget class="QSpinBox" name="lenFt" />
-                                                </item>
-                                                <item>
-                                                    <widget class="QLabel" name="label_2">
-                                                        <property name="text">
-                                                            <string>ft</string>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                                <item>
-                                                    <widget class="QSpinBox" name="lenIn" />
-                                                </item>
-                                                <item>
-                                                    <widget class="QLabel" name="label_3">
-                                                        <property name="text">
-                                                            <string>in</string>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                            </layout>
-                                        </item>
-                                    </layout>
-                                </item>
-                                <item>
-                                    <layout class="QVBoxLayout" name="verticalLayout_5">
-                                        <item>
-                                            <widget class="QLabel" name="label_5">
-                                                <property name="text">
-                                                    <string>Diameter:</string>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                        <item>
-                                            <layout class="QHBoxLayout" name="horizontalLayout_3">
-                                                <item>
-                                                    <widget class="QLabel" name="label_6">
-                                                        <property name="text">
-                                                            <string>in</string>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                                <item>
-                                                    <widget class="QSpinBox" name="diamIn" />
-                                                </item>
-                                            </layout>
-                                        </item>
-                                    </layout>
-                                </item>
-                                <item>
-                                    <layout class="QVBoxLayout" name="verticalLayout_6">
-                                        <item>
-                                            <widget class="QLabel" name="label_7">
-                                                <property name="text">
-                                                    <string>Log Cost:</string>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                        <item>
-                                            <widget class="QDoubleSpinBox" name="cost">
-                                                <property name="prefix">
-                                                    <string>$</string>
-                                                </property>
-                                                <property name="minimum">
-                                                    <double>0.010000000000000</double>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                    </layout>
-                                </item>
-                                <item>
-                                    <layout class="QVBoxLayout" name="verticalLayout_7">
-                                        <item>
-                                            <widget class="QLabel" name="label_8">
-                                                <property name="text">
-                                                    <string>Quality:</string>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                        <item>
-                                            <widget class="QSpinBox" name="quality">
-                                                <property name="toolTip">
-                                                    <string>(1 - 5)</string>
-                                                </property>
-                                                <property name="wrapping">
-                                                    <bool>true</bool>
-                                                </property>
-                                                <property name="minimum">
-                                                    <number>1</number>
-                                                </property>
-                                                <property name="maximum">
-                                                    <number>5</number>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                    </layout>
-                                </item>
-                                <item>
-                                    <widget class="QPushButton" name="enterLogButton">
-                                        <property name="text">
-                                            <string>Add Log</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                            </layout>
-                        </item>
-                    </layout>
-                </item>
-                <item>
-                    <widget class="QTabWidget" name="groupedLogsTab">
-                        <property name="currentIndex">
-                            <number>1</number>
+                    <widget class="QLabel" name="titleLabel">
+                        <property name="text">
+                            <string>Welcome to WoodWorks</string>
                         </property>
-                        <widget class="QWidget" name="groupedLogs">
-                            <attribute name="title">
-                                <string>Log Types</string>
-                            </attribute>
-                            <layout class="QVBoxLayout" name="verticalLayout_9">
-                                <item>
-                                    <widget class="QTableView" name="groupedLogsTableView">
-                                        <property name="autoFillBackground">
-                                            <bool>false</bool>
-                                        </property>
-                                        <property name="editTriggers">
-                                            <set>QAbstractItemView::NoEditTriggers</set>
-                                        </property>
-                                        <property name="selectionMode">
-                                            <enum>QAbstractItemView::SingleSelection</enum>
-                                        </property>
-                                        <property name="selectionBehavior">
-                                            <enum>QAbstractItemView::SelectRows</enum>
-                                        </property>
-                                    </widget>
-                                </item>
-                            </layout>
-                        </widget>
-                        <widget class="QWidget" name="individualLogs">
-                            <attribute name="title">
-                                <string>Detailed View</string>
-                            </attribute>
-                            <layout class="QVBoxLayout" name="verticalLayout_10">
-                                <item>
-                                    <widget class="QTableView" name="individualLogTableView">
-                                        <property name="selectionMode">
-                                            <enum>QAbstractItemView::SingleSelection</enum>
-                                        </property>
-                                        <property name="selectionBehavior">
-                                            <enum>QAbstractItemView::SelectRows</enum>
-                                        </property>
-                                    </widget>
-                                </item>
-                                <item>
-                                    <layout class="QHBoxLayout" name="logScrappingView">
-                                        <item>
-                                            <spacer name="horizontalSpacer">
-                                                <property name="orientation">
-                                                    <enum>Qt::Horizontal</enum>
-                                                </property>
-                                                <property name="sizeHint" stdset="0">
-                                                    <size>
-                                                        <width>40</width>
-                                                        <height>20</height>
-                                                    </size>
-                                                </property>
-                                            </spacer>
-                                        </item>
-                                        <item>
-                                            <widget class="QPushButton" name="scrapLogButton">
-                                                <property name="text">
-                                                    <string>Scrap Log</string>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                        <item>
-                                            <widget class="QPushButton" name="makeFirewoodButton">
-                                                <property name="text">
-                                                    <string>Make Into Firewood</string>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                    </layout>
-                                </item>
-                            </layout>
-                        </widget>
+                        <property name="alignment">
+                            <set>Qt::AlignCenter</set>
+                        </property>
+                        <property name="styleSheet">
+                            <string notr="true">font-size: 32pt; font-weight: bold; margin: 20px;</string>
+                        </property>
                     </widget>
                 </item>
+                <item>
+                    <widget class="QLabel" name="subtitleLabel">
+                        <property name="text">
+                            <string>🌳 Your complete sawmill inventory and sales solution! 🍃</string>
+                        </property>
+                        <property name="alignment">
+                            <set>Qt::AlignCenter</set>
+                        </property>
+                        <property name="styleSheet">
+                            <string notr="true">color: #228B22; font-style: italic; font-weight:
+                                bold; font-size: 20pt;</string>
+                        </property>
+                        <property name="font">
+                            <font>
+                                <pointsize>20</pointsize>
+                                <family>Segoe UI Emoji</family>
+                            </font>
+                        </property>
+                    </widget>
+                </item>
+                <item>
+                    <widget class="QWidget" name="buttonContainer">
+                        <layout class="QVBoxLayout" name="buttonLayout">
+                            <property name="spacing">
+                                <number>16</number>
+                            </property>
+                            <item>
+                                <widget class="QPushButton" name="openInventoryButton">
+                                    <property name="text">
+                                        <string>📦 Open Inventory Manager</string>
+                                    </property>
+                                    <property name="minimumHeight">
+                                        <number>50</number>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true">font-size: 18pt; border-radius: 8px;</string>
+                                    </property>
+                                    <property name="font">
+                                        <font>
+                                            <pointsize>18</pointsize>
+                                            <family>Segoe UI Emoji</family>
+                                            <weight>50</weight>
+                                        </font>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item>
+                                <widget class="QPushButton" name="openCutlistButton">
+                                    <property name="text">
+                                        <string>✂️ Open Cutlist Editor</string>
+                                    </property>
+                                    <property name="minimumHeight">
+                                        <number>50</number>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true">font-size: 18pt; border-radius: 8px;</string>
+                                    </property>
+                                    <property name="font">
+                                        <font>
+                                            <pointsize>18</pointsize>
+                                            <family>Segoe UI Emoji</family>
+                                            <weight>50</weight>
+                                        </font>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item>
+                                <widget class="QPushButton" name="openSalesButton">
+                                    <property name="text">
+                                        <string>🛒 Open Sale Constructor</string>
+                                    </property>
+                                    <property name="minimumHeight">
+                                        <number>50</number>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true">font-size: 18pt; border-radius: 8px;</string>
+                                    </property>
+                                    <property name="font">
+                                        <font>
+                                            <pointsize>18</pointsize>
+                                            <family>Segoe UI Emoji</family>
+                                            <weight>50</weight>
+                                        </font>
+                                    </property>
+                                </widget>
+                            </item>
+                        </layout>
+                        <property name="styleSheet">
+                            <string notr="true">border: 2px solid #B0C4B1; border-radius: 10px;
+                                padding: 20px;</string>
+                        </property>
+                    </widget>
+                </item>
+
             </layout>
         </widget>
-        <widget class="QMenuBar" name="menubar">
-            <property name="geometry">
-                <rect>
-                    <x>0</x>
-                    <y>0</y>
-                    <width>972</width>
-                    <height>24</height>
-                </rect>
-            </property>
-            <widget class="QMenu" name="menu_File">
-                <property name="title">
-                    <string>&amp;File</string>
-                </property>
-                <addaction name="projectsEditorAction" />
-            </widget>
-            <addaction name="menu_File" />
-        </widget>
-        <widget class="QStatusBar" name="statusbar" />
-        <action name="actionMenu">
-            <property name="text">
-                <string>Menu</string>
-            </property>
-        </action>
-        <action name="projectsEditorAction">
-            <property name="text">
-                <string>Projects</string>
-            </property>
-        </action>
     </widget>
     <resources />
     <connections />

@@ -118,6 +118,146 @@
                 </widget>
             </item>
             <item>
+                <widget class="QGroupBox" name="inventoryFilterGroupBox">
+                    <property name="title">
+                        <string>Filter Inventory</string>
+                    </property>
+                    <layout class="QVBoxLayout" name="inventoryFilterMainLayout">
+                        <item>
+                            <widget class="QFrame" name="basicFilterFrame">
+                                <property name="frameShape">
+                                    <enum>QFrame::StyledPanel</enum>
+                                </property>
+                                <property name="frameShadow">
+                                    <enum>QFrame::Raised</enum>
+                                </property>
+                                <layout class="QFormLayout" name="basicFilterLayout">
+                                    <item row="0" column="0">
+                                        <widget class="QLabel" name="speciesFilterLabel">
+                                            <property name="text">
+                                                <string>Species:</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="0" column="1">
+                                        <widget class="QLineEdit" name="speciesFilterEdit" />
+                                    </item>
+                                    <item row="1" column="0">
+                                        <widget class="QLabel" name="locationFilterLabel">
+                                            <property name="text">
+                                                <string>Location:</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="1" column="1">
+                                        <widget class="QLineEdit" name="locationFilterEdit" />
+                                    </item>
+                                </layout>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="numericFilterFrame">
+                                <property name="frameShape">
+                                    <enum>QFrame::StyledPanel</enum>
+                                </property>
+                                <property name="frameShadow">
+                                    <enum>QFrame::Raised</enum>
+                                </property>
+                                <layout class="QFormLayout" name="numericFilterLayout">
+                                    <item row="0" column="0">
+                                        <widget class="QLabel" name="minLengthLabel">
+                                            <property name="text">
+                                                <string>Min Length (in):</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="0" column="1">
+                                        <widget class="QSpinBox" name="minLengthSpin">
+                                            <property name="minimum">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="maximum">
+                                                <number>1000</number>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="1" column="0">
+                                        <widget class="QLabel" name="minDiameterLabel">
+                                            <property name="text">
+                                                <string>Min Diameter (in):</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="1" column="1">
+                                        <widget class="QSpinBox" name="minDiameterSpin">
+                                            <property name="minimum">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="maximum">
+                                                <number>100</number>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="2" column="0">
+                                        <widget class="QLabel" name="minCostLabel">
+                                            <property name="text">
+                                                <string>Min Cost ($):</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="2" column="1">
+                                        <widget class="QDoubleSpinBox" name="minCostSpin">
+                                            <property name="minimum">
+                                                <double>0.0</double>
+                                            </property>
+                                            <property name="maximum">
+                                                <double>10000.0</double>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="3" column="0">
+                                        <widget class="QLabel" name="minQualityLabel">
+                                            <property name="text">
+                                                <string>Min Quality:</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="3" column="1">
+                                        <widget class="QSpinBox" name="minQualitySpin">
+                                            <property name="minimum">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="maximum">
+                                                <number>10</number>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                </layout>
+                            </widget>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="filterButtonLayout">
+                                <item>
+                                    <widget class="QPushButton" name="applyFilterButton">
+                                        <property name="text">
+                                            <string>Apply Filter</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QPushButton" name="clearFilterButton">
+                                        <property name="text">
+                                            <string>Clear Filter</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                    </layout>
+                </widget>
+
+            </item>
+            <item>
                 <widget class="QTabWidget" name="inventoryTabs">
                     <property name="tabPosition">
                         <enum>QTabWidget::North</enum>

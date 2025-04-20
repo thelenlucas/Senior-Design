@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>StandardCutDialog</class>
+    <widget class="QDialog" name="StandardCutDialog">
+        <property name="windowTitle">
+            <string>Standard Cut</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+                <widget class="QStackedWidget" name="stackedWidget">
+                    <widget class="QWidget" name="cookiePage">
+                        <layout class="QFormLayout" name="cookieForm">
+                            <item row="0" column="0">
+                                <widget class="QLabel" name="cookieCountLabel">
+                                    <property name="text">
+                                        <string>Number of Cookies:</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="1">
+                                <widget class="QSpinBox" name="cookieCountSpin">
+                                    <property name="minimum">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="maximum">
+                                        <number>1000</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>5</number>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="0">
+                                <widget class="QLabel" name="cookieThicknessLabel">
+                                    <property name="text">
+                                        <string>Cookie Thickness (in):</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="1">
+                                <widget class="QDoubleSpinBox" name="cookieThicknessSpin">
+                                    <property name="minimum">
+                                        <double>0.1</double>
+                                    </property>
+                                    <property name="maximum">
+                                        <double>10.0</double>
+                                    </property>
+                                    <property name="singleStep">
+                                        <double>0.25</double>
+                                    </property>
+                                    <property name="value">
+                                        <double>2.0</double>
+                                    </property>
+                                </widget>
+                            </item>
+                        </layout>
+                    </widget>
+                    <widget class="QWidget" name="slabPage">
+                        <layout class="QFormLayout" name="slabForm">
+                            <item row="0" column="0">
+                                <widget class="QLabel" name="slabLengthLabel">
+                                    <property name="text">
+                                        <string>Slab Length (in):</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="1">
+                                <widget class="QSpinBox" name="slabLengthSpin">
+                                    <property name="minimum">
+                                        <number>12</number>
+                                    </property>
+                                    <property name="maximum">
+                                        <number>144</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>48</number>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="0">
+                                <widget class="QLabel" name="slabThicknessLabel">
+                                    <property name="text">
+                                        <string>Board Thickness (in):</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="1">
+                                <widget class="QDoubleSpinBox" name="slabThicknessSpin">
+                                    <property name="minimum">
+                                        <double>0.25</double>
+                                    </property>
+                                    <property name="maximum">
+                                        <double>3.0</double>
+                                    </property>
+                                    <property name="singleStep">
+                                        <double>0.25</double>
+                                    </property>
+                                    <property name="value">
+                                        <double>1.5</double>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="0">
+                                <widget class="QLabel" name="slabCountLabel">
+                                    <property name="text">
+                                        <string>Expected Number of Boards:</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="1">
+                                <widget class="QSpinBox" name="slabCountSpin">
+                                    <property name="minimum">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="maximum">
+                                        <number>1000</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>3</number>
+                                    </property>
+                                </widget>
+                            </item>
+                        </layout>
+                    </widget>
+                    <widget class="QWidget" name="lumberPage">
+                        <layout class="QFormLayout" name="lumberForm">
+                            <item row="0" column="0">
+                                <widget class="QLabel" name="lumberThicknessLabel">
+                                    <property name="text">
+                                        <string>Thickness (quarters):</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="1">
+                                <widget class="QSpinBox" name="lumberThicknessSpin">
+                                    <property name="minimum">
+                                        <number>4</number>
+                                    </property>
+                                    <property name="maximum">
+                                        <number>12</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>6</number>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="0">
+                                <widget class="QLabel" name="lumberWidthLabel">
+                                    <property name="text">
+                                        <string>Width (in):</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="1">
+                                <widget class="QSpinBox" name="lumberWidthSpin">
+                                    <property name="minimum">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="maximum">
+                                        <number>24</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>6</number>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="0">
+                                <widget class="QLabel" name="lumberLengthLabel">
+                                    <property name="text">
+                                        <string>Length (in):</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="1">
+                                <widget class="QSpinBox" name="lumberLengthSpin">
+                                    <property name="minimum">
+                                        <number>12</number>
+                                    </property>
+                                    <property name="maximum">
+                                        <number>144</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>48</number>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="3" column="0">
+                                <widget class="QLabel" name="surfacingLabel">
+                                    <property name="text">
+                                        <string>Surfacing:</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="3" column="1">
+                                <widget class="QComboBox" name="surfacingDropdown">
+                                    <item>
+                                        <property name="text">
+                                            <string>S2S</string>
+                                        </property>
+                                    </item>
+                                    <item>
+                                        <property name="text">
+                                            <string>S3S</string>
+                                        </property>
+                                    </item>
+                                    <item>
+                                        <property name="text">
+                                            <string>S4S</string>
+                                        </property>
+                                    </item>
+                                </widget>
+                            </item>
+                            <item row="4" column="0">
+                                <widget class="QLabel" name="lumberPieceCountLabel">
+                                    <property name="text">
+                                        <string>Expected Pieces:</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="4" column="1">
+                                <widget class="QSpinBox" name="lumberPieceCountSpin">
+                                    <property name="minimum">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="maximum">
+                                        <number>10000</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>1</number>
+                                    </property>
+                                </widget>
+
+                            </item>
+                        </layout>
+                    </widget>
+                </widget>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="buttonLayout">
+                    <item>
+                        <spacer name="horizontalSpacer">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item>
+                        <widget class="QPushButton" name="cancelButton">
+                            <property name="text">
+                                <string>Cancel</string>
+                            </property>
+                            <property name="autoDefault">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <widget class="QPushButton" name="okButton">
+                            <property name="text">
+                                <string>OK</string>
+                            </property>
+                            <property name="default">
+                                <bool>true</bool>
+                            </property>
+                            <property name="autoDefault">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+        </layout>
+    </widget>
+    <resources />
+    <connections />
+</ui>

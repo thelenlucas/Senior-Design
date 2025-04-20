@@ -22,6 +22,9 @@ private:
     QSqlQueryModel* inventoryModel;
 
     QVector<QWidget*> itemWidgets;
+    QWidget* lastClickedWidget = nullptr;
+
+    
     int selectedIndex;
     double runningTotal;
 
@@ -30,8 +33,8 @@ private:
     void AddSelectedInventoryRow(QString const& id, QString const& species, QString const& value);
     void ReapplyStripedBackgrounds();
     void UpdateTotal(double delta);
+    void UpdateRowTotal(QWidget* rowWidget, int newQty, double newVal);
     bool eventFilter(QObject* obj, QEvent* event) override;
-
 };
 
 #endif // SALES_HPP
