@@ -23,15 +23,6 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt5 COMPONENTS Widgets Sql REQUIRED)
 file(GLOB includes ${CMAKE_SOURCE_DIR}/include)
 
-# Fetchcontent for SQLiteCpp, tag 3.3.2
-include(FetchContent)
-FetchContent_Declare(
-    SQLiteCpp
-    GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
-    GIT_TAG        3.3.2
-)
-FetchContent_MakeAvailable(SQLiteCpp)
-
 # Specify the source files for the executable.
 file(GLOB SRC_TOP        "${CMAKE_SOURCE_DIR}/src/*.cpp")          # new
 file(GLOB_RECURSE SRC_REST CONFIGURE_DEPENDS
@@ -65,7 +56,7 @@ list(APPEND SOURCES ${UI_FILES})
 add_executable(logdb ${SOURCES})
 # New executable for the test harness. Includes everything except main.cpp
 add_executable(Woodworks_test src/main_testing.cpp ${SOURCES})
-target_link_libraries(Woodworks_test PRIVATE Qt5::Widgets SQLiteCpp)
+target_link_libraries(Woodworks_test PRIVATE Qt5::Widgets)
 
 # Define the BUILDING_WOODWORKS_TEST macro to select the right main
 target_compile_definitions(Woodworks_test PRIVATE BUILDING_WOODWORKS_TEST)
@@ -100,20 +91,18 @@ endif()
 
 # Set the AUTOUIC_SEARCH_PATHS property to the source directory.
 set_target_properties(logdb PROPERTIES
-    AUTOMOC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/src"
-    AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui"
+    AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui;${CMAKE_SOURCE_DIR}/ui/widgets"
 )
 set_target_properties(Woodworks_test PROPERTIES
-    AUTOMOC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/src"
-    AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui"
+    AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/ui;${CMAKE_SOURCE_DIR}/ui/widgets"
 )
 
 # Specify the include directories.
 target_include_directories(logdb PUBLIC ${includes})
 target_include_directories(Woodworks_test PUBLIC ${includes})
 
-target_link_libraries(logdb PRIVATE SQLiteCpp Qt5::Widgets Qt5::Sql)
-target_link_libraries(Woodworks_test PRIVATE SQLiteCpp Qt5::Widgets Qt5::Sql)
+target_link_libraries(logdb PRIVATE Qt5::Widgets Qt5::Sql)
+target_link_libraries(Woodworks_test PRIVATE Qt5::Widgets Qt5::Sql)
 
 add_compile_options(
     # Standard warnings.

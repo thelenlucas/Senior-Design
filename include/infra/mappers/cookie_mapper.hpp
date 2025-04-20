@@ -4,6 +4,7 @@
 #include "view_helpers.hpp"
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QByteArray>
 
 namespace woodworks::domain {
     inline QString Cookie::createDbSQL() {
@@ -16,7 +17,8 @@ namespace woodworks::domain {
                 drying INTEGER NOT NULL,
                 worth INTEGER NOT NULL,
                 location TEXT,
-                notes TEXT
+                notes TEXT,
+                image BLOB
             )
         )";
     }
@@ -59,37 +61,42 @@ namespace woodworks::domain {
 
     inline QString Cookie::insertSQL()
     {
-        return "INSERT INTO cookies (species, length, diameter, drying, worth, location, notes) VALUES (:species, :length, :diameter, :drying, :worth, :location, :notes)";
+        return "INSERT INTO cookies (species, length, diameter, drying, worth, location, notes, image) VALUES (:species, :length, :diameter, :drying, :worth, :location, :notes, :image)";
     }
 
     inline QString Cookie::updateSQL()
     {
-        return "UPDATE cookies SET species = :species, length = :length, diameter = :diameter, drying = :drying, worth = :worth, location = :location, notes = :notes WHERE id = :id";
+        return "UPDATE cookies SET species = :species, length = :length, diameter = :diameter, drying = :drying, worth = :worth, location = :location, notes = :notes, image = :image WHERE id = :id";
     }
 
     inline QString Cookie::selectOneSQL() { return u8R"(SELECT * FROM cookies WHERE id=:id)"; }
     inline QString Cookie::selectAllSQL() { return u8R"(SELECT * FROM cookies)"; }
 
+    // Add delete SQL
+    inline QString Cookie::deleteSQL() { return u8R"(DELETE FROM cookies WHERE id=:id)"; }
+
     inline void Cookie::bindForInsert(QSqlQuery& q, const Cookie& cookie)
     {
         q.bindValue(":species", QString::fromStdString(cookie.species.name));
-        q.bindValue(":length", cookie.length.toInches());
-        q.bindValue(":diameter", cookie.diameter.toInches());
+        q.bindValue(":length", cookie.length.toTicks());
+        q.bindValue(":diameter", cookie.diameter.toTicks());
         q.bindValue(":drying", static_cast<int>(cookie.drying));
         q.bindValue(":worth", cookie.worth.cents);
         q.bindValue(":location", QString::fromStdString(cookie.location));
         q.bindValue(":notes", QString::fromStdString(cookie.notes));
+        q.bindValue(":image", cookie.imageBuffer);
     }
 
     inline void Cookie::bindForUpdate(QSqlQuery& q, const Cookie& cookie)
     {
         q.bindValue(":species", QString::fromStdString(cookie.species.name));
-        q.bindValue(":length", cookie.length.toInches());
-        q.bindValue(":diameter", cookie.diameter.toInches());
+        q.bindValue(":length", cookie.length.toTicks());
+        q.bindValue(":diameter", cookie.diameter.toTicks());
         q.bindValue(":drying", static_cast<int>(cookie.drying));
         q.bindValue(":worth", cookie.worth.cents);
         q.bindValue(":location", QString::fromStdString(cookie.location));
         q.bindValue(":notes", QString::fromStdString(cookie.notes));
+        q.bindValue(":image", cookie.imageBuffer);
         q.bindValue(":id", cookie.id.id);
     }
 
@@ -98,12 +105,13 @@ namespace woodworks::domain {
         return {
             .id = {record.value("id").toInt()},
             .species = {record.value("species").toString().toStdString()},
-            .length = Length::fromInches(record.value("length").toDouble()),
-            .diameter = Length::fromInches(record.value("diameter").toDouble()),
+            .length = Length::fromTicks(record.value("length").toDouble()),
+            .diameter = Length::fromTicks(record.value("diameter").toDouble()),
             .drying = static_cast<Drying>(record.value("drying").toInt()),
             .worth = Dollar{record.value("worth").toInt()},
             .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString()
+            .notes = record.value("notes").toString().toStdString(),
+            .imageBuffer = record.value("image").toByteArray()
         };
     }
 }
