@@ -4,8 +4,6 @@
 #include <iostream>
 #include <vector>
 
-#include <sqlite3.h>
-
 #include <QApplication>
 #include <QPushButton>
 #include <QThread>

@@ -30,6 +30,11 @@ class InventoryPage : public QWidget
     void onImageButtonClicked();
     void refreshTableViews();
 
+    void onDoubleClickLogTable(const QModelIndex& index);
+    void onDoubleClickCookieTable(const QModelIndex& index);
+    void onDoubleClickSlabTable(const QModelIndex& index);
+    void onDoubleClickLumberTable(const QModelIndex& index);
+
   private:
     void refreshModels();                               // Refreshes all models from the DB.
 

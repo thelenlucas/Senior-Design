@@ -29,6 +29,7 @@
 #include "infra/repository.hpp"
 #include "infra/mappers/view_helpers.hpp"
 #include "infra/helpers.hpp"
+#include "infra/images.hpp"
 
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
@@ -56,14 +57,6 @@ InventoryPage::InventoryPage(QWidget *parent)
         move((screenSize.width() - windowSize.width()) / 2,
              (screenSize.height() - windowSize.height()) / 2);
     }
-
-    // // Setup the logical models for our mvc.
-    // ui->individualLogsTable->setModel(individualLogsModel);
-    // ui->groupedLogsTable->setModel(groupedLogsModel);
-    // ui->cookiesTable->setModel(cookiesModel);
-    // ui->lumberTable->setModel(lumberModel);
-    // ui->slabsTable->setModel(slabsModel);
-    // ui->firewoodTable->setModel(firewoodModel);
 
     // Add drying options to the combo box
     ui->dryingComboBox->addItem("Green", QVariant(static_cast<int>(Drying::GREEN)));
@@ -114,6 +107,12 @@ InventoryPage::InventoryPage(QWidget *parent)
 
     connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
+
+    // Bind the double clicks
+    connect(ui->logsTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickLogTable);
+    connect(ui->cookiesTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickCookieTable);
+    connect(ui->slabsTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickSlabTable);
+    connect(ui->lumberTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickSlabTable);
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
@@ -349,6 +348,81 @@ void InventoryPage::onAddLogClicked()
     }
 
     refreshModels();
+}
+
+void InventoryPage::onDoubleClickLogTable(const QModelIndex& index) {
+    // If not in detailed view, set the species and drying to the selected row, and then move
+    // to the detailed view.
+    if (!ui->detailedViewCheckBox->isChecked())
+    {
+        // Species - Column 1 (2nd), Drying - Column 5 (6th)
+        QString species = index.sibling(index.row(), 1).data().toString();
+        QString drying = index.sibling(index.row(), 5).data().toString();
+        ui->logSpeciesComboBox->setCurrentText(species);
+        ui->logDryingComboBox->setCurrentText(drying);
+        ui->detailedViewCheckBox->setChecked(true);
+        refreshModels();
+    } else {
+        // Otherwise, bring up the image dialog for the selected log.
+        // Id is first column (0th)
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto log = QtSqlRepository<Log>::spawn().get(id).value();
+        viewImagePopup(log, this);
+    }
+}
+void InventoryPage::onDoubleClickCookieTable(const QModelIndex& index) {
+    // Same as above, but for cookies - species on 1, drying on 4, id on 0
+    if (!ui->detailedViewCheckBox->isChecked())
+    {
+        QString species = index.sibling(index.row(), 1).data().toString();
+        QString drying = index.sibling(index.row(), 4).data().toString();
+        ui->cookiesSpeciesCombo->setCurrentText(species);
+        ui->cookieDryingCombo->setCurrentText(drying);
+        ui->detailedViewCheckBox->setChecked(true);
+        refreshModels();
+    } else {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto cookie = QtSqlRepository<Cookie>::spawn().get(id).value();
+        viewImagePopup(cookie, this);
+    }
+}
+void InventoryPage::onDoubleClickSlabTable(const QModelIndex& index) {
+    // Slabs are on species (1), drying (5), surfacing (6) and id (0)
+    if (!ui->detailedViewCheckBox->isChecked())
+    {
+        QString species = index.sibling(index.row(), 1).data().toString();
+        QString drying = index.sibling(index.row(), 5).data().toString();
+        QString surfacing = index.sibling(index.row(), 6).data().toString();
+        ui->slabsSpeciesCombo->setCurrentText(species);
+        ui->slabDryingCombo->setCurrentText(drying);
+        ui->slabSurfacingCombo->setCurrentText(surfacing);
+        ui->detailedViewCheckBox->setChecked(true);
+        refreshModels();
+    } else {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(id).value();
+        viewImagePopup(slab, this);
+    }
+}
+void InventoryPage::onDoubleClickLumberTable(const QModelIndex& index) {
+    // Lumber on species (1), thickness (3), drying (5), surfacing (6) and id (0)
+    if (!ui->detailedViewCheckBox->isChecked())
+    {
+        QString species = index.sibling(index.row(), 1).data().toString();
+        QString thickness = index.sibling(index.row(), 3).data().toString();
+        QString drying = index.sibling(index.row(), 5).data().toString();
+        QString surfacing = index.sibling(index.row(), 6).data().toString();
+        ui->lumberSpeciesCombo->setCurrentText(species);
+        ui->lumberThicknessCombo->setCurrentText(thickness);
+        ui->lumberDryingCombo->setCurrentText(drying);
+        ui->lumberSurfacingCombo->setCurrentText(surfacing);
+        ui->detailedViewCheckBox->setChecked(true);
+        refreshModels();
+    } else {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto lumber = QtSqlRepository<Lumber>::spawn().get(id).value();
+        viewImagePopup(lumber, this);
+    }
 }
 
 void InventoryPage::onCookieButtonClicked()

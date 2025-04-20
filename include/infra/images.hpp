@@ -43,10 +43,40 @@ namespace woodworks::infra
         QPixmap pix = loadImage(item);
         if (pix.isNull())
         {
-            QMessageBox::information(parent,
-                                     QCoreApplication::translate("ImageViewer", "No Image"),
-                                     QCoreApplication::translate("ImageViewer", "There is no image to display."));
-            return;
+            QDialog dlg(parent);
+            dlg.setWindowTitle(QCoreApplication::translate("ImageViewer", "No Image"));
+            QVBoxLayout *layout2 = new QVBoxLayout(&dlg);
+            QLabel *lbl = new QLabel(QCoreApplication::translate("ImageViewer", "There is no image to display."), &dlg);
+            lbl->setAlignment(Qt::AlignCenter);
+            layout2->addWidget(lbl);
+            QHBoxLayout *btnLayout2 = new QHBoxLayout();
+            QPushButton *addBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Add Image"), &dlg);
+            QPushButton *cancelBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Cancel"), &dlg);
+            btnLayout2->addWidget(addBtn);
+            btnLayout2->addWidget(cancelBtn);
+            layout2->addLayout(btnLayout2);
+            QObject::connect(addBtn, &QPushButton::clicked, [&dlg, &item]() {
+                QString fn = QFileDialog::getOpenFileName(&dlg,
+                                                          QObject::tr("Open Image"),
+                                                          QString(),
+                                                          QObject::tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
+                if (!fn.isEmpty()) {
+                    QPixmap newPix(fn);
+                    if (!newPix.isNull()) {
+                        saveImage(item, newPix);
+                        QtSqlRepository<T>::spawn().update(item);
+                        dlg.accept();
+                    } else {
+                        QMessageBox::warning(&dlg,
+                                             QCoreApplication::translate("ImageViewer", "Add Failed"),
+                                             QCoreApplication::translate("ImageViewer", "Could not load the selected image."));
+                    }
+                }
+            });
+            QObject::connect(cancelBtn, &QPushButton::clicked, &dlg, &QDialog::reject);
+            if (dlg.exec() != QDialog::Accepted)
+                return;
+            pix = loadImage(item);
         }
 
         QPixmap displayPix = pix;
@@ -89,6 +119,7 @@ namespace woodworks::infra
                 QPixmap newPix(fn);
                 if (!newPix.isNull()) {
                     saveImage(item, newPix);
+                    QtSqlRepository<T>::spawn().update(item);
                     QPixmap scaled = newPix;
                     int maxW = 800, maxH = 600, minW = 200, minH = 200;
                     QSize orig = newPix.size();
