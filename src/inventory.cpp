@@ -116,7 +116,6 @@ InventoryPage::InventoryPage(QWidget *parent)
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
-    setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::Window);
 }
 
