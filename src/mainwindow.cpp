@@ -13,12 +13,9 @@
 #include <QVBoxLayout>
 
 #include "cutlist.hpp"
-#include "firewood.hpp"
 #include "inventory.hpp"
-#include "logs.hpp"
 #include "mainwindow.hpp"
 #include "project_editor.hpp"
-#include "types.hpp"
 
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
@@ -34,7 +31,6 @@
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
 
-// TODO: Remove this outdated window, replace with landing page
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow),
@@ -85,7 +81,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     // Database connection setup
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(DATABASE_FILE);
+    db.setDatabaseName("woodworks.db");
     if (!db.open())
     {
         qDebug() << "Database error:" << db.lastError().text();
