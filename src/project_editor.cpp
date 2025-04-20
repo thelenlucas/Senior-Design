@@ -1,5 +1,3 @@
-#include <SQLiteCpp/SQLiteCpp.h>
-
 #include <QMainWindow>
 #include <QSqlDatabase>
 #include <QSqlQueryModel>
@@ -25,16 +23,16 @@ ProjectEditorWindow::ProjectEditorWindow(QWidget *parent) :
 void ProjectEditorWindow::updateProjects() {
     ui->projectsCombo->clear();
 
-    // Get all "Name" under "projects" view
-    SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
-    SQLite::Statement query(db, "SELECT Name FROM projects");
-    while (query.executeStep()) {
-        ui->projectsCombo->addItem(query.getColumn(0).getText());
-    }
-    // Set the first project as the default
-    if (ui->projectsCombo->count() > 0) {
-        ui->projectsCombo->setCurrentIndex(0);
-    }
+    // // Get all "Name" under "projects" view
+    // SQLite::Database db(DATABASE_FILE, SQLite::OPEN_READONLY);
+    // SQLite::Statement query(db, "SELECT Name FROM projects");
+    // while (query.executeStep()) {
+    //     ui->projectsCombo->addItem(query.getColumn(0).getText());
+    // }
+    // // Set the first project as the default
+    // if (ui->projectsCombo->count() > 0) {
+    //     ui->projectsCombo->setCurrentIndex(0);
+    // }
     onProjectSelected();
 }
 

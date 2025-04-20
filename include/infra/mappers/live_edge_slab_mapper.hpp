@@ -44,6 +44,9 @@ namespace woodworks::domain {
     inline QString LiveEdgeSlab::selectOneSQL() { return u8R"(SELECT * FROM live_edge_slabs WHERE id=:id)"; }
     inline QString LiveEdgeSlab::selectAllSQL() { return u8R"(SELECT * FROM live_edge_slabs)"; }
 
+    // Add delete SQL
+    inline QString LiveEdgeSlab::deleteSQL() { return u8R"(DELETE FROM live_edge_slabs WHERE id=:id)"; }
+
     inline void LiveEdgeSlab::bindForInsert(QSqlQuery& q, const LiveEdgeSlab& slab)
     {
         q.bindValue(":species", QString::fromStdString(slab.species.name));

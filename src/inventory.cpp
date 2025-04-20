@@ -24,19 +24,19 @@ InventoryPage::InventoryPage(QWidget *parent)
       cookiesModel(new QSqlQueryModel(this)),
       firewoodModel(new QSqlQueryModel(this))
 {
-    // ui->setupUi(this);
+    ui->setupUi(this);
 
-    // // Dynamically resize window to 60% of screen size and center
-    // QScreen *screen = QGuiApplication::primaryScreen();
-    // if (screen)
-    // {
-    //     QSize screenSize = screen->availableGeometry().size();
-    //     QSize windowSize(screenSize.width() * 0.6, screenSize.height() * 0.6);
-    //     resize(windowSize);
-    //     move((screenSize.width() - windowSize.width()) / 2, (screenSize.height() - windowSize.height()) / 2);
-    // }
+    // Dynamically resize window to 60% of screen size and center
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (screen)
+    {
+        QSize screenSize = screen->availableGeometry().size();
+        QSize windowSize(screenSize.width() * 0.6, screenSize.height() * 0.6);
+        resize(windowSize);
+        move((screenSize.width() - windowSize.width()) / 2, (screenSize.height() - windowSize.height()) / 2);
+    }
 
-    // // Setup the logical models for our mvc.
+    // Setup the logical models for our mvc.
     // ui->individualLogsTable->setModel(individualLogsModel);
     // ui->groupedLogsTable->setModel(groupedLogsModel);
     // ui->cookiesTable->setModel(cookiesModel);

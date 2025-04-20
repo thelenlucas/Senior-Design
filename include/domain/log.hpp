@@ -42,6 +42,7 @@ namespace woodworks::domain {
         static QString updateSQL();
         static QString selectOneSQL();
         static QString selectAllSQL();
+        static QString deleteSQL();
 
         static void bindForInsert(QSqlQuery&, const Log&);
         static void bindForUpdate(QSqlQuery&, const Log&);

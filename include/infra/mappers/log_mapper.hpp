@@ -74,6 +74,8 @@ namespace woodworks::domain {
 
     inline QString Log::selectAllSQL() { return u8R"(SELECT * FROM logs)"; }
 
+    inline QString Log::deleteSQL() { return u8R"(DELETE FROM logs WHERE id=:id)"; }
+
     inline void Log::bindForInsert(QSqlQuery& q, const Log& log)
     {
         q.bindValue(":species", QString::fromStdString(log.species.name));

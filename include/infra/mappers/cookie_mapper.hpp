@@ -70,6 +70,9 @@ namespace woodworks::domain {
     inline QString Cookie::selectOneSQL() { return u8R"(SELECT * FROM cookies WHERE id=:id)"; }
     inline QString Cookie::selectAllSQL() { return u8R"(SELECT * FROM cookies)"; }
 
+    // Add delete SQL
+    inline QString Cookie::deleteSQL() { return u8R"(DELETE FROM cookies WHERE id=:id)"; }
+
     inline void Cookie::bindForInsert(QSqlQuery& q, const Cookie& cookie)
     {
         q.bindValue(":species", QString::fromStdString(cookie.species.name));

@@ -27,6 +27,7 @@ namespace woodworks::domain {
         static QString groupedViewSQL();
         static QString insertSQL();
         static QString updateSQL();
+        static QString deleteSQL();
         static QString selectOneSQL();
         static QString selectAllSQL();
         static void bindForInsert(QSqlQuery&, const Lumber&);

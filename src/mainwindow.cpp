@@ -20,6 +20,13 @@
 #include "cutlist.hpp"
 #include "sales.hpp"
 #include "infra/mappers/view_helpers.hpp"
+#include <optional>
+
+#include "domain/log.hpp"
+#include "infra/connection.hpp"
+#include "infra/repository.hpp"
+
+using namespace woodworks::domain;
 
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
@@ -37,6 +44,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setCentralWidget(ui->centralwidget);
 
+    // Connect buttons to their respective slots
+    connect(ui->scrapLogButton, &QPushButton::clicked, this, &MainWindow::onScrapLogButtonClicked);
+
     refreshModel();
 }
 
@@ -47,6 +57,9 @@ void MainWindow::refreshModel()
 
     QSqlQueryModel *groupedModel = woodworks::infra::mappers::makeViewModel("display_logs_grouped", this);
     ui->groupedLogsTableView->setModel(groupedModel);
+
+    ui->individualLogTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->groupedLogsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 void MainWindow::onEnterLogButtonClicked() {
@@ -74,21 +87,30 @@ void MainWindow::onEnterLogButtonClicked() {
 }
 
 void MainWindow::onScrapLogButtonClicked() {
-    // // Get the selected log ID
-    // QModelIndex index = ui->individualLogTableView->currentIndex();
-    // std::optional<Log> log = Log::get_by_id(index.sibling(index.row(), 0).data().toInt());
+    // Get the selected log ID (first column)
+    int selectedRow = ui->individualLogTableView->currentIndex().row();
+    int logId = ui->individualLogTableView->model()->data(ui->individualLogTableView->model()->index(selectedRow, 0)).toInt();
 
-    // // If the log is not found, return, after displaying an error message
-    // if (!log) {
-    //     QMessageBox::critical(this, "Error", "Log not found");
-    //     return;
-    // }
+    // Get the log object from the database
+    auto& debee = woodworks::infra::DbConnection::instance();
+    woodworks::infra::QtSqlRepository<Log> logRepo(debee);
+    auto logOpt = logRepo.get(logId);
+    if (!logOpt) {
+        QMessageBox::critical(this, "Error", "Log not found");
+        return;
+    }
+    Log log = logOpt.value();
 
-    // // Scrap the log
-    // log->scrap();
+    // Confirm via popup
+    QMessageBox::StandardButton reply = QMessageBox::question(this, "Confirm", "Are you sure you want to scrap this log?", QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::No) {
+        return;
+    }
 
-    // // Update the model
-    // refreshModel();
+    // Scrap the log
+    logRepo.remove(logId);
+
+    refreshModel();
 }
 
 void MainWindow::onFirewoodButtonClicked() {

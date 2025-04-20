@@ -6,8 +6,6 @@
 
 #include <sqlite3.h>
 
-#include <SQLiteCpp/SQLiteCpp.h>
-
 #include <QApplication>
 #include <QPushButton>
 #include <QThread>

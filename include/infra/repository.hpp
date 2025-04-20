@@ -84,9 +84,9 @@ namespace woodworks::infra {
             void remove(int id) {
                 QSqlQuery q(db_);
                 q.prepare(T::deleteSQL());
-                q.bindValue(0, id);
+                q.bindValue(":id", id);
                 if (!q.exec()) {
-                    throw std::runtime_error("Failed to delete item");
+                    throw std::runtime_error(std::string("Failed to delete item: ") + q.lastError().text().toStdString());
                 }
             }
 

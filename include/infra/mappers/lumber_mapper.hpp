@@ -69,6 +69,8 @@ namespace woodworks::domain {
     inline QString Lumber::selectOneSQL() { return u8R"(SELECT * FROM lumber WHERE id=:id)"; }
     inline QString Lumber::selectAllSQL() { return u8R"(SELECT * FROM lumber)"; }
 
+    inline QString Lumber::deleteSQL() { return u8R"(DELETE FROM lumber WHERE id=:id)"; }
+
     inline void Lumber::bindForInsert(QSqlQuery& q, const Lumber& l) {
         q.bindValue(":species", QString::fromStdString(l.species.name));
         q.bindValue(":length", l.length.toInches());
