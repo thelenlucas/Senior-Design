@@ -73,9 +73,9 @@ namespace woodworks::domain {
 
     inline void Lumber::bindForInsert(QSqlQuery& q, const Lumber& l) {
         q.bindValue(":species", QString::fromStdString(l.species.name));
-        q.bindValue(":length", l.length.toInches());
-        q.bindValue(":width", l.width.toInches());
-        q.bindValue(":thickness", l.thickness.toInches());
+        q.bindValue(":length", l.length.toTicks());
+        q.bindValue(":width", l.width.toTicks());
+        q.bindValue(":thickness", l.thickness.toTicks());
         q.bindValue(":drying", static_cast<int>(l.drying));
         q.bindValue(":surfacing", static_cast<int>(l.surfacing));
         q.bindValue(":worth", static_cast<int>(l.worth.toCents()));
@@ -85,9 +85,9 @@ namespace woodworks::domain {
 
     inline void Lumber::bindForUpdate(QSqlQuery& q, const Lumber& l) {
         q.bindValue(":species", QString::fromStdString(l.species.name));
-        q.bindValue(":length", l.length.toInches());
-        q.bindValue(":width", l.width.toInches());
-        q.bindValue(":thickness", l.thickness.toInches());
+        q.bindValue(":length", l.length.toTicks());
+        q.bindValue(":width", l.width.toTicks());
+        q.bindValue(":thickness", l.thickness.toTicks());
         q.bindValue(":drying", static_cast<int>(l.drying));
         q.bindValue(":surfacing", static_cast<int>(l.surfacing));
         q.bindValue(":worth", static_cast<int>(l.worth.toCents()));
@@ -100,9 +100,9 @@ namespace woodworks::domain {
         return {
             .id = { record.value("id").toInt() },
             .species = { record.value("species").toString().toStdString() },
-            .length = Length::fromInches(record.value("length").toDouble()),
-            .width = Length::fromInches(record.value("width").toDouble()),
-            .thickness = Length::fromInches(record.value("thickness").toDouble()),
+            .length = Length::fromTicks(record.value("length").toDouble()),
+            .width = Length::fromTicks(record.value("width").toDouble()),
+            .thickness = Length::fromTicks(record.value("thickness").toDouble()),
             .drying = static_cast<Drying>(record.value("drying").toInt()),
             .surfacing = static_cast<LumberSurfacing>(record.value("surfacing").toInt()),
             .worth = { record.value("worth").toInt() },

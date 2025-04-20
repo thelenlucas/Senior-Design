@@ -79,8 +79,8 @@ namespace woodworks::domain {
     inline void Log::bindForInsert(QSqlQuery& q, const Log& log)
     {
         q.bindValue(":species", QString::fromStdString(log.species.name));
-        q.bindValue(":length", log.length.toInches());
-        q.bindValue(":diameter", log.diameter.toInches());
+        q.bindValue(":length", log.length.toTicks());
+        q.bindValue(":diameter", log.diameter.toTicks());
         q.bindValue(":quality", log.quality.value);
         q.bindValue(":drying", static_cast<int>(log.drying));
         q.bindValue(":cost", log.cost.cents);
@@ -91,8 +91,8 @@ namespace woodworks::domain {
     inline void Log::bindForUpdate(QSqlQuery& q, const Log& log)
     {
         q.bindValue(":species", QString::fromStdString(log.species.name));
-        q.bindValue(":length", log.length.toInches());
-        q.bindValue(":diameter", log.diameter.toInches());
+        q.bindValue(":length", log.length.toTicks());
+        q.bindValue(":diameter", log.diameter.toTicks());
         q.bindValue(":quality", log.quality.value);
         q.bindValue(":drying", static_cast<int>(log.drying));
         q.bindValue(":cost", log.cost.cents);
@@ -106,8 +106,8 @@ namespace woodworks::domain {
         Log log {
             .id = {record.value("id").toInt()},
             .species = {record.value("species").toString().toStdString()},
-            .length = Length::fromInches(record.value("length").toDouble()),
-            .diameter = Length::fromInches(record.value("diameter").toDouble()),
+            .length = Length::fromTicks(record.value("length").toDouble()),
+            .diameter = Length::fromTicks(record.value("diameter").toDouble()),
             .quality = Quality(record.value("quality").toInt()),
             .drying = static_cast<Drying>(record.value("drying").toInt()),
             .cost = {Dollar(record.value("cost").toInt())},
