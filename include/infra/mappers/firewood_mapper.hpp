@@ -14,7 +14,8 @@ namespace woodworks::domain {
                 drying INTEGER NOT NULL,
                 cost INTEGER NOT NULL,
                 location TEXT,
-                notes TEXT
+                notes TEXT,
+                image BLOB
             )
         )";
     }
@@ -53,10 +54,10 @@ namespace woodworks::domain {
         );
     }
     inline QString Firewood::insertSQL() {
-        return "INSERT INTO firewood (species, cubicFeet, drying, cost, location, notes) VALUES (:species, :cubicFeet, :drying, :cost, :location, :notes)";
+        return "INSERT INTO firewood (species, cubicFeet, drying, cost, location, notes, image) VALUES (:species, :cubicFeet, :drying, :cost, :location, :notes, :image)";
     }
     inline QString Firewood::updateSQL() {
-        return "UPDATE firewood SET species = :species, cubicFeet = :cubicFeet, drying = :drying, cost = :cost, location = :location, notes = :notes WHERE id = :id";
+        return "UPDATE firewood SET species = :species, cubicFeet = :cubicFeet, drying = :drying, cost = :cost, location = :location, notes = :notes, image = :image WHERE id = :id";
     }
     inline QString Firewood::selectOneSQL() { return u8R"(SELECT * FROM firewood WHERE id=:id)"; }
     inline QString Firewood::selectAllSQL() { return u8R"(SELECT * FROM firewood)"; }
@@ -68,11 +69,18 @@ namespace woodworks::domain {
         q.bindValue(":cost", firewood.cost.cents);
         q.bindValue(":location", QString::fromStdString(firewood.location));
         q.bindValue(":notes", QString::fromStdString(firewood.notes));
+        q.bindValue(":image", firewood.imageBuffer);
     }
 
     inline void Firewood::bindForUpdate(QSqlQuery& q, const Firewood& firewood) {
         q.bindValue(":id", firewood.id.id);
-        bindForInsert(q, firewood);
+        q.bindValue(":species", QString::fromStdString(firewood.species.name));
+        q.bindValue(":cubicFeet", firewood.cubicFeet);
+        q.bindValue(":drying", static_cast<int>(firewood.drying));
+        q.bindValue(":cost", firewood.cost.cents);
+        q.bindValue(":location", QString::fromStdString(firewood.location));
+        q.bindValue(":notes", QString::fromStdString(firewood.notes));
+        q.bindValue(":image", firewood.imageBuffer);
     }
 
     inline Firewood Firewood::fromRecord(const QSqlRecord& record) {
@@ -83,7 +91,8 @@ namespace woodworks::domain {
             .drying = static_cast<Drying>(record.value("drying").toInt()),
             .cost = {record.value("cost").toInt()},
             .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString()
+            .notes = record.value("notes").toString().toStdString(),
+            .imageBuffer = record.value("image").toByteArray()
         };
     }
 }

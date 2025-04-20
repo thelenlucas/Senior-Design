@@ -17,7 +17,8 @@ namespace woodworks::domain {
                 surfacing INTEGER NOT NULL,
                 worth INTEGER NOT NULL,
                 location TEXT,
-                notes TEXT
+                notes TEXT,
+                image BLOB
             )
         )";
     }
@@ -56,11 +57,11 @@ namespace woodworks::domain {
     }
 
     inline QString Lumber::insertSQL() {
-        return "INSERT INTO lumber (species, length, width, thickness, drying, surfacing, worth, location, notes) VALUES (:species, :length, :width, :thickness, :drying, :surfacing, :worth, :location, :notes)";
+        return "INSERT INTO lumber (species, length, width, thickness, drying, surfacing, worth, location, notes, image) VALUES (:species, :length, :width, :thickness, :drying, :surfacing, :worth, :location, :notes, :image)";
     }
 
     inline QString Lumber::updateSQL() {
-        return "UPDATE lumber SET species = :species, length = :length, width = :width, thickness = :thickness, drying = :drying, surfacing = :surfacing, worth = :worth, location = :location, notes = :notes WHERE id = :id";
+        return "UPDATE lumber SET species = :species, length = :length, width = :width, thickness = :thickness, drying = :drying, surfacing = :surfacing, worth = :worth, location = :location, notes = :notes, image = :image WHERE id = :id";
     }
 
     inline QString Lumber::selectOneSQL() { return u8R"(SELECT * FROM lumber WHERE id=:id)"; }
@@ -78,6 +79,7 @@ namespace woodworks::domain {
         q.bindValue(":worth", static_cast<int>(l.worth.toCents()));
         q.bindValue(":location", QString::fromStdString(l.location));
         q.bindValue(":notes", QString::fromStdString(l.notes));
+        q.bindValue(":image", l.imageBuffer);
     }
 
     inline void Lumber::bindForUpdate(QSqlQuery& q, const Lumber& l) {
@@ -90,6 +92,7 @@ namespace woodworks::domain {
         q.bindValue(":worth", static_cast<int>(l.worth.toCents()));
         q.bindValue(":location", QString::fromStdString(l.location));
         q.bindValue(":notes", QString::fromStdString(l.notes));
+        q.bindValue(":image", l.imageBuffer);
         q.bindValue(":id", l.id.id);
     }
 
@@ -104,7 +107,8 @@ namespace woodworks::domain {
             .surfacing = static_cast<LumberSurfacing>(record.value("surfacing").toInt()),
             .worth = { record.value("worth").toInt() },
             .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString()
+            .notes = record.value("notes").toString().toStdString(),
+            .imageBuffer = record.value("image").toByteArray()
         };
     }
 }

@@ -5,6 +5,7 @@
 #include <QString>
 #include <string>
 #include <QSqlQuery>
+#include <QByteArray>
 
 using namespace woodworks::domain::types;
 using namespace woodworks::domain::imperial;
@@ -23,6 +24,7 @@ namespace woodworks::domain {
         Dollar cost;
         std::string location;
         std::string notes;
+        QByteArray imageBuffer;  // image data buffer
 
         // Chords - a unit of measure for firewood, equal to 128 cubic feet
         // 1 chord = 128 cubic feet

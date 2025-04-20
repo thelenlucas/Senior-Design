@@ -5,6 +5,7 @@
 #include <QString>
 #include <string>
 #include <QSqlQuery>
+#include <QByteArray>
 #include "domain/cookie.hpp"
 
 using namespace woodworks::domain::types;
@@ -28,6 +29,7 @@ namespace woodworks::domain {
         Dollar cost;
         std::string location;
         std::string notes;
+        QByteArray imageBuffer;  // image data buffer
 
         // Validity check
         bool isValid() const noexcept
@@ -53,7 +55,8 @@ namespace woodworks::domain {
                 .drying = Drying::GREEN,
                 .cost = Dollar{0},
                 .location = "",
-                .notes = ""
+                .notes = "",
+                .imageBuffer = QByteArray(),
             };
         }
 

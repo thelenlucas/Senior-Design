@@ -16,7 +16,8 @@ namespace woodworks::domain {
                 surfacing INTEGER NOT NULL,
                 worth INTEGER NOT NULL,
                 location TEXT,
-                notes TEXT
+                notes TEXT,
+                image BLOB
             )
         )";
     }
@@ -33,12 +34,12 @@ namespace woodworks::domain {
 
     inline QString LiveEdgeSlab::insertSQL()
     {
-        return "INSERT INTO live_edge_slabs (species, length, width, thickness, drying, surfacing, worth, location, notes) VALUES (:species, :length, :width, :thickness, :drying, :surfacing, :worth, :location, :notes)";
+        return "INSERT INTO live_edge_slabs (species, length, width, thickness, drying, surfacing, worth, location, notes, image) VALUES (:species, :length, :width, :thickness, :drying, :surfacing, :worth, :location, :notes, :image)";
     }
 
     inline QString LiveEdgeSlab::updateSQL()
     {
-        return "UPDATE live_edge_slabs SET species = :species, length = :length, width = :width, thickness = :thickness, drying = :drying, surfacing = :surfacing, worth = :worth, location = :location, notes = :notes WHERE id = :id";
+        return "UPDATE live_edge_slabs SET species = :species, length = :length, width = :width, thickness = :thickness, drying = :drying, surfacing = :surfacing, worth = :worth, location = :location, notes = :notes, image = :image WHERE id = :id";
     }
 
     inline QString LiveEdgeSlab::selectOneSQL() { return u8R"(SELECT * FROM live_edge_slabs WHERE id=:id)"; }
@@ -58,6 +59,7 @@ namespace woodworks::domain {
         q.bindValue(":worth", static_cast<int>(slab.worth.toCents()));
         q.bindValue(":location", QString::fromStdString(slab.location));
         q.bindValue(":notes", QString::fromStdString(slab.notes));
+        q.bindValue(":image", slab.imageBuffer);
     }
 
     inline void LiveEdgeSlab::bindForUpdate(QSqlQuery& q, const LiveEdgeSlab& slab)
@@ -71,6 +73,7 @@ namespace woodworks::domain {
         q.bindValue(":worth", static_cast<int>(slab.worth.toCents()));
         q.bindValue(":location", QString::fromStdString(slab.location));
         q.bindValue(":notes", QString::fromStdString(slab.notes));
+        q.bindValue(":image", slab.imageBuffer);
         q.bindValue(":id", slab.id.id);
     }
 
@@ -86,7 +89,8 @@ namespace woodworks::domain {
             .surfacing = static_cast<SlabSurfacing>(record.value("surfacing").toInt()),
             .worth = { record.value("worth").toInt() },
             .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString()
+            .notes = record.value("notes").toString().toStdString(),
+            .imageBuffer = record.value("image").toByteArray()
         };
     }
 }

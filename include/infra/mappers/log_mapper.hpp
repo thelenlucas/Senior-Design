@@ -16,7 +16,8 @@ namespace woodworks::domain {
                 drying INTEGER NOT NULL,
                 cost INTEGER NOT NULL,
                 location TEXT,
-                notes TEXT
+                notes TEXT,
+                image BLOB
             )
         )";
     }
@@ -62,12 +63,12 @@ namespace woodworks::domain {
 
     inline QString Log::insertSQL()
     {
-        return "INSERT INTO logs (species, length, diameter, quality, drying, cost, location, notes) VALUES (:species, :length, :diameter, :quality, :drying, :cost, :location, :notes)";
+        return "INSERT INTO logs (species, length, diameter, quality, drying, cost, location, notes, image) VALUES (:species, :length, :diameter, :quality, :drying, :cost, :location, :notes, :image)";
     }
 
     inline QString Log::updateSQL()
     {
-        return "UPDATE logs SET species = :species, length = :length, diameter = :diameter, quality = :quality, drying = :drying, cost = :cost, location = :location, notes = :notes WHERE id = :id";
+        return "UPDATE logs SET species = :species, length = :length, diameter = :diameter, quality = :quality, drying = :drying, cost = :cost, location = :location, notes = :notes, image = :image WHERE id = :id";
     }
 
     inline QString Log::selectOneSQL() { return u8R"(SELECT * FROM logs WHERE id=:id)"; }
@@ -86,6 +87,7 @@ namespace woodworks::domain {
         q.bindValue(":cost", log.cost.cents);
         q.bindValue(":location", QString::fromStdString(log.location));
         q.bindValue(":notes", QString::fromStdString(log.notes));
+        q.bindValue(":image", log.imageBuffer);
     }
 
     inline void Log::bindForUpdate(QSqlQuery& q, const Log& log)
@@ -98,6 +100,7 @@ namespace woodworks::domain {
         q.bindValue(":cost", log.cost.cents);
         q.bindValue(":location", QString::fromStdString(log.location));
         q.bindValue(":notes", QString::fromStdString(log.notes));
+        q.bindValue(":image", log.imageBuffer);
         q.bindValue(":id", log.id.id);
     }
 
@@ -113,6 +116,7 @@ namespace woodworks::domain {
             .cost = {Dollar(record.value("cost").toInt())},
             .location = record.value("location").toString().toStdString(),
             .notes = record.value("notes").toString().toStdString(),
+            .imageBuffer = record.value("image").toByteArray(),
         };
         
         return log;

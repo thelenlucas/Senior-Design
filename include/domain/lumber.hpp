@@ -4,6 +4,7 @@
 #include "units.hpp"
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QByteArray>
 
 using namespace woodworks::domain::types;
 using namespace woodworks::domain::imperial;
@@ -20,6 +21,7 @@ namespace woodworks::domain {
         Dollar worth;
         std::string location;
         std::string notes;
+        QByteArray imageBuffer;  // image data buffer
 
         // ---- Mapping -----
         static QString createDbSQL();
