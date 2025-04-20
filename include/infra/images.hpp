@@ -11,6 +11,8 @@
 #include <QMessageBox>
 #include <QObject>
 #include <QSize>
+#include <QInputDialog>
+#include <QTextEdit>
 #include "repository.hpp"
 #include <QCoreApplication>
 
@@ -102,11 +104,19 @@ namespace woodworks::infra
         imgLabel->setAlignment(Qt::AlignCenter);
         layout->addWidget(imgLabel);
 
+        QLabel *notesLabel = new QLabel(QCoreApplication::translate("ImageViewer", "Notes:"), &dlg);
+        QTextEdit *notesEdit = new QTextEdit(QString::fromStdString(item.notes), &dlg);
+        notesEdit->setMinimumHeight(100);
+        layout->addWidget(notesLabel);
+        layout->addWidget(notesEdit);
+
         QHBoxLayout *btnLayout = new QHBoxLayout();
         QPushButton *replaceBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Replace Image"), &dlg);
         QPushButton *saveBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Save As…"), &dlg);
+        QPushButton *closeBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Close"), &dlg);
         btnLayout->addWidget(replaceBtn);
         btnLayout->addWidget(saveBtn);
+        btnLayout->addWidget(closeBtn);
         layout->addLayout(btnLayout);
 
         QObject::connect(replaceBtn, &QPushButton::clicked, [&dlg, &imgLabel, &item]()
@@ -144,6 +154,12 @@ namespace woodworks::infra
                                                       QObject::tr("PNG Files (*.png);;JPEG Files (*.jpg *.jpeg);;Bitmap Files (*.bmp)"));
             if (!fn.isEmpty())
                 displayPix.save(fn); });
+
+        QObject::connect(closeBtn, &QPushButton::clicked, [&dlg, &item, notesEdit]() {
+            item.notes = notesEdit->toPlainText().toStdString();
+            QtSqlRepository<T>::spawn().update(item);
+            dlg.accept();
+        });
 
         dlg.exec();
     }
