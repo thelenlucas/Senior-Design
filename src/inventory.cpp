@@ -10,9 +10,7 @@
 #include <QSqlQuery>
 #include <QTimer>
 
-#include "cookies.hpp"
 #include "inventory.hpp"
-#include "logs.hpp"
 #include "ui_inventory.h"
 
 InventoryPage::InventoryPage(QWidget *parent)
@@ -43,13 +41,6 @@ InventoryPage::InventoryPage(QWidget *parent)
     ui->lumberTable->setModel(lumberModel);
     ui->slabsTable->setModel(slabsModel);
     ui->firewoodTable->setModel(firewoodModel);
-
-    // Set the drying QComboBox to the enum values, and strings to match them
-    ui->dryingComboBox->addItem("Air Dried", static_cast<int>(Drying::AIR_DRIED));
-    ui->dryingComboBox->addItem("Kiln Dried", static_cast<int>(Drying::KILN_DRIED));
-    ui->dryingComboBox->addItem("Air Dried and Kiln Dried",
-                                static_cast<int>(Drying::AIR_AND_KILN_DRIED));
-    ui->dryingComboBox->addItem("Air and Kiln Dried", static_cast<int>(Drying::WET));
 
     refreshModels();
 
@@ -120,45 +111,45 @@ void InventoryPage::onAddLogClicked()
     int costQuarters = costCents / lenQuarters;
 
     // Get the drying by casting back from the QComboBox value
-    int dryingVal = ui->dryingComboBox->currentData().toInt();
-    Drying drying = static_cast<Drying>(dryingVal);
-    // Create a new log
-    Log newLog(0, species.toStdString(), lenQuarters, diamQuarters,
-               costQuarters, quality, drying, location);
-    // Insert the log into the database
-    newLog.insert();
+    // int dryingVal = ui->dryingComboBox->currentData().toInt();
+    // Drying drying = static_cast<Drying>(dryingVal);
+    // // Create a new log
+    // Log newLog(0, species.toStdString(), lenQuarters, diamQuarters,
+    //            costQuarters, quality, drying, location);
+    // // Insert the log into the database
+    // newLog.insert();
 
     // Refresh the models to show the new log
     refreshModels();
 }
 
 void InventoryPage::onCookieButtonClicked() {
-    // Get the selected log id
-    std::optional<Log> opt = Log::get_by_id(ui->individualLogsTable->currentIndex().siblingAtColumn(0).data().toInt());
-    if (!opt) {
-        QMessageBox::critical(this, "Error", "Log not found");
-        return;
-    }
+    // // Get the selected log id
+    // std::optional<Log> opt = Log::get_by_id(ui->individualLogsTable->currentIndex().siblingAtColumn(0).data().toInt());
+    // if (!opt) {
+    //     QMessageBox::critical(this, "Error", "Log not found");
+    //     return;
+    // }
 
-    Log log = opt.value();
+    // Log log = opt.value();
 
-    // Dialog for the user to enter a uint for cookie thickness
-    // https://doc.qt.io/qt-5/qinputdialog.html
-    // Pointer, Dialog Title, Dialog Text, Initial Val, Min Val, Max Val, Trigger Val
-    bool ok;    
-    float enteredCut = QInputDialog::getInt(this, QObject::tr("Cookie Cutter"), QObject::tr("Please enter the desired cookie thickness (inches):"), 1, 1, log.getAvailableLength(), ok);     
-    if(!ok) {
-        std::cout << "Cutting Cookie!" << std::endl;
-        int enteredQuarters = enteredCut*4;
+    // // Dialog for the user to enter a uint for cookie thickness
+    // // https://doc.qt.io/qt-5/qinputdialog.html
+    // // Pointer, Dialog Title, Dialog Text, Initial Val, Min Val, Max Val, Trigger Val
+    // bool ok;    
+    // float enteredCut = QInputDialog::getInt(this, QObject::tr("Cookie Cutter"), QObject::tr("Please enter the desired cookie thickness (inches):"), 1, 1, log.getAvailableLength(), ok);     
+    // if(!ok) {
+    //     std::cout << "Cutting Cookie!" << std::endl;
+    //     int enteredQuarters = enteredCut*4;
 
-        Cookie cookie = Cookie::make_from_log(log, static_cast<unsigned int>(enteredQuarters)).at(0); 
-        if(!cookie.insert()) {
-            std::cout << "ERROR: Failed to insert cookie!" << std::endl;
-        }
-    } else { std::cout << "User canceled input." << std::endl; }
+    //     Cookie cookie = Cookie::make_from_log(log, static_cast<unsigned int>(enteredQuarters)).at(0); 
+    //     if(!cookie.insert()) {
+    //         std::cout << "ERROR: Failed to insert cookie!" << std::endl;
+    //     }
+    // } else { std::cout << "User canceled input." << std::endl; }
 
-    refreshModels();
-    std::cout << "Cookies done! Models refreshed!" << std::endl;
+    // refreshModels();
+    // std::cout << "Cookies done! Models refreshed!" << std::endl;
 }
 
 void InventoryPage::onSpreadsheetImportClicked()

@@ -12,16 +12,13 @@
 #include <QScreen>
 
 #include "project_editor.hpp"
-#include "logs.hpp"
 #include "types.hpp"
-#include "firewood.hpp"
 
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 #include "inventory.hpp"
 #include "cutlist.hpp"
 #include "sales.hpp"
-#include <cookies.hpp>
 
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
@@ -51,6 +48,14 @@ void MainWindow::refreshModel()
         qDebug() << "Query error:" << model->lastError().text();
     }
     ui->individualLogTableView->setModel(model);
+
+    // Set up the model for the grouped logs table
+    QSqlQueryModel *groupedModel = new QSqlQueryModel(this);
+    groupedModel->setQuery("SELECT * FROM display_logs_grouped", QSqlDatabase::database());
+    if (groupedModel->lastError().isValid()) {
+        qDebug() << "Query error:" << groupedModel->lastError().text();
+    }
+    ui->groupedLogsTableView->setModel(groupedModel);
 }
 
 void MainWindow::onEnterLogButtonClicked() {
@@ -78,48 +83,48 @@ void MainWindow::onEnterLogButtonClicked() {
 }
 
 void MainWindow::onScrapLogButtonClicked() {
-    // Get the selected log ID
-    QModelIndex index = ui->individualLogTableView->currentIndex();
-    std::optional<Log> log = Log::get_by_id(index.sibling(index.row(), 0).data().toInt());
+    // // Get the selected log ID
+    // QModelIndex index = ui->individualLogTableView->currentIndex();
+    // std::optional<Log> log = Log::get_by_id(index.sibling(index.row(), 0).data().toInt());
 
-    // If the log is not found, return, after displaying an error message
-    if (!log) {
-        QMessageBox::critical(this, "Error", "Log not found");
-        return;
-    }
+    // // If the log is not found, return, after displaying an error message
+    // if (!log) {
+    //     QMessageBox::critical(this, "Error", "Log not found");
+    //     return;
+    // }
 
-    // Scrap the log
-    log->scrap();
+    // // Scrap the log
+    // log->scrap();
 
-    // Update the model
-    refreshModel();
+    // // Update the model
+    // refreshModel();
 }
 
 void MainWindow::onFirewoodButtonClicked() {
-    // Get the selected log ID, and get log object
-    std::optional<Log> opt = Log::get_by_id(ui->individualLogTableView->currentIndex().siblingAtColumn(0).data().toInt());
+    // // Get the selected log ID, and get log object
+    // std::optional<Log> opt = Log::get_by_id(ui->individualLogTableView->currentIndex().siblingAtColumn(0).data().toInt());
 
-    if (!opt) {
-        QMessageBox::critical(this, "Error", "Log not found");
-        return;
-    }
+    // if (!opt) {
+    //     QMessageBox::critical(this, "Error", "Log not found");
+    //     return;
+    // }
 
-    // Confirm that they want to turn the log into firewood
-    QMessageBox::StandardButton reply = QMessageBox::question(this, "Confirm", "Are you sure you want to turn this entire log into firewood?", QMessageBox::Yes | QMessageBox::No);
-    if (reply == QMessageBox::No) {
-        return;
-    }
+    // // Confirm that they want to turn the log into firewood
+    // QMessageBox::StandardButton reply = QMessageBox::question(this, "Confirm", "Are you sure you want to turn this entire log into firewood?", QMessageBox::Yes | QMessageBox::No);
+    // if (reply == QMessageBox::No) {
+    //     return;
+    // }
 
-    std::cout << "Turning log into firewood" << std::endl;
+    // std::cout << "Turning log into firewood" << std::endl;
 
-    // We're going to convert the entire usable length of the log into firewood
-    Log log = opt.value();
-    int usableLength = log.getAvailableLength();
+    // // We're going to convert the entire usable length of the log into firewood
+    // Log log = opt.value();
+    // int usableLength = log.getAvailableLength();
 
-    // Manufacture the log into firewood
-    auto firewood = Firewood::make_from_log(log, usableLength);
+    // // Manufacture the log into firewood
+    // auto firewood = Firewood::make_from_log(log, usableLength);
 
-    refreshModel();
+    // refreshModel();
 }
 
 void MainWindow::onTableCellDoubleClicked() {

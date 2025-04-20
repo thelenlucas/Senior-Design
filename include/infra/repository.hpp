@@ -11,6 +11,11 @@
 // STD output
 #include <iostream>
 
+#include "infra/mappers/log_mapper.hpp"
+#include "infra/mappers/cookie_mapper.hpp"
+#include "infra/mappers/live_edge_slab_mapper.hpp"
+#include "infra/mappers/lumber_mapper.hpp"
+
 namespace woodworks::infra {
     template<typename T>
     class QtSqlRepository {
@@ -24,6 +29,10 @@ namespace woodworks::infra {
                     throw std::runtime_error("Failed to create table: " + q.lastError().text().toStdString());
                 }
                 q.prepare(T::individualViewSQL());
+                if (!q.exec()) {
+                    throw std::runtime_error("Failed to create view: " + q.lastError().text().toStdString());
+                }
+                q.prepare(T::groupedViewSQL());
                 if (!q.exec()) {
                     throw std::runtime_error("Failed to create view: " + q.lastError().text().toStdString());
                 }

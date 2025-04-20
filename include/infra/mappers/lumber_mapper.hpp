@@ -25,6 +25,10 @@ namespace woodworks::domain {
         return u8R"(CREATE VIEW IF NOT EXISTS display_lumber AS SELECT id AS 'ID', species AS 'Species', ROUND(length/16.0,2) AS 'Length (in)', ROUND(width/16.0,2) AS 'Width (in)', printf('%d/4', ROUND(thickness/4.0)) AS 'Thickness (in)', CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying', CASE surfacing WHEN 0 THEN 'RGH' WHEN 1 THEN 'S1S' WHEN 2 THEN 'S2S' WHEN 3 THEN 'S3S' WHEN 4 THEN 'S4S' END AS 'Surfacing', printf('%.2f', worth/100.0) AS 'Worth ($)', location AS 'Location', notes AS 'Notes' FROM lumber)";
     }
 
+    inline QString Lumber::groupedViewSQL() {
+        return  "CREATE VIEW IF NOT EXISTS display_lumber_grouped AS SELECT COUNT(*) AS 'Count', species AS 'Species', ROUND(length/16.0,2) AS 'Length (in)', ROUND(width/16.0,2) AS 'Width (in)', printf('%d/4', ROUND(thickness/4.0)) AS 'Thickness (in)', CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying', CASE surfacing WHEN 0 THEN 'RGH' WHEN 1 THEN 'S1S' WHEN 2 THEN 'S2S' WHEN 3 THEN 'S3S' WHEN 4 THEN 'S4S' END AS 'Surfacing', ROUND(AVG(worth)/100.0,2) AS 'Avg Worth ($)' FROM lumber GROUP BY species, ROUND(length/16.0,2), ROUND(width/16.0,2), ROUND(thickness/4.0), drying, surfacing";
+    }
+
     inline QString Lumber::insertSQL() {
         return "INSERT INTO lumber (species, length, width, thickness, drying, surfacing, worth, location, notes) VALUES (:species, :length, :width, :thickness, :drying, :surfacing, :worth, :location, :notes)";
     }

@@ -37,6 +37,7 @@ namespace woodworks::domain {
         // ---- Mapping -----
         static QString createDbSQL();
         static QString individualViewSQL();
+        static QString groupedViewSQL();
         static QString insertSQL();
         static QString updateSQL();
         static QString selectOneSQL();

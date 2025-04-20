@@ -24,6 +24,10 @@ namespace woodworks::domain {
         return u8R"(CREATE VIEW IF NOT EXISTS display_logs AS SELECT id AS 'ID', species AS 'Species', ROUND(length/192.0,2) AS 'Length (ft)', ROUND(diameter/16.0,2) AS 'Diameter (in)', quality AS 'Quality', CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying', printf('%.2f',cost/100.0) AS 'Cost ($)', location AS 'Location', notes AS 'Notes' FROM logs)";
     }
 
+    inline QString Log::groupedViewSQL() {
+        return "CREATE VIEW IF NOT EXISTS display_logs_grouped AS SELECT COUNT(*) AS 'Count', species AS 'Species', ROUND(length/192.0,2) AS 'Length (ft)', ROUND(diameter/16.0,2) AS 'Diameter (in)', quality AS 'Quality', CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying', ROUND(AVG(cost)/100.0,2) AS 'Avg Cost ($)' FROM logs GROUP BY species, ROUND(length/192.0,2), ROUND(diameter/16.0,2), quality, drying";
+    }
+
     inline QString Log::insertSQL()
     {
         return "INSERT INTO logs (species, length, diameter, quality, drying, cost, location, notes) VALUES (:species, :length, :diameter, :quality, :drying, :cost, :location, :notes)";
