@@ -126,7 +126,7 @@
       <enum>QTabWidget::North</enum>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="logsTab">
       <attribute name="title">
@@ -164,7 +164,7 @@
          <item alignment="Qt::AlignRight">
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>Length (Min):</string>
+            <string>Length:</string>
            </property>
           </widget>
          </item>
@@ -175,10 +175,16 @@
            </property>
           </widget>
          </item>
-         <item alignment="Qt::AlignRight">
+         <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_4">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
-            <string>Length (Max):</string>
+            <string>-</string>
            </property>
           </widget>
          </item>
@@ -192,7 +198,7 @@
          <item alignment="Qt::AlignRight">
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Radius (Min):</string>
+            <string>Radius: </string>
            </property>
           </widget>
          </item>
@@ -203,10 +209,10 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>Radius (Max):</string>
+            <string>-</string>
            </property>
           </widget>
          </item>
@@ -226,6 +232,19 @@
          </item>
          <item>
           <widget class="QComboBox" name="logDryingComboBox"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>
@@ -527,7 +546,14 @@
         </layout>
        </item>
        <item>
-        <widget class="QTableView" name="slabsTableView"/>
+        <widget class="QTableView" name="slabsTableView">
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -670,7 +696,14 @@
         </layout>
        </item>
        <item>
-        <widget class="QTableView" name="lumberTableView"/>
+        <widget class="QTableView" name="lumberTableView">
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -729,7 +762,14 @@
         </layout>
        </item>
        <item>
-        <widget class="QTableView" name="firewoodTableView"/>
+        <widget class="QTableView" name="firewoodTableView">
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
