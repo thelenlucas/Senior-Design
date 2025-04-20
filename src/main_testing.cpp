@@ -6,12 +6,14 @@
 #include "domain/log.hpp"
 #include "domain/cookie.hpp"
 #include "domain/live_edge_slab.hpp"
+#include "domain/lumber.hpp"
 #include "infra/repository.hpp"
 #include "infra/unit_of_work.hpp"
 #include "infra/connection.hpp"
 #include "infra/mappers/log_mapper.hpp"
 #include "infra/mappers/cookie_mapper.hpp"
 #include "infra/mappers/live_edge_slab_mapper.hpp"
+#include "infra/mappers/lumber_mapper.hpp"
 
 using namespace woodworks::domain;
 using namespace woodworks::domain::imperial;
@@ -77,6 +79,29 @@ int main(int argc, char* argv[]) {
     assert(slab2.has_value());
     assert(slab2->species.name == "Walnut");
     assert(slab2->length.toInches() == 8 * 12);
+
+    // Lumber insertion test
+    UnitOfWork uow4(db);
+    QtSqlRepository<Lumber> lumbers(db);
+    woodworks::domain::Lumber lumber {
+        .id = {-1},
+        .species = {"Pine"},
+        .length = woodworks::domain::imperial::Length::fromFeet(12),
+        .width = woodworks::domain::imperial::Length::fromInches(4),
+        .thickness = woodworks::domain::imperial::Length::fromInches(1),
+        .drying = woodworks::domain::types::Drying::AIR_DRIED,
+        .surfacing = LumberSurfacing::S4S,
+        .worth = {200},
+        .location = "Storage",
+        .notes = "Test lumber"
+    };
+    lumbers.add(lumber);
+    uow4.commit();
+    auto lumber2 = lumbers.get(1);
+    assert(lumber2.has_value());
+    assert(lumber2->species.name == "Pine");
+    assert(lumber2->length.toInches() == 12 * 12);
+    assert(lumber2->width.toInches() == 4);
 }
 
 #endif

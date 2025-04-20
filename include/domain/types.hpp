@@ -21,6 +21,13 @@ namespace woodworks::domain::types {
 
         constexpr Dollar worthless() const noexcept { return Dollar{0}; }
 
+        constexpr Dollar(int c) : cents(c) {
+            if (c < 0)
+                throw std::invalid_argument("Dollar value cannot be negative");
+        }
+
+        constexpr unsigned int toCents() const noexcept { return static_cast<unsigned int>(cents); }
+
         std::string format() const noexcept
         {
             return "$" + std::to_string(cents / 100) + "." + std::to_string(cents % 100);
