@@ -23,6 +23,8 @@ namespace woodworks::domain {
         Quality quality;
         // Drying
         Drying drying;
+        // Cost in cents
+        Dollar cost;
         std::string location;
         std::string notes;
 

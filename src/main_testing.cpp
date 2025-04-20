@@ -32,6 +32,7 @@ int main(int argc, char* argv[]) {
         .diameter = woodworks::domain::imperial::Length::fromInches(12),
         .quality = {5},
         .drying = woodworks::domain::types::Drying::KILN_DRIED,
+        .cost = {500},
         .location = "Storage",
         .notes = "Test log"
     };

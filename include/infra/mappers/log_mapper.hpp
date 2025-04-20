@@ -13,6 +13,7 @@ namespace woodworks::domain {
                 diameter REAL NOT NULL,
                 quality INTEGER NOT NULL,
                 drying INTEGER NOT NULL,
+                cost INTEGER NOT NULL,
                 location TEXT,
                 notes TEXT
             )
@@ -21,12 +22,12 @@ namespace woodworks::domain {
 
     inline QString Log::insertSQL()
     {
-        return "INSERT INTO logs (species, length, diameter, quality, drying, location, notes) VALUES (:species, :length, :diameter, :quality, :drying, :location, :notes)";
+        return "INSERT INTO logs (species, length, diameter, quality, drying, cost, location, notes) VALUES (:species, :length, :diameter, :quality, :drying, :cost, :location, :notes)";
     }
 
     inline QString Log::updateSQL()
     {
-        return "UPDATE logs SET species = :species, length = :length, diameter = :diameter, quality = :quality, drying = :drying, location = :location, notes = :notes WHERE id = :id";
+        return "UPDATE logs SET species = :species, length = :length, diameter = :diameter, quality = :quality, drying = :drying, cost = :cost, location = :location, notes = :notes WHERE id = :id";
     }
 
     inline QString Log::selectOneSQL() { return u8R"(SELECT * FROM logs WHERE id=:id)"; }
@@ -40,6 +41,7 @@ namespace woodworks::domain {
         q.bindValue(":diameter", log.diameter.toInches());
         q.bindValue(":quality", log.quality.value);
         q.bindValue(":drying", static_cast<int>(log.drying));
+        q.bindValue(":cost", log.cost.cents);
         q.bindValue(":location", QString::fromStdString(log.location));
         q.bindValue(":notes", QString::fromStdString(log.notes));
     }
@@ -51,6 +53,7 @@ namespace woodworks::domain {
         q.bindValue(":diameter", log.diameter.toInches());
         q.bindValue(":quality", log.quality.value);
         q.bindValue(":drying", static_cast<int>(log.drying));
+        q.bindValue(":cost", log.cost.cents);
         q.bindValue(":location", QString::fromStdString(log.location));
         q.bindValue(":notes", QString::fromStdString(log.notes));
         q.bindValue(":id", log.id.id);
@@ -65,6 +68,7 @@ namespace woodworks::domain {
             .diameter = Length::fromInches(record.value("diameter").toDouble()),
             .quality = Quality(record.value("quality").toInt()),
             .drying = static_cast<Drying>(record.value("drying").toInt()),
+            .cost = {Dollar(record.value("cost").toInt())},
             .location = record.value("location").toString().toStdString(),
             .notes = record.value("notes").toString().toStdString(),
         };
