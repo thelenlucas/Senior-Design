@@ -26,6 +26,8 @@
 #include "infra/repository.hpp"
 #include "infra/unit_of_work.hpp"
 
+#include "inventory.hpp"
+
 using qsd = QSqlDatabase;
 
 class Container : public QThread 
@@ -40,7 +42,7 @@ public:
 public:
     void run() 
     {
-        MainWindow window;
+        InventoryPage window;
         window.show();
         app->exec();
     }

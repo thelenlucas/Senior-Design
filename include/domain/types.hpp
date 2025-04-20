@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <string>
 
+#include <QMetaType>
+
 namespace woodworks::domain::types {
     // Species
     struct Species {std::string name; };
@@ -39,8 +41,8 @@ namespace woodworks::domain::types {
         int value;
 
         constexpr Quality(int v) : value(v) {
-            if (v < 1 || v > 5)
-                throw std::invalid_argument("Quality must be between 1 and 5");
+            if ((v < 1 || v > 5) && v != -1) // Allowing -1 for uninitialized
+                throw std::invalid_argument("Quality must be between 1 and 5: attempted quality" + std::to_string(v));
         }
         constexpr Quality uninitialized() const noexcept { return Quality{-1}; }
         constexpr bool isUninitialized() const noexcept { return value == -1; }
@@ -125,3 +127,5 @@ namespace woodworks::domain::types {
         throw std::invalid_argument("Invalid surfacing state");
     }
 }
+
+Q_DECLARE_METATYPE(woodworks::domain::types::Drying);

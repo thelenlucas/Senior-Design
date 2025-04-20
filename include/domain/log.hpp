@@ -42,6 +42,21 @@ namespace woodworks::domain {
         // Cuts a length of firewood from the log, inserts it into the database, and updates the log.
         void cutFirewood(Length cutLength);
 
+        static Log uninitialized() noexcept
+        {
+            return Log{
+                .id = Id{-1},
+                .species = Species{""},
+                .length = Length::fromTicks(0),
+                .diameter = Length::fromTicks(0),
+                .quality = Quality{-1},
+                .drying = Drying::GREEN,
+                .cost = Dollar{0},
+                .location = "",
+                .notes = ""
+            };
+        }
+
         // ---- Mapping -----
         static QString createDbSQL();
         static QString individualViewSQL();
