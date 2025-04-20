@@ -29,7 +29,7 @@ namespace woodworks::domain {
             QStringList{
                 "id AS 'ID'",
                 "species AS 'Species'",
-                "ROUND(length/16.0,2) AS 'Length (in)'",
+                "ROUND(length/16.0,2) AS 'Thickness (in)'",
                 "ROUND(diameter/16.0,2) AS 'Diameter (in)'",
                 "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
                 "printf('%.2f',worth/100.0) AS 'Worth ($)'",
@@ -45,7 +45,7 @@ namespace woodworks::domain {
             QStringList{
                 "COUNT(*) AS 'Count'",
                 "species AS 'Species'",
-                "ROUND(length/16.0,2) AS 'Length (in)'",
+                "ROUND(length/16.0,2) AS 'Thickness (in)'",
                 "ROUND(diameter/16.0,2) AS 'Diameter (in)'",
                 "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
                 "ROUND(AVG(worth)/100.0,2) AS 'Avg Worth ($)'"

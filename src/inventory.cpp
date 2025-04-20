@@ -83,6 +83,13 @@ InventoryPage::InventoryPage(QWidget *parent)
     connect(ui->logRadiusMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
     connect(ui->logRadiusMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
     connect(ui->logSpeciesComboBox, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->logDryingComboBox, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->cookiesSpeciesCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->cookieThicknessSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->cookieThicknessMaxSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->cookieDiameterMinSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->cookieDiameterMaxSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->cookieDryingCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
 
     connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
@@ -103,17 +110,23 @@ void InventoryPage::buildFilterWidgets() {
     QStringList species = getUniqueSpecies();
     species.prepend("All");
     ui->logSpeciesComboBox->addItems(species);
-    ui->logSpeciesComboBox->setCurrentIndex(0); // Set to "All" by default
+    ui->cookiesSpeciesCombo->addItems(species);
+    // Set to "All" by default
+    ui->logSpeciesComboBox->setCurrentIndex(0);
+    ui->cookiesSpeciesCombo->setCurrentIndex(0);
 
     QStringList dryings = getUniqueValuesOfColumn("display_logs", "Drying");
     dryings.prepend("All");
     ui->logDryingComboBox->addItems(dryings);
-    ui->logDryingComboBox->setCurrentIndex(0); // Set to "All" by default
+    ui->cookieDryingCombo->addItems(dryings);
+    ui->logDryingComboBox->setCurrentIndex(0);
+    ui->cookieDryingCombo->setCurrentIndex(0);
 }
 
 void InventoryPage::refreshModels()
 {
     QVector<FieldFilter> logFilters;
+    QVector<FieldFilter> cookieFilters;
 
     if (ui->logSpeciesComboBox->currentText() != "All") {
         logFilters.push_back(FieldFilter().exact("species", ui->logSpeciesComboBox->currentText()));
@@ -139,14 +152,35 @@ void InventoryPage::refreshModels()
         logFilters.push_back(FieldFilter().exact("drying", ui->logDryingComboBox->currentText()));
     }
 
+    if (ui->cookiesSpeciesCombo->currentText() != "All") {
+        cookieFilters.push_back(FieldFilter().exact("species", ui->cookiesSpeciesCombo->currentText()));
+    }
+    if (ui->cookieThicknessSpinBox->value() != 0 || ui->cookieThicknessMaxSpinBox->value() != 0) {
+        cookieFilters.push_back(FieldFilter().between(
+            "\"Thickness (in)\"",
+            ui->cookieThicknessSpinBox->value(),
+            ui->cookieThicknessMaxSpinBox->value()
+        ));
+    }
+    if (ui->cookieDiameterMinSpinBox->value() != 0 || ui->cookieDiameterMaxSpinBox->value() != 0) {
+        cookieFilters.push_back(FieldFilter().between(
+            "\"Diameter (in)\"",
+            ui->cookieDiameterMinSpinBox->value(),
+            ui->cookieDiameterMaxSpinBox->value()
+        ));
+    }
+    if (ui->cookieDryingCombo->currentText() != "All") {
+        cookieFilters.push_back(FieldFilter().exact("drying", ui->cookieDryingCombo->currentText()));
+    }
+
     if (ui->detailedViewCheckBox->isChecked()) {
         ui->logsTableView->setModel(makeFilteredModel("display_logs", logFilters, this));
-        ui->cookiesTableView->setModel(makeViewModel("display_cookies", this));
+        ui->cookiesTableView->setModel(makeFilteredModel("display_cookies", cookieFilters, this));
         ui->slabsTableView->setModel(makeViewModel("display_slabs", this));
         ui->lumberTableView->setModel(makeViewModel("display_lumber", this));
     } else {
         ui->logsTableView->setModel(makeFilteredModel("display_logs_grouped", logFilters, this));
-        ui->cookiesTableView->setModel(makeViewModel("display_cookies_grouped", this));
+        ui->cookiesTableView->setModel(makeFilteredModel("display_cookies_grouped", cookieFilters, this));
         ui->slabsTableView->setModel(makeViewModel("display_slabs_grouped", this));
         ui->lumberTableView->setModel(makeViewModel("display_lumber_grouped", this));
     }
