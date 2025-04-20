@@ -3,92 +3,107 @@
 #include <cassert>
 #include <optional>
 #include <stdio.h>
+#include "domain/log.hpp"
+#include "domain/cookie.hpp"
+#include "domain/live_edge_slab.hpp"
+#include "domain/lumber.hpp"
+#include "infra/repository.hpp"
+#include "infra/unit_of_work.hpp"
+#include "infra/connection.hpp"
+#include "infra/mappers/log_mapper.hpp"
+#include "infra/mappers/cookie_mapper.hpp"
+#include "infra/mappers/live_edge_slab_mapper.hpp"
+#include "infra/mappers/lumber_mapper.hpp"
 
-#include "logs.hpp"
-#include "types.hpp"
-#include "cookies.hpp"
-#include "slab_manufacturer.hpp"
-
-#include "wwhg_constants.hpp"
-#include "wwhg_datamodel.hpp"
-#include "wwhg_generator.hpp"
-
-using namespace std;
+using namespace woodworks::domain;
+using namespace woodworks::domain::imperial;
+using namespace woodworks::domain::types;
+using namespace woodworks::infra;
 
 int main(int argc, char* argv[]) {
-    Log log(-1, "Cherry", 12*12*4, 6*4, 100, 3, Drying::WET, "", "");
-    assert(log.get_id() == -1);
-    log.insert();
-    assert(log.get_id() != -1);
-    cout << "Log ID: " << log.get_id() << endl;
+    auto& db = DbConnection::instance();
+    UnitOfWork uow(db);
+    QtSqlRepository<Log> logs(db);
 
-    optional<Log> fetchLog = Log::get_by_id(log.get_id());
-    assert(fetchLog.has_value());
-    assert(fetchLog->getSpecies() == "Cherry");
-    assert(fetchLog->getLenQuarters() == 12*12*4);
-    assert(fetchLog->getDiameterQuarters() == 6*4);
-    cout << "Log insertion and retreival successful." << endl;
+    woodworks::domain::Log log {
+        .id = {-1},
+        .species = {"Oak"},
+        .length = woodworks::domain::imperial::Length::fromFeet(10),
+        .diameter = woodworks::domain::imperial::Length::fromInches(12),
+        .quality = {5},
+        .drying = woodworks::domain::types::Drying::KILN_DRIED,
+        .cost = {500},
+        .location = "Storage",
+        .notes = "Test log"
+    };
+    logs.add(log);
+    uow.commit();
+    auto log2 = logs.get(1);
+    assert(log2.has_value());
 
-    // Test cutting a length from a log of 12 inches
-    unsigned cutLength = 12*4;
-    log.multiCut(cutLength);
-    assert(log.getAvailableLength() == (log.getLenQuarters() - cutLength));
-    cout << "Log cut successful. Remaining length: " << log.getAvailableLength() << endl;
+    UnitOfWork uow2(db);
+    // Cookie insertion test
+    QtSqlRepository<Cookie> cookies(db);
+    woodworks::domain::Cookie cookie {
+        .id = {-1},
+        .species = {"Maple"},
+        .length = woodworks::domain::imperial::Length::fromFeet(5),
+        .diameter = woodworks::domain::imperial::Length::fromInches(6),
+        .drying = woodworks::domain::types::Drying::AIR_DRIED,
+        .worth = {100},
+        .location = "Warehouse",
+        .notes = "Test cookie"
+    };
+    cookies.add(cookie);
+    uow2.commit();
+    auto cookie2 = cookies.get(1);
+    assert(cookie2.has_value());
+    assert(cookie2->species.name == "Maple");
 
-    // Take a foot off of kerf waste
-    unsigned kerfWaste = 12;
-    unsigned kerfWaste4ths = kerfWaste * 4;
-    unsigned kerfWaste16ths = kerfWaste * 16;
-    log.wasteKerf(kerfWaste16ths);
-    cout << "Kerf waste applied. Remaining length: " << log.getAvailableLength() << endl;
-    assert(log.getAvailableLength() == (log.getLenQuarters() - cutLength - kerfWaste4ths));
+    // LiveEdgeSlab insertion test
+    UnitOfWork uow3(db);
+    QtSqlRepository<LiveEdgeSlab> slabs(db);
+    woodworks::domain::LiveEdgeSlab slab {
+        .id = {-1},
+        .species = {"Walnut"},
+        .length = woodworks::domain::imperial::Length::fromFeet(8),
+        .width = woodworks::domain::imperial::Length::fromInches(10),
+        .thickness = woodworks::domain::imperial::Length::fromInches(2),
+        .drying = woodworks::domain::types::Drying::KILN_DRIED,
+        .surfacing = SlabSurfacing::RGH,
+        .worth = {300},
+        .location = "Shop",
+        .notes = "Test slab"
+    };
+    slabs.add(slab);
+    uow3.commit();
+    auto slab2 = slabs.get(1);
+    assert(slab2.has_value());
+    assert(slab2->species.name == "Walnut");
+    assert(slab2->length.toInches() == 8 * 12);
 
-    // New log to test cookie cutting
-    Log cookieLog(-1, "Maple", 12*12*4, 6*4, 100, 3, Drying::WET, "", "");
-    cookieLog.insert();
-    assert(cookieLog.get_id() != -1);
-    cout << "Cookie Log ID: " << cookieLog.get_id() << endl;
-    // 3 in cookie
-    unsigned cookieThickness = 3*4;
-    vector<Cookie> cookies = Cookie::make_from_log(cookieLog, cookieThickness);
-    Cookie cookie = cookies[0];
-    cookie.insert();
-    assert(cookie.get_id() != -1);
-    assert(cookie.getThicknessQuarters() == cookieThickness);
-    assert(cookieLog.getAvailableLength() == (cookieLog.getLenQuarters() - cookieThickness));
-    cout << "Cookie ID: " << cookie.get_id() << endl;
-    cout << "Cookie tests passed" << endl;
-
-    // Test slab manufacturing
-    Log slabLog(-1, "Oak", 12*12*4, 6*4, 100, 3, Drying::WET, "", "");
-    slabLog.insert();
-    assert(slabLog.get_id() != -1);
-    cout << "Slab Log ID: " << slabLog.get_id() << endl;
-    SlabManufacturer slabManuf(slabLog);
-    cout << "Available diameter: " << slabManuf.availableDiameterEighths() << endl;
-    assert(slabManuf.availableDiameterEighths() == 48);
-    assert(slabManuf.makeSlice(4, 1));
-    assert(slabManuf.makeSlice(8, 1));
-    assert(slabManuf.makeSlice(6, 1));
-    assert(slabManuf.makeSlice(20, 1));
-    vector<Slab> slabs = slabManuf.finalize(24, "","");
-
-    for (const auto& slab : slabs) {
-        cout << "Slab ID: " << slab.get_id();
-        cout << ", Species: " << slab.getSpecies();
-        cout << ", Thickness: " << slab.getThickness8() << " eighths";
-        cout << ", Length: " << slab.getLenQ() << " quarters";
-        cout << ", Width: " << slab.getWidth8() << " eighths";
-        cout << endl;
-    }
-
-    wwhg::WwhgGenerator gen("./public");
-    gen.emplaceCookie(cookie.toWwhg());
-    for (const auto& slab : slabs) {
-        gen.emplaceSlab(slab.toWwhg());
-    }
-    gen.save();
-    return 0;
+    // Lumber insertion test
+    UnitOfWork uow4(db);
+    QtSqlRepository<Lumber> lumbers(db);
+    woodworks::domain::Lumber lumber {
+        .id = {-1},
+        .species = {"Pine"},
+        .length = woodworks::domain::imperial::Length::fromFeet(12),
+        .width = woodworks::domain::imperial::Length::fromInches(4),
+        .thickness = woodworks::domain::imperial::Length::fromInches(1),
+        .drying = woodworks::domain::types::Drying::AIR_DRIED,
+        .surfacing = LumberSurfacing::S4S,
+        .worth = {200},
+        .location = "Storage",
+        .notes = "Test lumber"
+    };
+    lumbers.add(lumber);
+    uow4.commit();
+    auto lumber2 = lumbers.get(1);
+    assert(lumber2.has_value());
+    assert(lumber2->species.name == "Pine");
+    assert(lumber2->length.toInches() == 12 * 12);
+    assert(lumber2->width.toInches() == 4);
 }
 
 #endif

@@ -9,7 +9,7 @@
 #include <optional>
 #include "interfaces.hpp" // Provides Persistent
 #include "types.hpp"      // Provides Drying enum
-#include "logs.hpp"       // Provides Log class definition
+#include "domain/types.hpp"
 
 // Forward declaration if Log is only used by pointer/reference here,
 // but #include is likely needed for Derived::make_from_log implementations.
@@ -48,7 +48,7 @@ public:
         int len_quarters,
         std::optional<int> thickness_quarters = std::nullopt,
         std::optional<int> width_quarters = std::nullopt,
-        std::optional<Drying> drying = std::nullopt
+        std::optional<woodworks::domain::types::Drying> drying = std::nullopt
     ) {
         // Delegate creation to the derived class's specific implementation
         std::vector<Derived> products = Derived::make_from_log(log, len_quarters, thickness_quarters, width_quarters, drying);

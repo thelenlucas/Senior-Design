@@ -16,9 +16,17 @@
 #include <QSqlError>
 #include <QDir>
 
-#include "logs.hpp"
 #include "types.hpp"
 #include "mainwindow.hpp"
+
+#include "domain/log.hpp"
+#include "domain/cookie.hpp"
+#include "domain/live_edge_slab.hpp"
+#include "domain/lumber.hpp"
+
+#include "infra/connection.hpp"
+#include "infra/repository.hpp"
+#include "infra/unit_of_work.hpp"
 
 using qsd = QSqlDatabase;
 
@@ -42,9 +50,15 @@ public:
 
 int main(int argc, char* argv[]) 
 {
+    // Mock open the types so that we ensure their tables + views are created
+    auto &debee = woodworks::infra::DbConnection::instance();
+    woodworks::infra::QtSqlRepository<woodworks::domain::Log> logRepo(debee);
+    woodworks::infra::QtSqlRepository<woodworks::domain::Cookie> cookieRepo(debee);
+    woodworks::infra::QtSqlRepository<woodworks::domain::LiveEdgeSlab> liveEdgeSlabRepo(debee);
+    woodworks::infra::QtSqlRepository<woodworks::domain::Lumber> lumberRepo(debee);
 
     auto db = qsd::addDatabase("QSQLITE");
-    db.setDatabaseName("test.db");
+    db.setDatabaseName("woodworks.db");
     if (!db.open()) 
         qDebug() << "Failed to open database:" << db.lastError().text();
 
