@@ -50,9 +50,9 @@ namespace woodworks::domain {
     inline void LiveEdgeSlab::bindForInsert(QSqlQuery& q, const LiveEdgeSlab& slab)
     {
         q.bindValue(":species", QString::fromStdString(slab.species.name));
-        q.bindValue(":length", slab.length.toInches());
-        q.bindValue(":width", slab.width.toInches());
-        q.bindValue(":thickness", slab.thickness.toInches());
+        q.bindValue(":length", slab.length.toTicks());
+        q.bindValue(":width", slab.width.toTicks());
+        q.bindValue(":thickness", slab.thickness.toTicks());
         q.bindValue(":drying", static_cast<int>(slab.drying));
         q.bindValue(":surfacing", static_cast<int>(slab.surfacing));
         q.bindValue(":worth", static_cast<int>(slab.worth.toCents()));
@@ -63,9 +63,9 @@ namespace woodworks::domain {
     inline void LiveEdgeSlab::bindForUpdate(QSqlQuery& q, const LiveEdgeSlab& slab)
     {
         q.bindValue(":species", QString::fromStdString(slab.species.name));
-        q.bindValue(":length", slab.length.toInches());
-        q.bindValue(":width", slab.width.toInches());
-        q.bindValue(":thickness", slab.thickness.toInches());
+        q.bindValue(":length", slab.length.toTicks());
+        q.bindValue(":width", slab.width.toTicks());
+        q.bindValue(":thickness", slab.thickness.toTicks());
         q.bindValue(":drying", static_cast<int>(slab.drying));
         q.bindValue(":surfacing", static_cast<int>(slab.surfacing));
         q.bindValue(":worth", static_cast<int>(slab.worth.toCents()));
@@ -79,9 +79,9 @@ namespace woodworks::domain {
         return {
             .id = {record.value("id").toInt()},
             .species = {record.value("species").toString().toStdString()},
-            .length = Length::fromInches(record.value("length").toDouble()),
-            .width = Length::fromInches(record.value("width").toDouble()),
-            .thickness = Length::fromInches(record.value("thickness").toDouble()),
+            .length = Length::fromTicks(record.value("length").toDouble()),
+            .width = Length::fromTicks(record.value("width").toDouble()),
+            .thickness = Length::fromTicks(record.value("thickness").toDouble()),
             .drying = static_cast<Drying>(record.value("drying").toInt()),
             .surfacing = static_cast<SlabSurfacing>(record.value("surfacing").toInt()),
             .worth = { record.value("worth").toInt() },
