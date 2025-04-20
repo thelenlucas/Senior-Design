@@ -29,8 +29,7 @@ SalesPage::SalesPage(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ResizeToDisplayPercentage(DEFAULT_WINDOW_SIZE_RATIO,
-                              DEFAULT_WINDOW_SIZE_RATIO);
+    ResizeToDisplayPercentage(DEFAULT_WINDOW_SIZE_RATIO, DEFAULT_WINDOW_SIZE_RATIO);
 
     ui->inventoryTable->setModel(inventoryModel);
     RefreshInventoryModel();
@@ -38,8 +37,7 @@ SalesPage::SalesPage(QWidget *parent)
     connect(ui->addButton, &QPushButton::clicked, this,
             [this]()
             {
-                QItemSelectionModel *selectionModel =
-                    ui->inventoryTable->selectionModel();
+                QItemSelectionModel *selectionModel = ui->inventoryTable->selectionModel();
                 if (!selectionModel)
                     return;
 
@@ -57,18 +55,9 @@ SalesPage::SalesPage(QWidget *parent)
                     return;
                 }
 
-                QString id =
-                    inventoryModel
-                        ->data(inventoryModel->index(index.row(), idCol))
-                        .toString();
-                QString species =
-                    inventoryModel
-                        ->data(inventoryModel->index(index.row(), speciesCol))
-                        .toString();
-                QString value =
-                    inventoryModel
-                        ->data(inventoryModel->index(index.row(), valueCol))
-                        .toString();
+                QString id = inventoryModel->data(inventoryModel->index(index.row(), idCol)).toString();
+                QString species = inventoryModel->data(inventoryModel->index(index.row(), speciesCol)).toString();
+                QString value = inventoryModel->data(inventoryModel->index(index.row(), valueCol)).toString();
 
                 AddSelectedInventoryRow(id, species, value);
             });
@@ -109,12 +98,10 @@ SalesPage::~SalesPage() { delete ui; }
 
 void SalesPage::RefreshInventoryModel()
 {
-    inventoryModel->setQuery("SELECT * FROM logs_view",
-                             QSqlDatabase::database());
+    inventoryModel->setQuery("SELECT * FROM logs_view", QSqlDatabase::database());
 
     if (inventoryModel->lastError().isValid())
-        qDebug() << "Inventory model error:"
-                 << inventoryModel->lastError().text();
+        qDebug() << "Inventory model error:" << inventoryModel->lastError().text();
 }
 
 void SalesPage::ResizeToDisplayPercentage(double width_ratio,
@@ -124,8 +111,7 @@ void SalesPage::ResizeToDisplayPercentage(double width_ratio,
     if (screen)
     {
         QSize screenSize = screen->availableGeometry().size();
-        QSize windowSize(screenSize.width() * width_ratio,
-                         screenSize.height() * height_ratio);
+        QSize windowSize(screenSize.width() * width_ratio, screenSize.height() * height_ratio);
         resize(windowSize);
     }
 }
@@ -134,44 +120,39 @@ void SalesPage::AddSelectedInventoryRow(QString const &id,
                                         QString const &species,
                                         QString const &value)
 {
-    QString labelText =
-        QString("ID: %1 | Species: %2 | Value: %3").arg(id, species, value);
+    QString labelText = QString("ID: %1 | Species: %2 | Value: %3").arg(id, species, value);
 
-    QWidget *rowWidget = new QWidget;
+    QWidget* rowWidget = new QWidget;
     rowWidget->setFixedHeight(100);
-    rowWidget->setSizePolicy(QSizePolicy::Expanding,
-                             QSizePolicy::Fixed); // 🛠 Important fix
+    rowWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    QHBoxLayout *rowLayout = new QHBoxLayout(rowWidget);
+    QHBoxLayout* rowLayout = new QHBoxLayout(rowWidget);
     rowLayout->setContentsMargins(6, 2, 6, 2);
     rowLayout->setSpacing(6);
 
-    QLabel *imageLabel = new QLabel;
+    QLabel* imageLabel = new QLabel;
     imageLabel->setFixedSize(80, 80);
-    imageLabel->setPixmap(
-        QPixmap(":/images/placeholder.png")
-            .scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    imageLabel->setPixmap(QPixmap(":/images/placeholder.png").scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-    QLabel *label = new QLabel(labelText);
+    QLabel* label = new QLabel(labelText);
     label->setMinimumWidth(200);
 
-    QLineEdit *quantityEdit = new QLineEdit("1");
+    QLineEdit* quantityEdit = new QLineEdit("1");
     quantityEdit->setFixedWidth(40);
     quantityEdit->setAlignment(Qt::AlignCenter);
-    quantityEdit->setProperty("quantity", 1);
 
-    QPushButton *plusButton = new QPushButton("+");
+    QPushButton* plusButton = new QPushButton("+");
     plusButton->setFixedSize(24, 24);
 
-    QPushButton *minusButton = new QPushButton("-");
+    QPushButton* minusButton = new QPushButton("-");
     minusButton->setFixedSize(24, 24);
 
-    QLineEdit *priceEdit = new QLineEdit("0.00");
+    QLineEdit* priceEdit = new QLineEdit(value);
     priceEdit->setFixedWidth(60);
     priceEdit->setAlignment(Qt::AlignRight);
     priceEdit->setPlaceholderText("Price");
 
-    QPushButton *removeButton = new QPushButton("×");
+    QPushButton* removeButton = new QPushButton("×");
     removeButton->setFixedSize(24, 24);
     removeButton->setToolTip("Remove entry");
 
@@ -183,33 +164,54 @@ void SalesPage::AddSelectedInventoryRow(QString const &id,
     rowLayout->addWidget(priceEdit);
     rowLayout->addWidget(removeButton);
 
-    int rowIndex = itemWidgets.size();
-    QString bgColor = (rowIndex % 2 == 0) ? "#f0f0f0" : "#e0e0e0";
-    rowWidget->setStyleSheet(QString("background-color: %1;").arg(bgColor));
+    double rowValue = value.toDouble();
+    int rowQuantity = 1;
+    double rowTotal = rowValue * rowQuantity;
+
+    rowWidget->setProperty("value", rowValue);
+    rowWidget->setProperty("quantity", rowQuantity);
+    rowWidget->setProperty("rowTotal", rowTotal);
 
     ui->amountEntryLayout->addWidget(rowWidget);
     itemWidgets.append(rowWidget);
+    UpdateTotal(rowTotal); // Initial addition
 
     connect(plusButton, &QPushButton::clicked, this,
-            [quantityEdit]()
+            [this, quantityEdit, rowWidget, priceEdit]()
             {
-                int value = quantityEdit->text().toInt();
-                quantityEdit->setText(QString::number(value + 1));
-                quantityEdit->setProperty("quantity", value + 1);
+                int newQty = quantityEdit->text().toInt() + 1;
+                quantityEdit->setText(QString::number(newQty));
+                UpdateRowTotal(rowWidget, newQty, priceEdit->text().toDouble());
             });
 
     connect(minusButton, &QPushButton::clicked, this,
-            [quantityEdit]()
+            [this, quantityEdit, rowWidget, priceEdit]()
             {
-                int value = quantityEdit->text().toInt();
-                int newVal = qMax(0, value - 1);
-                quantityEdit->setText(QString::number(newVal));
-                quantityEdit->setProperty("quantity", newVal);
+                int newQty = qMax(0, quantityEdit->text().toInt() - 1);
+                quantityEdit->setText(QString::number(newQty));
+                UpdateRowTotal(rowWidget, newQty, priceEdit->text().toDouble());
+            });
+
+    connect(quantityEdit, &QLineEdit::editingFinished, this,
+            [this, quantityEdit, rowWidget, priceEdit]()
+            {
+                int newQty = quantityEdit->text().toInt();
+                UpdateRowTotal(rowWidget, newQty, priceEdit->text().toDouble());
+            });
+
+    connect(priceEdit, &QLineEdit::editingFinished, this,
+            [this, quantityEdit, rowWidget, priceEdit]()
+            {
+                double newVal = priceEdit->text().toDouble();
+                UpdateRowTotal(rowWidget, quantityEdit->text().toInt(), newVal);
             });
 
     connect(removeButton, &QPushButton::clicked, this,
             [this, rowWidget]()
             {
+                double prevTotal = rowWidget->property("rowTotal").toDouble();
+                UpdateTotal(-prevTotal);
+
                 ui->amountEntryLayout->removeWidget(rowWidget);
                 itemWidgets.removeOne(rowWidget);
                 rowWidget->deleteLater();
@@ -252,8 +254,22 @@ bool SalesPage::eventFilter(QObject *obj, QEvent *event)
             QFrame *frame = clickedWidget->findChild<QFrame *>();
             if (frame)
                 frame->setStyleSheet("QFrame { background-color: #cce6ff; }");
+
+            lastClickedWidget = clickedWidget;
         }
     }
 
     return QWidget::eventFilter(obj, event);
+}
+
+void SalesPage::UpdateRowTotal(QWidget* rowWidget, int newQty, double newVal)
+{
+    double oldTotal = rowWidget->property("rowTotal").toDouble();
+    double newTotal = newQty * newVal;
+
+    UpdateTotal(newTotal - oldTotal);
+
+    rowWidget->setProperty("quantity", newQty);
+    rowWidget->setProperty("value", newVal);
+    rowWidget->setProperty("rowTotal", newTotal);
 }

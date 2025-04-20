@@ -1,17 +1,22 @@
-#include <string>
-#include <iostream>
-#include <iomanip>
-
-#include <QSqlDatabase>
-#include <QSqlQueryModel>
-#include <QSqlError>
-#include <QMessageBox>
+#include <QAction>
 #include <QDebug>
 #include <QDockWidget>
+#include <QLabel>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QScrollArea>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQueryModel>
 #include <QSqlRecord>
-#include <QScreen>
 #include <QVBoxLayout>
 
+#include "cutlist.hpp"
+#include "firewood.hpp"
+#include "inventory.hpp"
+#include "logs.hpp"
+#include "mainwindow.hpp"
 #include "project_editor.hpp"
 #include "types.hpp"
 
@@ -21,123 +26,101 @@
 #include "cutlist.hpp"
 #include "sales.hpp"
 #include "infra/mappers/view_helpers.hpp"
-#include <optional>
 
-#include "domain/log.hpp"
-#include "infra/connection.hpp"
-#include "infra/repository.hpp"
-#include "widgets/log_inventory.hpp"
-
-using namespace woodworks::domain;
-using namespace woodworks::widgets;
+#include <iomanip>
+#include <iostream>
+#include <string>
 
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
 
 // TODO: Remove this outdated window, replace with landing page
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),
-      ui(new Ui::MainWindow),
-      cutlistPage(new CutlistPage()),
-      salesPage(new SalesPage()),
+MainWindow::MainWindow(QWidget* parent)
+    : QMainWindow(parent), ui(new Ui::MainWindow),
+      cutlistPage(new CutlistPage()), salesPage(new SalesPage()),
       inventoryPage(nullptr)
 {
     // Load UI layout and set the central widget
     ui->setupUi(this);
     setCentralWidget(ui->centralwidget);
 
-    // Set the inventoryLayout vertical layout and insert a log_inventory widget
-    auto *w = new LogInventory(this);
-    auto *layout = new QVBoxLayout;
-    layout->addWidget(w);
-    layout->addStretch();
-    ui->inventoryLayout->setLayout(layout);
+    // Enable docking options globally for the main window. We aren't using this
+    // yet on the main branch.
+    // setDockOptions(QMainWindow::AnimatedDocks | QMainWindow::AllowNestedDocks
+    // |
+    //               QMainWindow::AllowTabbedDocks);
 
-    refreshModel();
-}
+    // Add the menu and actions for switching between pages
+    QMenu* menu = menuBar()->addMenu("WoodWorks");
+    QAction* inventoryAction = new QAction("Inventory", this);
+    QAction* cutlistAction = new QAction("Cutlist", this);
+    QAction* salesAction = new QAction("Sales", this);
 
-void MainWindow::refreshModel()
-{
-    // 
-}
+    menu->addAction(inventoryAction);
+    menu->addAction(cutlistAction);
+    menu->addAction(salesAction);
 
-void MainWindow::onEnterLogButtonClicked() {
-    // Get values from the UI widgets
-    QString species = ui->speciesText->text();
-    int lenFt = ui->lenFt->value();
-    int lenIn = ui->lenIn->value();
-    int diamIn = ui->diamIn->value();
-    double costVal = ui->cost->value();
-    int quality = ui->quality->value();
-    std::string location = ui->locationEntry->text().toStdString();
+    connect(inventoryAction, &QAction::triggered, this,
+            &MainWindow::showInventoryPage);
+    connect(cutlistAction, &QAction::triggered, this,
+            &MainWindow::showCutlistPage);
+    connect(salesAction, &QAction::triggered, this, &MainWindow::showSalesPage);
 
-    int lenQuarters = (lenFt * 12 + lenIn) * 4;
-    int diamQuarters = diamIn * 4;
+    connect(ui->openInventoryButton, &QPushButton::clicked, this,
+            &MainWindow::showInventoryPage);
+    connect(ui->openCutlistButton, &QPushButton::clicked, this,
+            &MainWindow::showCutlistPage);
+    connect(ui->openSalesButton, &QPushButton::clicked, this,
+            &MainWindow::showSalesPage);
 
-    int costCents = costVal * 100;
-    int costQuarters = costCents / lenQuarters;
+    // Setup a simple welcome message landing page
+    QLabel* welcomeLabel = new QLabel("Welcome to WoodWorks Sawmill Manager");
+    welcomeLabel->setAlignment(Qt::AlignCenter);
+    welcomeLabel->setStyleSheet(
+        "font-size: 24px; font-weight: bold; padding: 40px;");
 
-    // Create a log object, insert it into the database
-    //Log log(0, species.toStdString(), lenQuarters, diamQuarters, costQuarters, quality, location);
-    //log.insert();
+    QVBoxLayout* layout = new QVBoxLayout(ui->centralwidget);
+    layout->addWidget(welcomeLabel);
 
-    // Refresh the model
-    refreshModel();
-}
-
-void MainWindow::onScrapLogButtonClicked() {
-    
-
-    refreshModel();
-}
-
-void MainWindow::onFirewoodButtonClicked() {
+    // Database connection setup
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(DATABASE_FILE);
+    if (!db.open())
+    {
+        qDebug() << "Database error:" << db.lastError().text();
+        return;
     }
 
-void MainWindow::onTableCellDoubleClicked() {
-    
+    ui->openInventoryButton->setStyleSheet(
+        "font-family: 'Segoe UI Symbol'; font-size: 14pt;");
 }
 
-void MainWindow::onProjectEditActionTriggered() {
-   
-}
-
-MainWindow::~MainWindow() 
-{
-    delete ui;
-    // TODO: Remove these after testing. This is actually double deleting because
-    // of the QT parenting system, these are effectively shared pointers in the main window
-    // and will be cleaned up by scope resolution.
-    //delete inventoryPage;
-    //delete cutlistPage;
-    //delete salesPage;
-}
+MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::showInventoryPage()
 {
-    if (!inventoryPage || !inventoryPage->isVisible())
-    {
+    if (!inventoryPage)
         inventoryPage = new InventoryPage();
-        inventoryPage->setAttribute(Qt::WA_DeleteOnClose);
-        connect(inventoryPage, &InventoryPage::destroyed, this, [this]() {
-            inventoryPage = nullptr;
-        });
-        inventoryPage->show();
-    }
-    else
-    {
-        inventoryPage->raise();
-        inventoryPage->activateWindow();
-    }
+    inventoryPage->show();
+    inventoryPage->raise();
+    inventoryPage->activateWindow();
 }
 
-void MainWindow::showCutlistPage() 
+void MainWindow::showCutlistPage()
 {
+    if (!cutlistPage)
+        cutlistPage = new CutlistPage();
     cutlistPage->show();
+    cutlistPage->raise();
+    cutlistPage->activateWindow();
 }
 
-void MainWindow::showSalesPage() 
+void MainWindow::showSalesPage()
 {
+    if (!salesPage)
+        salesPage = new SalesPage();
     salesPage->show();
+    salesPage->raise();
+    salesPage->activateWindow();
 }

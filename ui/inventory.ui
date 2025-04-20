@@ -1,263 +1,355 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>InventoryPage</class>
- <widget class="QWidget" name="InventoryPage">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>988</width>
-    <height>600</height>
-   </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>600</width>
-    <height>400</height>
-   </size>
-  </property>
-  <property name="windowTitle">
-   <string>Inventory Management</string>
-  </property>
-  <layout class="QVBoxLayout" name="mainLayout">
-   <item>
-    <widget class="QGroupBox" name="logEntryPanel">
-     <property name="title">
-      <string>Log Entry Panel</string>
-     </property>
-     <layout class="QGridLayout" name="logEntryLayout">
-      <item row="7" column="0" colspan="4">
-       <widget class="QPushButton" name="addLogButton">
-        <property name="text">
-         <string>Add Log</string>
+    <class>InventoryPage</class>
+    <widget class="QWidget" name="InventoryPage">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>988</width>
+                <height>600</height>
+            </rect>
         </property>
-       </widget>
-      </item>
-      <item row="7" column="4">
-       <widget class="QPushButton" name="createCookieButton">
-        <property name="text">
-         <string>Create Cookie</string>
+        <property name="minimumSize">
+            <size>
+                <width>600</width>
+                <height>400</height>
+            </size>
         </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="speciesLabel">
-        <property name="text">
-         <string>Species:</string>
+        <property name="windowTitle">
+            <string>Inventory Management</string>
         </property>
-       </widget>
-      </item>
-      <item row="1" column="4">
-       <widget class="QSpinBox" name="lengthIn"/>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="diameterLabel">
-        <property name="text">
-         <string>Diameter (in):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QSpinBox" name="diameterIn"/>
-      </item>
-      <item row="4" column="2">
-       <widget class="QSpinBox" name="qualityValue">
-        <property name="maximum">
-         <number>10</number>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="locationLabel">
-        <property name="text">
-         <string>Location:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="2" colspan="3">
-       <widget class="QLineEdit" name="locationEntry"/>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="qualityLabel">
-        <property name="text">
-         <string>Quality (1–5):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="lengthFtLabel">
-        <property name="text">
-         <string>Length (ft):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QSpinBox" name="lengthFt"/>
-      </item>
-      <item row="3" column="2">
-       <widget class="QDoubleSpinBox" name="costValue">
-        <property name="maximum">
-         <double>9999999999999.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLineEdit" name="speciesEntry"/>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="costLabel">
-        <property name="text">
-         <string>Cost ($):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="dryingLabel">
-        <property name="text">
-         <string>Drying:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QLabel" name="lengthInLabel">
-        <property name="text">
-         <string>Inches:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="2">
-       <widget class="QComboBox" name="dryingComboBox"/>
-      </item>
-      <item row="6" column="4">
-       <widget class="QToolButton" name="insertImageButton">
-        <property name="text">
-         <string>Insert Image</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+        <layout class="QVBoxLayout" name="mainLayout">
+            <item>
+                <widget class="QGroupBox" name="logEntryPanel">
+                    <property name="title">
+                        <string>Log Entry Panel</string>
+                    </property>
+                    <layout class="QGridLayout" name="logEntryLayout">
+                        <item row="0" column="0">
+                            <widget class="QLabel" name="speciesLabel">
+                                <property name="text">
+                                    <string>Species:</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="0" column="1">
+                            <widget class="QLineEdit" name="speciesEntry"/>
+                        </item>
+                        <item row="1" column="0">
+                            <widget class="QLabel" name="lengthFtLabel">
+                                <property name="text">
+                                    <string>Length (ft):</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="1" column="1">
+                            <widget class="QSpinBox" name="lengthFt"/>
+                        </item>
+                        <item row="1" column="2">
+                            <widget class="QLabel" name="lengthInLabel">
+                                <property name="text">
+                                    <string>Inches:</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="1" column="3">
+                            <widget class="QSpinBox" name="lengthIn"/>
+                        </item>
+                        <item row="2" column="0">
+                            <widget class="QLabel" name="diameterLabel">
+                                <property name="text">
+                                    <string>Diameter (in):</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="2" column="1">
+                            <widget class="QSpinBox" name="diameterIn"/>
+                        </item>
+                        <item row="3" column="0">
+                            <widget class="QLabel" name="costLabel">
+                                <property name="text">
+                                    <string>Cost ($):</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="3" column="1">
+                            <widget class="QDoubleSpinBox" name="costValue"/>
+                        </item>
+                        <item row="4" column="0">
+                            <widget class="QLabel" name="qualityLabel">
+                                <property name="text">
+                                    <string>Quality (1–5):</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="4" column="1">
+                            <widget class="QSpinBox" name="qualityValue">
+                                <property name="maximum">
+                                    <number>10</number>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="5" column="0">
+                            <widget class="QLabel" name="locationLabel">
+                                <property name="text">
+                                    <string>Location:</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="5" column="1" colspan="3">
+                            <widget class="QLineEdit" name="locationEntry"/>
+                        </item>
+                        <item row="6" column="0" colspan="3">
+                            <widget class="QPushButton" name="addLogButton">
+                                <property name="text">
+                                    <string>Add Log</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="6" column="3">
+                            <widget class="QPushButton" name="createCookieButton">
+                                <property name="text">
+                                    <string>Create Cookie</string>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QGroupBox" name="inventoryFilterGroupBox">
+                    <property name="title">
+                        <string>Filter Inventory</string>
+                    </property>
+                    <layout class="QVBoxLayout" name="inventoryFilterMainLayout">
+                        <item>
+                            <widget class="QFrame" name="basicFilterFrame">
+                                <property name="frameShape">
+                                    <enum>QFrame::StyledPanel</enum>
+                                </property>
+                                <property name="frameShadow">
+                                    <enum>QFrame::Raised</enum>
+                                </property>
+                                <layout class="QFormLayout" name="basicFilterLayout">
+                                    <item row="0" column="0">
+                                        <widget class="QLabel" name="speciesFilterLabel">
+                                            <property name="text">
+                                                <string>Species:</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="0" column="1">
+                                        <widget class="QLineEdit" name="speciesFilterEdit" />
+                                    </item>
+                                    <item row="1" column="0">
+                                        <widget class="QLabel" name="locationFilterLabel">
+                                            <property name="text">
+                                                <string>Location:</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="1" column="1">
+                                        <widget class="QLineEdit" name="locationFilterEdit" />
+                                    </item>
+                                </layout>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="numericFilterFrame">
+                                <property name="frameShape">
+                                    <enum>QFrame::StyledPanel</enum>
+                                </property>
+                                <property name="frameShadow">
+                                    <enum>QFrame::Raised</enum>
+                                </property>
+                                <layout class="QFormLayout" name="numericFilterLayout">
+                                    <item row="0" column="0">
+                                        <widget class="QLabel" name="minLengthLabel">
+                                            <property name="text">
+                                                <string>Min Length (in):</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="0" column="1">
+                                        <widget class="QSpinBox" name="minLengthSpin">
+                                            <property name="minimum">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="maximum">
+                                                <number>1000</number>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="1" column="0">
+                                        <widget class="QLabel" name="minDiameterLabel">
+                                            <property name="text">
+                                                <string>Min Diameter (in):</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="1" column="1">
+                                        <widget class="QSpinBox" name="minDiameterSpin">
+                                            <property name="minimum">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="maximum">
+                                                <number>100</number>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="2" column="0">
+                                        <widget class="QLabel" name="minCostLabel">
+                                            <property name="text">
+                                                <string>Min Cost ($):</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="2" column="1">
+                                        <widget class="QDoubleSpinBox" name="minCostSpin">
+                                            <property name="minimum">
+                                                <double>0.0</double>
+                                            </property>
+                                            <property name="maximum">
+                                                <double>10000.0</double>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="3" column="0">
+                                        <widget class="QLabel" name="minQualityLabel">
+                                            <property name="text">
+                                                <string>Min Quality:</string>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item row="3" column="1">
+                                        <widget class="QSpinBox" name="minQualitySpin">
+                                            <property name="minimum">
+                                                <number>0</number>
+                                            </property>
+                                            <property name="maximum">
+                                                <number>10</number>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                </layout>
+                            </widget>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="filterButtonLayout">
+                                <item>
+                                    <widget class="QPushButton" name="applyFilterButton">
+                                        <property name="text">
+                                            <string>Apply Filter</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QPushButton" name="clearFilterButton">
+                                        <property name="text">
+                                            <string>Clear Filter</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                    </layout>
+                </widget>
+
+            </item>
+            <item>
+                <widget class="QTabWidget" name="inventoryTabs">
+                    <property name="tabPosition">
+                        <enum>QTabWidget::North</enum>
+                    </property>
+                    <widget class="QWidget" name="logsTab">
+                        <attribute name="title">
+                            <string>Logs</string>
+                        </attribute>
+                        <layout class="QVBoxLayout">
+                            <item>
+                                <widget class="QTableView" name="individualLogsTable"/>
+                            </item>
+                        </layout>
+                    </widget>
+                    <widget class="QWidget" name="groupedLogsTab">
+                        <attribute name="title">
+                            <string>Grouped Logs</string>
+                        </attribute>
+                        <layout class="QVBoxLayout">
+                            <item>
+                                <widget class="QTableView" name="groupedLogsTable"/>
+                            </item>
+                        </layout>
+                    </widget>
+                    <widget class="QWidget" name="lumberTab">
+                        <attribute name="title">
+                            <string>Lumber</string>
+                        </attribute>
+                        <layout class="QVBoxLayout">
+                            <item>
+                                <widget class="QTableView" name="lumberTable"/>
+                            </item>
+                        </layout>
+                    </widget>
+                    <widget class="QWidget" name="slabsTab">
+                        <attribute name="title">
+                            <string>Slabs</string>
+                        </attribute>
+                        <layout class="QVBoxLayout">
+                            <item>
+                                <widget class="QTableView" name="slabsTable"/>
+                            </item>
+                        </layout>
+                    </widget>
+                    <widget class="QWidget" name="cookiesTab">
+                        <attribute name="title">
+                            <string>Cookies</string>
+                        </attribute>
+                        <layout class="QVBoxLayout">
+                            <item>
+                                <widget class="QTableView" name="cookiesTable"/>
+                            </item>
+                        </layout>
+                    </widget>
+                    <widget class="QWidget" name="firewoodTab">
+                        <attribute name="title">
+                            <string>Firewood</string>
+                        </attribute>
+                        <layout class="QVBoxLayout">
+                            <item>
+                                <widget class="QTableView" name="firewoodTable"/>
+                            </item>
+                        </layout>
+                    </widget>
+                </widget>
+            </item>
+            <item>
+                <layout class="QHBoxLayout" name="importLayout">
+                    <item>
+                        <spacer name="horizontalSpacer">
+                            <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item>
+                        <widget class="QPushButton" name="spreadsheetImporterButton">
+                            <property name="text">
+                                <string>Import from Spreadsheet...</string>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+        </layout>
     </widget>
-   </item>
-   <item>
-    <widget class="QTabWidget" name="inventoryTabs">
-     <property name="tabPosition">
-      <enum>QTabWidget::North</enum>
-     </property>
-     <property name="currentIndex">
-      <number>5</number>
-     </property>
-     <widget class="QWidget" name="logsTab">
-      <attribute name="title">
-       <string>Logs</string>
-      </attribute>
-      <layout class="QVBoxLayout">
-       <item>
-        <widget class="QTableView" name="individualLogsTable">
-         <property name="selectionBehavior">
-          <enum>QAbstractItemView::SelectRows</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="groupedLogsTab">
-      <attribute name="title">
-       <string>Grouped Logs</string>
-      </attribute>
-      <layout class="QVBoxLayout">
-       <item>
-        <widget class="QTableView" name="groupedLogsTable">
-         <property name="selectionBehavior">
-          <enum>QAbstractItemView::SelectRows</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="lumberTab">
-      <attribute name="title">
-       <string>Lumber</string>
-      </attribute>
-      <layout class="QVBoxLayout">
-       <item>
-        <widget class="QTableView" name="lumberTable">
-         <property name="selectionBehavior">
-          <enum>QAbstractItemView::SelectRows</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="slabsTab">
-      <attribute name="title">
-       <string>Slabs</string>
-      </attribute>
-      <layout class="QVBoxLayout">
-       <item>
-        <widget class="QTableView" name="slabsTable">
-         <property name="selectionBehavior">
-          <enum>QAbstractItemView::SelectRows</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="cookiesTab">
-      <attribute name="title">
-       <string>Cookies</string>
-      </attribute>
-      <layout class="QVBoxLayout">
-       <item>
-        <widget class="QTableView" name="cookiesTable">
-         <property name="selectionBehavior">
-          <enum>QAbstractItemView::SelectRows</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="firewoodTab">
-      <attribute name="title">
-       <string>Firewood</string>
-      </attribute>
-      <layout class="QVBoxLayout">
-       <item>
-        <widget class="QTableView" name="firewoodTable">
-         <property name="selectionBehavior">
-          <enum>QAbstractItemView::SelectRows</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="importLayout">
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="spreadsheetImporterButton">
-       <property name="text">
-        <string>Import from Spreadsheet...</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-  </layout>
- </widget>
- <resources/>
- <connections/>
+    <resources/>
+    <connections/>
 </ui>
