@@ -24,6 +24,8 @@ namespace woodworks::domain {
         Drying drying;
         // Surfacing
         SlabSurfacing surfacing;
+        // Dollar worth
+        Dollar worth;
         // Location
         std::string location;
         // Notes
