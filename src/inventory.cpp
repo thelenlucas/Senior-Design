@@ -21,14 +21,6 @@
 #include "domain/types.hpp"
 #include "domain/log.hpp"
 
-#include "infra/connection.hpp"
-#include "infra/repository.hpp"
-
-using namespace woodworks::domain::imperial;
-using namespace woodworks::domain::types;
-using namespace woodworks::domain;
-
-#include "infra/mappers/view_helpers.hpp"
 #include "domain/units.hpp"
 #include "domain/types.hpp"
 #include "domain/log.hpp"
@@ -36,6 +28,7 @@ using namespace woodworks::domain;
 #include "infra/connection.hpp"
 #include "infra/repository.hpp"
 #include "infra/mappers/view_helpers.hpp"
+#include "infra/helpers.hpp"
 
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
@@ -78,16 +71,21 @@ InventoryPage::InventoryPage(QWidget *parent)
     ui->dryingComboBox->addItem("Kiln Dried", QVariant(static_cast<int>(Drying::KILN_DRIED)));
     ui->dryingComboBox->addItem("Air & Kiln Dried", QVariant(static_cast<int>(Drying::KILN_AND_AIR_DRIED)));
 
+    buildFilterWidgets();
+
     refreshModels();
 
-    // When the detailed view is checked, refresh the models.
-    connect(ui->detailedViewCheckBox, &QCheckBox::stateChanged, this,
-            &InventoryPage::refreshModels);
+    // When the views/filters are changed, refresh the models.
+    connect(ui->detailedViewCheckBox, &QCheckBox::stateChanged, this, &InventoryPage::refreshModels);
+    connect(ui->logSpeciesComboBox, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
+    connect(ui->logLengthMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->logLengthMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->logRadiusMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->logRadiusMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->logSpeciesComboBox, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
 
-    connect(ui->addLogButton, &QPushButton::clicked, this,
-            &InventoryPage::onAddLogClicked);
-    connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this,
-            &InventoryPage::onSpreadsheetImportClicked);
+    connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
+    connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
@@ -100,20 +98,59 @@ InventoryPage::~InventoryPage()
     delete ui;
 }
 
+void InventoryPage::buildFilterWidgets() {
+    // speciesComboBox has all the species in the database, pluas an "All" option that filters out nothing.
+    QStringList species = getUniqueSpecies();
+    species.prepend("All");
+    ui->logSpeciesComboBox->addItems(species);
+    ui->logSpeciesComboBox->setCurrentIndex(0); // Set to "All" by default
+
+    QStringList dryings = getUniqueValuesOfColumn("display_logs", "Drying");
+    dryings.prepend("All");
+    ui->logDryingComboBox->addItems(dryings);
+    ui->logDryingComboBox->setCurrentIndex(0); // Set to "All" by default
+}
+
 void InventoryPage::refreshModels()
 {
+    QVector<FieldFilter> logFilters;
+
+    if (ui->logSpeciesComboBox->currentText() != "All") {
+        logFilters.push_back(FieldFilter().exact("species", ui->logSpeciesComboBox->currentText()));
+    }
+
+    if (ui->logLengthMin->value() != 0 || ui->logLengthMax->value() != 0) {
+        logFilters.push_back(FieldFilter().between(
+            "\"Length (ft)\"",
+            ui->logLengthMin->value(),
+            ui->logLengthMax->value()
+        ));
+    }
+
+    if (ui->logRadiusMin->value() != 0 || ui->logRadiusMax->value() != 0) {
+        logFilters.push_back(FieldFilter().between(
+            "\"Diameter (in)\"",
+            ui->logRadiusMin->value(),
+            ui->logRadiusMax->value()
+        ));
+    }
+
+    if (ui->logDryingComboBox->currentText() != "All") {
+        logFilters.push_back(FieldFilter().exact("drying", ui->logDryingComboBox->currentText()));
+    }
+
     if (ui->detailedViewCheckBox->isChecked()) {
-        ui->logsTableView->setModel(makeViewModel("display_logs", this));
+        ui->logsTableView->setModel(makeFilteredModel("display_logs", logFilters, this));
         ui->cookiesTableView->setModel(makeViewModel("display_cookies", this));
         ui->slabsTableView->setModel(makeViewModel("display_slabs", this));
         ui->lumberTableView->setModel(makeViewModel("display_lumber", this));
     } else {
-        ui->logsTableView->setModel(makeViewModel("display_logs_grouped", this));
+        ui->logsTableView->setModel(makeFilteredModel("display_logs_grouped", logFilters, this));
         ui->cookiesTableView->setModel(makeViewModel("display_cookies_grouped", this));
         ui->slabsTableView->setModel(makeViewModel("display_slabs_grouped", this));
         ui->lumberTableView->setModel(makeViewModel("display_lumber_grouped", this));
     }
-    ui->firewoodTableView->setModel(makeViewModel("display_firewood_grouped", this)); // All firewood is grouped
+    ui->firewoodTableView->setModel(makeViewModel("display_firewood_grouped", this));
     
     ui->logsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->cookiesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);

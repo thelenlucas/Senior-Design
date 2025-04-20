@@ -33,6 +33,9 @@ class InventoryPage : public QWidget
   private:
     void refreshModels();                               // Refreshes all models from the DB.
 
+    // Builds the UI widgets (comboboxes, etc.)
+    void buildFilterWidgets();
+
     Ui::InventoryPage* ui;
 
     // Models for each inventory view type
