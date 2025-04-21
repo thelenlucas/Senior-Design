@@ -35,6 +35,8 @@ class InventoryPage : public QWidget
     void onDoubleClickSlabTable(const QModelIndex& index);
     void onDoubleClickLumberTable(const QModelIndex& index);
 
+    void logsCustomContextMenu(const QPoint& pos);
+
   private:
     void refreshModels();                               // Refreshes all models from the DB.
 

@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QStringList>
 #include <QVariant>
+#include <QMenu>
 
 #include "inventory.hpp"
 #include "csv_importer.hpp"
@@ -47,16 +48,7 @@ InventoryPage::InventoryPage(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Dynamically resize window to 60% of screen size and center.
-    QScreen *screen = QGuiApplication::primaryScreen();
-    if (screen)
-    {
-        QSize screenSize = screen->availableGeometry().size();
-        QSize windowSize(screenSize.width() * 0.6, screenSize.height() * 0.6);
-        resize(windowSize);
-        move((screenSize.width() - windowSize.width()) / 2,
-             (screenSize.height() - windowSize.height()) / 2);
-    }
+    // Killed dynamic resizing
 
     // Add drying options to the combo box
     ui->logEntryLogDryingComboBox->addItem("Green", QVariant(static_cast<int>(Drying::GREEN)));
@@ -114,6 +106,12 @@ InventoryPage::InventoryPage(QWidget *parent)
     connect(ui->slabsTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickSlabTable);
     connect(ui->lumberTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickSlabTable);
 
+    // Context menu policy
+    ui->logsTableView->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    // Bind context menu handlers
+    connect(ui->logsTableView, &QWidget::customContextMenuRequested, this, &InventoryPage::logsCustomContextMenu);
+
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
     setWindowFlags(Qt::Window);
@@ -122,6 +120,73 @@ InventoryPage::InventoryPage(QWidget *parent)
 InventoryPage::~InventoryPage()
 {
     delete ui;
+}
+
+void InventoryPage::logsCustomContextMenu(const QPoint &pos)
+{
+    QModelIndex index = ui->logsTableView->indexAt(pos);
+    if (!index.isValid()) {
+        std::cout << "Invalid index" << std::endl;
+        return;
+    }
+
+    if (!ui->detailedViewCheckBox->isChecked())
+    {
+        QMenu contextMenu;
+        contextMenu.addAction("Filter similar logs", [this, index]() {
+            // Hijack the double click event
+            onDoubleClickLogTable(index);
+        });
+        contextMenu.exec(ui->logsTableView->viewport()->mapToGlobal(pos));
+    } else {
+        QMenu contextMenu;
+        contextMenu.addAction("View Image", [this, index]() {
+            // Get id from the first column of the row selected
+            int logId = index.sibling(index.row(), 0).data().toInt();
+            auto log = QtSqlRepository<Log>::spawn().get(logId);
+            if (log) {
+                // Show the image
+                viewImagePopup(*log, this);
+            }
+        });
+
+        contextMenu.addAction("Scrap Log", [this, index]() {
+            // Get the log ID from the model
+            int logId = index.sibling(index.row(), 0).data().toInt();
+            // Get the log from the database
+            auto log = QtSqlRepository<Log>::spawn().get(logId);
+            if (log) {
+                // Show a confirmation dialog
+                QMessageBox::StandardButton reply;
+                reply = QMessageBox::question(this, "Confirm", "Are you sure you want to scrap this log?",
+                                              QMessageBox::Yes | QMessageBox::No);
+                if (reply == QMessageBox::Yes) {
+                    // Scrap the log
+                    QtSqlRepository<Log>::spawn().remove(logId);
+                    refreshModels();
+                }
+            }
+        });
+
+        contextMenu.addAction("Cut Cookie", [this, index]() {
+            // Get the log ID from the model
+            int logId = index.sibling(index.row(), 0).data().toInt();
+            std::cout << "Log ID: " << logId << std::endl;
+            // Get the log from the database
+            auto log = QtSqlRepository<Log>::spawn().get(logId);
+            if (log) {
+                // Show a dialog to cut a cookie
+                bool ok;
+                double length = QInputDialog::getDouble(this, "Cut Cookie", "Enter length (in):", 0, 0, log.value().length.toInches(), 2, &ok);
+                if (ok) {
+                    log->cutCookie(Length::fromInches(length));
+                    refreshModels();
+                }
+            }
+        });
+
+        contextMenu.exec(ui->logsTableView->viewport()->mapToGlobal(pos));
+    }
 }
 
 void InventoryPage::buildFilterWidgets()
