@@ -7,6 +7,7 @@
 #include <QSqlQuery>
 #include <QByteArray>
 #include "domain/cookie.hpp"
+#include "domain/firewood.hpp"
 
 using namespace woodworks::domain::types;
 using namespace woodworks::domain::imperial;
@@ -42,7 +43,7 @@ namespace woodworks::domain {
         // Cuts a cookie from the log, inserts it into the database, and updates the log.
         Cookie cutCookie(Length cutLength);
         // Cuts a length of firewood from the log, inserts it into the database, and updates the log.
-        void cutFirewood(Length cutLength);
+        Firewood cutFirewood(Length cutLength);
 
         static Log uninitialized() noexcept
         {

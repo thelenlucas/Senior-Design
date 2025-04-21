@@ -33,6 +33,20 @@ namespace woodworks::domain {
             return cubicFeet / 128.0;
         }
 
+        static Firewood uninitialized() noexcept
+        {
+            return Firewood{
+                .id = Id{-1},
+                .species = Species{""},
+                .cubicFeet = 0.0,
+                .drying = Drying::GREEN,
+                .cost = Dollar{0},
+                .location = "",
+                .notes = "",
+                .imageBuffer = QByteArray(),
+            };
+        }
+
         // --- Mapping -----
         static QString createDbSQL();
         static QString individualViewSQL();
