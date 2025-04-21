@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1126</width>
-    <height>855</height>
+    <width>855</width>
+    <height>841</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -163,52 +163,111 @@
          <property name="title">
           <string>Log Entry</string>
          </property>
-         <layout class="QGridLayout" name="logEntryLayout">
-          <item row="2" column="0">
-           <widget class="QLabel" name="diameterLabel">
-            <property name="text">
-             <string>Diameter (in):</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
+         <layout class="QGridLayout" name="logEntryLayout" rowstretch="0,0,0,0,0,0,0,0,0,0,0">
+          <item row="0" column="4">
            <widget class="QLabel" name="locationLabel">
             <property name="text">
              <string>Location:</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="costLabel">
+          <item row="1" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QSpinBox" name="lengthFt">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+              <property name="suffix">
+               <string> ft</string>
+              </property>
+             </widget>
+            </item>
+            <item alignment="Qt::AlignLeft">
+             <widget class="QSpinBox" name="lengthIn">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="suffix">
+               <string> in</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="3">
+           <widget class="QDoubleSpinBox" name="logEntryLogCost">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="prefix">
+             <string>$</string>
+            </property>
+            <property name="maximum">
+             <double>9999.989999999999782</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="5">
+           <widget class="QSpinBox" name="logEntryLogCountSpin">
+            <property name="suffix">
+             <string> log</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>999</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="logEntrySpeciesCombo">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4">
+           <widget class="QLabel" name="label_34">
             <property name="text">
-             <string>Cost ($):</string>
+             <string>Add Multiple?</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="diameterLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Diameter:</string>
             </property>
            </widget>
           </item>
           <item row="1" column="3">
-           <widget class="QSpinBox" name="lengthIn"/>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="diameterIn"/>
-          </item>
-          <item row="1" column="1">
-           <widget class="QSpinBox" name="lengthFt"/>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="speciesEntry"/>
-          </item>
-          <item row="3" column="1">
-           <widget class="QDoubleSpinBox" name="costValue"/>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="speciesLabel">
-            <property name="text">
-             <string>Species:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QSpinBox" name="qualityValue">
+           <widget class="QSpinBox" name="logEntryLogQuality">
             <property name="minimum">
              <number>1</number>
             </property>
@@ -217,48 +276,113 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="0" colspan="3">
-           <widget class="QPushButton" name="addLogButton">
-            <property name="text">
-             <string>Add Log</string>
+          <item row="2" column="3">
+           <widget class="QComboBox" name="logEntryLogDryingComboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
            </widget>
           </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="lengthInLabel">
+          <item row="0" column="0" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="speciesLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>Inches:</string>
+             <string>Species:</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="lengthFtLabel">
+          <item row="0" column="2">
+           <widget class="QLabel" name="costLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>Length (ft):</string>
+             <string>Cost:</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="qualityLabel">
-            <property name="text">
-             <string>Quality (1–5):</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
+          <item row="2" column="2">
            <widget class="QLabel" name="label">
             <property name="text">
              <string>Drying:</string>
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
-           <widget class="QComboBox" name="dryingComboBox"/>
+          <item row="1" column="2">
+           <widget class="QLabel" name="qualityLabel">
+            <property name="text">
+             <string>Quality:</string>
+            </property>
+           </widget>
           </item>
-          <item row="5" column="1">
-           <widget class="QLineEdit" name="locationEntry"/>
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="logEntryDiameterSpin">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="suffix">
+             <string> in</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" alignment="Qt::AlignRight">
+           <widget class="QLabel" name="lengthFtLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Length: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <widget class="QComboBox" name="logEntryLocationCombo">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="logEntryNotes">
+         <property name="placeholderText">
+          <string>Notes...</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="addLogButton">
+         <property name="text">
+          <string>Add Log</string>
+         </property>
         </widget>
        </item>
       </layout>

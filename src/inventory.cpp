@@ -59,10 +59,10 @@ InventoryPage::InventoryPage(QWidget *parent)
     }
 
     // Add drying options to the combo box
-    ui->dryingComboBox->addItem("Green", QVariant(static_cast<int>(Drying::GREEN)));
-    ui->dryingComboBox->addItem("Air Dried", QVariant(static_cast<int>(Drying::AIR_DRIED)));
-    ui->dryingComboBox->addItem("Kiln Dried", QVariant(static_cast<int>(Drying::KILN_DRIED)));
-    ui->dryingComboBox->addItem("Air & Kiln Dried", QVariant(static_cast<int>(Drying::KILN_AND_AIR_DRIED)));
+    ui->logEntryLogDryingComboBox->addItem("Green", QVariant(static_cast<int>(Drying::GREEN)));
+    ui->logEntryLogDryingComboBox->addItem("Air Dried", QVariant(static_cast<int>(Drying::AIR_DRIED)));
+    ui->logEntryLogDryingComboBox->addItem("Kiln Dried", QVariant(static_cast<int>(Drying::KILN_DRIED)));
+    ui->logEntryLogDryingComboBox->addItem("Air & Kiln Dried", QVariant(static_cast<int>(Drying::KILN_AND_AIR_DRIED)));
 
     buildFilterWidgets();
 
@@ -124,9 +124,12 @@ InventoryPage::~InventoryPage()
     delete ui;
 }
 
-void InventoryPage::buildFilterWidgets() {
+void InventoryPage::buildFilterWidgets()
+{
     // speciesComboBox has all the species in the database, pluas an "All" option that filters out nothing.
-    QStringList species = getUniqueSpecies();
+    QStringList species = getUniqueSpecies(); // Doesn't have an "All" option
+    ui->logEntrySpeciesCombo->addItems(species);
+    ui->logEntrySpeciesCombo->setCurrentIndex(0);
     species.prepend("All");
     ui->logSpeciesComboBox->addItems(species);
     ui->cookiesSpeciesCombo->addItems(species);
@@ -166,6 +169,10 @@ void InventoryPage::buildFilterWidgets() {
     ui->lumberThicknessCombo->addItem("All");
     ui->lumberThicknessCombo->addItems(getUniqueValuesOfColumn("display_lumber", "Thickness"));
     ui->lumberThicknessCombo->setCurrentIndex(0);
+
+    // Unique locations for log entry
+    QStringList locations = getUniqueLocations();
+    ui->logEntryLocationCombo->addItems(locations);
 }
 
 void InventoryPage::refreshModels()
@@ -176,129 +183,145 @@ void InventoryPage::refreshModels()
     QVector<FieldFilter> lumberFilters;
     QVector<FieldFilter> firewoodFilters;
 
-    if (ui->logSpeciesComboBox->currentText() != "All") {
+    if (ui->logSpeciesComboBox->currentText() != "All")
+    {
         logFilters.push_back(FieldFilter().exact("species", ui->logSpeciesComboBox->currentText()));
     }
 
-    if (ui->logLengthMin->value() != 0 || ui->logLengthMax->value() != 0) {
+    if (ui->logLengthMin->value() != 0 || ui->logLengthMax->value() != 0)
+    {
         logFilters.push_back(FieldFilter().between(
             "\"Length (ft)\"",
             ui->logLengthMin->value(),
-            ui->logLengthMax->value()
-        ));
+            ui->logLengthMax->value()));
     }
 
-    if (ui->logRadiusMin->value() != 0 || ui->logRadiusMax->value() != 0) {
+    if (ui->logRadiusMin->value() != 0 || ui->logRadiusMax->value() != 0)
+    {
         logFilters.push_back(FieldFilter().between(
             "\"Diameter (in)\"",
             ui->logRadiusMin->value(),
-            ui->logRadiusMax->value()
-        ));
+            ui->logRadiusMax->value()));
     }
 
-    if (ui->logDryingComboBox->currentText() != "All") {
+    if (ui->logDryingComboBox->currentText() != "All")
+    {
         logFilters.push_back(FieldFilter().exact("drying", ui->logDryingComboBox->currentText()));
     }
 
-    if (ui->cookiesSpeciesCombo->currentText() != "All") {
+    if (ui->cookiesSpeciesCombo->currentText() != "All")
+    {
         cookieFilters.push_back(FieldFilter().exact("species", ui->cookiesSpeciesCombo->currentText()));
     }
-    if (ui->cookieThicknessSpinBox->value() != 0 || ui->cookieThicknessMaxSpinBox->value() != 0) {
+    if (ui->cookieThicknessSpinBox->value() != 0 || ui->cookieThicknessMaxSpinBox->value() != 0)
+    {
         cookieFilters.push_back(FieldFilter().between(
             "\"Thickness (in)\"",
             ui->cookieThicknessSpinBox->value(),
-            ui->cookieThicknessMaxSpinBox->value()
-        ));
+            ui->cookieThicknessMaxSpinBox->value()));
     }
-    if (ui->cookieDiameterMinSpinBox->value() != 0 || ui->cookieDiameterMaxSpinBox->value() != 0) {
+    if (ui->cookieDiameterMinSpinBox->value() != 0 || ui->cookieDiameterMaxSpinBox->value() != 0)
+    {
         cookieFilters.push_back(FieldFilter().between(
             "\"Diameter (in)\"",
             ui->cookieDiameterMinSpinBox->value(),
-            ui->cookieDiameterMaxSpinBox->value()
-        ));
+            ui->cookieDiameterMaxSpinBox->value()));
     }
-    if (ui->cookieDryingCombo->currentText() != "All") {
+    if (ui->cookieDryingCombo->currentText() != "All")
+    {
         cookieFilters.push_back(FieldFilter().exact("drying", ui->cookieDryingCombo->currentText()));
     }
 
-    if (ui->slabsSpeciesCombo->currentText() != "All") {
+    if (ui->slabsSpeciesCombo->currentText() != "All")
+    {
         slabsFilter.push_back(FieldFilter().exact("species", ui->slabsSpeciesCombo->currentText()));
     }
-    if (ui->slabLengthMin->value() != 0 || ui->slabLengthMax->value() != 0) {
+    if (ui->slabLengthMin->value() != 0 || ui->slabLengthMax->value() != 0)
+    {
         slabsFilter.push_back(FieldFilter().between(
             "\"Length (in)\"",
             ui->slabLengthMin->value(),
-            ui->slabLengthMax->value()
-        ));
+            ui->slabLengthMax->value()));
     }
-    if (ui->slabWidthMax->value() != 0 || ui->slabWidthMin->value() != 0) {
+    if (ui->slabWidthMax->value() != 0 || ui->slabWidthMin->value() != 0)
+    {
         slabsFilter.push_back(FieldFilter().between(
             "\"Width (in)\"",
             ui->slabWidthMin->value(),
-            ui->slabWidthMax->value()
-        ));
+            ui->slabWidthMax->value()));
     }
-    if (ui->slabThicknessMin->value() != 0 || ui->slabThicknessMax->value() != 0) {
+    if (ui->slabThicknessMin->value() != 0 || ui->slabThicknessMax->value() != 0)
+    {
         slabsFilter.push_back(FieldFilter().between(
             "\"Thickness (in)\"",
             ui->slabThicknessMin->value(),
-            ui->slabThicknessMax->value()
-        ));
+            ui->slabThicknessMax->value()));
     }
-    if (ui->slabDryingCombo->currentText() != "All") {
+    if (ui->slabDryingCombo->currentText() != "All")
+    {
         slabsFilter.push_back(FieldFilter().exact("drying", ui->slabDryingCombo->currentText()));
     }
-    if (ui->slabSurfacingCombo->currentText() != "All") {
+    if (ui->slabSurfacingCombo->currentText() != "All")
+    {
         slabsFilter.push_back(FieldFilter().exact("surfacing", ui->slabSurfacingCombo->currentText()));
     }
 
-    if (ui->lumberSpeciesCombo->currentText() != "All") {
+    if (ui->lumberSpeciesCombo->currentText() != "All")
+    {
         lumberFilters.push_back(FieldFilter().exact("species", ui->lumberSpeciesCombo->currentText()));
     }
-    if (ui->lumberLengthMin->value() != 0 || ui->lumberLengthMax->value() != 0) {
+    if (ui->lumberLengthMin->value() != 0 || ui->lumberLengthMax->value() != 0)
+    {
         lumberFilters.push_back(FieldFilter().between(
             "\"Length (in)\"",
             ui->lumberLengthMin->value(),
-            ui->lumberLengthMax->value()
-        ));
+            ui->lumberLengthMax->value()));
     }
-    if (ui->lumberWidthMin->value() != 0 || ui->lumberWidthMax->value() != 0) {
+    if (ui->lumberWidthMin->value() != 0 || ui->lumberWidthMax->value() != 0)
+    {
         lumberFilters.push_back(FieldFilter().between(
             "\"Width (in)\"",
             ui->lumberWidthMin->value(),
-            ui->lumberWidthMax->value()
-        ));
+            ui->lumberWidthMax->value()));
     }
-    if (ui->lumberThicknessCombo->currentText() != "All") {
+    if (ui->lumberThicknessCombo->currentText() != "All")
+    {
         lumberFilters.push_back(FieldFilter().exact("thickness", ui->lumberThicknessCombo->currentText()));
     }
-    if (ui->lumberDryingCombo->currentText() != "All") {
+    if (ui->lumberDryingCombo->currentText() != "All")
+    {
         lumberFilters.push_back(FieldFilter().exact("drying", ui->lumberDryingCombo->currentText()));
     }
-    if (ui->lumberSurfacingCombo->currentText() != "All") {
+    if (ui->lumberSurfacingCombo->currentText() != "All")
+    {
         lumberFilters.push_back(FieldFilter().exact("surfacing", ui->lumberSurfacingCombo->currentText()));
     }
 
-    if (ui->firewoodSpeciesCombo->currentText() != "All") {
+    if (ui->firewoodSpeciesCombo->currentText() != "All")
+    {
         firewoodFilters.push_back(FieldFilter().exact("species", ui->firewoodSpeciesCombo->currentText()));
     }
-    if (ui->firewoodDryingCombo->currentText() != "All") {
+    if (ui->firewoodDryingCombo->currentText() != "All")
+    {
         firewoodFilters.push_back(FieldFilter().exact("drying", ui->firewoodDryingCombo->currentText()));
     }
 
-    if (ui->detailedViewCheckBox->isChecked()) {
+    if (ui->detailedViewCheckBox->isChecked())
+    {
         ui->logsTableView->setModel(makeFilteredModel("display_logs", logFilters, this));
         ui->cookiesTableView->setModel(makeFilteredModel("display_cookies", cookieFilters, this));
         ui->slabsTableView->setModel(makeFilteredModel("display_slabs", slabsFilter, this));
         ui->lumberTableView->setModel(makeFilteredModel("display_lumber", lumberFilters, this));
-    } else {
+    }
+    else
+    {
         ui->logsTableView->setModel(makeFilteredModel("display_logs_grouped", logFilters, this));
         ui->cookiesTableView->setModel(makeFilteredModel("display_cookies_grouped", cookieFilters, this));
         ui->slabsTableView->setModel(makeFilteredModel("display_slabs_grouped", slabsFilter, this));
         ui->lumberTableView->setModel(makeFilteredModel("display_lumber_grouped", lumberFilters, this));
     }
     ui->firewoodTableView->setModel(makeFilteredModel("display_firewood_grouped", firewoodFilters, this));
-    
+
     ui->logsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->cookiesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->slabsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -306,50 +329,56 @@ void InventoryPage::refreshModels()
     ui->firewoodTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
-void InventoryPage::refreshTableViews() {
+void InventoryPage::refreshTableViews()
+{
     refreshModels();
 }
 
 void InventoryPage::onAddLogClicked()
 {
     Length logLen = Length::fromFeet(ui->lengthFt->value()) + Length::fromInches(ui->lengthIn->value());
-    Length logDiam = Length::fromInches(ui->diameterIn->value());
-    Species logSpecies = {ui->speciesEntry->text().toStdString()};
-    Quality logQuality = {ui->qualityValue->value()};
-    Drying logDrying = ui->dryingComboBox->currentData().value<Drying>();
-    Dollar logCost = {static_cast<int>(ui->costValue->value() * 100)};
-    std::string location = ui->locationEntry->text().toStdString();
+    Length logDiam = Length::fromInches(ui->logEntryDiameterSpin->value());
+    Species logSpecies = {ui->logEntrySpeciesCombo->currentText().toStdString()};
+    Quality logQuality = {ui->logEntryLogQuality->value()};
+    Drying logDrying = ui->logEntryLogDryingComboBox->currentData().value<Drying>();
+    Dollar logCost = {static_cast<int>(ui->logEntryLogCost->value() * 100)};
+    std::string location = ui->logEntryLocationCombo->currentText().toStdString();
 
     Log log = Log::uninitialized();
 
-    log.length = logLen;
-    log.diameter = logDiam;
-    log.species = logSpecies;
-    log.quality = logQuality;
-    log.drying = logDrying;
-    log.cost = logCost;
-    log.location = location;
-
-    if (!log.isValid())
+    for (int i = 0; i < ui->logEntryLogCountSpin->value(); i++)
     {
-        QMessageBox::critical(this, "Error", "Invalid log data");
-        return;
-    }
+        log.length = logLen;
+        log.diameter = logDiam;
+        log.species = logSpecies;
+        log.quality = logQuality;
+        log.drying = logDrying;
+        log.cost = logCost;
+        log.location = location;
+        log.notes = ui->logEntryNotes->text().toStdString();
 
-    // Insert the log into the database
-    auto &deebee = woodworks::infra::DbConnection::instance();
-    auto repo = woodworks::infra::QtSqlRepository<Log>(deebee);
+        if (!log.isValid())
+        {
+            QMessageBox::critical(this, "Error", "Invalid log data");
+            return;
+        }
 
-    if (!repo.add(log))
-    {
-        QMessageBox::critical(this, "Error", "Failed to insert log: " + deebee.lastError().text());
-        return;
+        // Insert the log into the database
+        auto &deebee = woodworks::infra::DbConnection::instance();
+        auto repo = woodworks::infra::QtSqlRepository<Log>(deebee);
+
+        if (!repo.add(log))
+        {
+            QMessageBox::critical(this, "Error", "Failed to insert log: " + deebee.lastError().text());
+            return;
+        }
     }
 
     refreshModels();
 }
 
-void InventoryPage::onDoubleClickLogTable(const QModelIndex& index) {
+void InventoryPage::onDoubleClickLogTable(const QModelIndex &index)
+{
     // If not in detailed view, set the species and drying to the selected row, and then move
     // to the detailed view.
     if (!ui->detailedViewCheckBox->isChecked())
@@ -361,7 +390,9 @@ void InventoryPage::onDoubleClickLogTable(const QModelIndex& index) {
         ui->logDryingComboBox->setCurrentText(drying);
         ui->detailedViewCheckBox->setChecked(true);
         refreshModels();
-    } else {
+    }
+    else
+    {
         // Otherwise, bring up the image dialog for the selected log.
         // Id is first column (0th)
         int id = index.sibling(index.row(), 0).data().toInt();
@@ -369,7 +400,8 @@ void InventoryPage::onDoubleClickLogTable(const QModelIndex& index) {
         viewImagePopup(log, this);
     }
 }
-void InventoryPage::onDoubleClickCookieTable(const QModelIndex& index) {
+void InventoryPage::onDoubleClickCookieTable(const QModelIndex &index)
+{
     // Same as above, but for cookies - species on 1, drying on 4, id on 0
     if (!ui->detailedViewCheckBox->isChecked())
     {
@@ -379,13 +411,16 @@ void InventoryPage::onDoubleClickCookieTable(const QModelIndex& index) {
         ui->cookieDryingCombo->setCurrentText(drying);
         ui->detailedViewCheckBox->setChecked(true);
         refreshModels();
-    } else {
+    }
+    else
+    {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto cookie = QtSqlRepository<Cookie>::spawn().get(id).value();
         viewImagePopup(cookie, this);
     }
 }
-void InventoryPage::onDoubleClickSlabTable(const QModelIndex& index) {
+void InventoryPage::onDoubleClickSlabTable(const QModelIndex &index)
+{
     // Slabs are on species (1), drying (5), surfacing (6) and id (0)
     if (!ui->detailedViewCheckBox->isChecked())
     {
@@ -397,13 +432,16 @@ void InventoryPage::onDoubleClickSlabTable(const QModelIndex& index) {
         ui->slabSurfacingCombo->setCurrentText(surfacing);
         ui->detailedViewCheckBox->setChecked(true);
         refreshModels();
-    } else {
+    }
+    else
+    {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(id).value();
         viewImagePopup(slab, this);
     }
 }
-void InventoryPage::onDoubleClickLumberTable(const QModelIndex& index) {
+void InventoryPage::onDoubleClickLumberTable(const QModelIndex &index)
+{
     // Lumber on species (1), thickness (3), drying (5), surfacing (6) and id (0)
     if (!ui->detailedViewCheckBox->isChecked())
     {
@@ -417,7 +455,9 @@ void InventoryPage::onDoubleClickLumberTable(const QModelIndex& index) {
         ui->lumberSurfacingCombo->setCurrentText(surfacing);
         ui->detailedViewCheckBox->setChecked(true);
         refreshModels();
-    } else {
+    }
+    else
+    {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto lumber = QtSqlRepository<Lumber>::spawn().get(id).value();
         viewImagePopup(lumber, this);

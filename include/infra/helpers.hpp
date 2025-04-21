@@ -63,6 +63,34 @@ namespace woodworks::infra {
         return out;
     }
 
+    // Unique locations
+    inline QStringList getUniqueLocations() {
+        auto &db = DbConnection::instance();
+        QStringList locationList;
+        QSqlQuery query(db);
+        if (!query.prepare(
+            "SELECT DISTINCT location FROM ("
+            "SELECT location FROM cookies UNION "
+            "SELECT location FROM firewood UNION "
+            "SELECT location FROM logs UNION "
+            "SELECT location FROM lumber UNION "
+            "SELECT location FROM live_edge_slabs)"
+        )) {
+            qDebug() << "Error preparing query for unique locations:" << query.lastError().text();
+            return locationList;
+        }
+
+        auto out = QStringList();
+        if (query.exec()) {
+            while (query.next()) {
+                out << query.value(0).toString();
+            }
+        } else {
+            qDebug() << "Error fetching unique locations:" << query.lastError().text();
+        }
+        return out;
+    }
+
     // Gets the max of a column in a table
     inline int getMaxOfColumn(const QString &tableName, const QString &columnName) {
         auto &db = DbConnection::instance();
