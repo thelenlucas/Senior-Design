@@ -14,14 +14,22 @@ std::vector<std::string> Importer::digestLine(const std::string& line){
     return parts;
 }
 
-// Drying Importer::returnDryingType(std::string dryStr)
+// woodworks::domain::types::Drying Importer::returnDryingType(std::string dryStr)
 // {
 //     std::transform(dryStr.begin(), dryStr.end(), dryStr.begin(), ::toupper);
-//     if(dryStr == "AIR DRIED" || dryStr == "AIR") return AIR_DRIED;
-//     else if(dryStr == "KILN DRIED" || dryStr == "KILN") return KILN_DRIED;
-//     else if(dryStr == "AIR AND KILN DRIED") return AIR_AND_KILN_DRIED;
-//     else return WET;
+//     if(dryStr == "KILN DRIED" || dryStr == "KILN") return 1;
+//     else if(dryStr == "AIR DRIED" || dryStr == "AIR") return 2;
+//     else if(dryStr == "AIR AND KILN DRIED" || dryStr == "KILN AND AIR DRIED" || dryStr == "AIR AND KILN" || dryStr == "KILN AND AIR") return 3;
+//     else return 0;
 // }
+
+//	   SLAB_SURFACNG: 
+//	   woodworks::domain::types::SlabSurfacing
+//	   RGH (rough), S1S, S2S
+
+//	   LUMUBER_SURFACNG:
+//     woodworks::domain::types::LumberSurfacing
+//     RGH, S1S, S2S, S3S, S4S
 
 // bool Importer::returnSmoothed(std::string smd)
 // {
@@ -32,8 +40,8 @@ std::vector<std::string> Importer::digestLine(const std::string& line){
 
 
 // void Importer::importLogs(const std::string& filePath){
-//     //id, species, length (quarters), diameter (quarters), cost (cent/quarter), quality, drying, location, notes
-//     //int, string, uint, uint, uint, int, Drying, string, string
+//     //length (ft/in), diameter (in), species, quality, drying, cost, location, notes
+//     //length, length, species, quality, drying, dollar, string, string
 //     std::ifstream file(filePath);
 //     if(!file){
 //         std::cout << "File could not open at: " << filePath << std::endl;
