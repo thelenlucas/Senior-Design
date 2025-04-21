@@ -32,10 +32,13 @@
 #include "infra/helpers.hpp"
 #include "infra/images.hpp"
 
+#include "widgets/SlabCuttingWindow.hpp"
+
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
 using namespace woodworks::domain;
 using namespace woodworks::infra;
+using namespace woodworks::widgets;
 
 InventoryPage::InventoryPage(QWidget *parent)
     : QWidget(parent), ui(new Ui::InventoryPage),
@@ -182,6 +185,15 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
                     log->cutCookie(Length::fromInches(length));
                     refreshModels();
                 }
+            }
+        });
+
+        contextMenu.addAction("Cut Slabs", [this, index]() {
+            auto log = QtSqlRepository<Log>::spawn().get(index.sibling(index.row(), 0).data().toInt());
+            if (log) {
+                SlabCuttingWindow *slabCuttingWindow = new SlabCuttingWindow(*log, this);
+                slabCuttingWindow->setAttribute(Qt::WA_DeleteOnClose);
+                slabCuttingWindow->show();
             }
         });
 
