@@ -7,6 +7,7 @@
 #include <QVariant>
 #include <QSqlDatabase>
 #include <QSqlError>
+#include <QObject>
 
 // STD output
 #include <iostream>
@@ -20,6 +21,15 @@
 #include "infra/mappers/firewood_mapper.hpp"
 
 namespace woodworks::infra {
+
+class RepositoryNotifier : public QObject {
+    Q_OBJECT
+public:
+    static RepositoryNotifier& instance() { static RepositoryNotifier inst; return inst; }
+signals:
+    void repositoryChanged();
+};
+
     template<typename T>
     class QtSqlRepository {
         public:
@@ -79,7 +89,9 @@ namespace woodworks::infra {
                 if (!q.exec()) {
                     throw std::runtime_error(std::string("Failed to insert item: ") + q.lastError().text().toStdString());
                 }
-                return q.lastInsertId().toInt();
+                int id = q.lastInsertId().toInt();
+                RepositoryNotifier::instance().repositoryChanged();
+                return id;
             }
 
             void update(const T& item) {
@@ -93,6 +105,7 @@ namespace woodworks::infra {
                 if (!q.exec()) {
                     throw std::runtime_error("Failed to update item");
                 }
+                RepositoryNotifier::instance().repositoryChanged();
             }
 
             void remove(int id) {
@@ -102,6 +115,7 @@ namespace woodworks::infra {
                 if (!q.exec()) {
                     throw std::runtime_error(std::string("Failed to delete item: ") + q.lastError().text().toStdString());
                 }
+                RepositoryNotifier::instance().repositoryChanged();
             }
 
         private:

@@ -53,6 +53,10 @@ InventoryPage::InventoryPage(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Subscribe to repository changes
+    connect(&woodworks::infra::RepositoryNotifier::instance(), &woodworks::infra::RepositoryNotifier::repositoryChanged,
+            this, &InventoryPage::refreshModels);
+
     // Killed dynamic resizing
 
     // Add drying options to the combo box
@@ -558,13 +562,19 @@ void InventoryPage::onAddLogClicked()
 
 void InventoryPage::onDoubleClickLogTable(const QModelIndex &index)
 {
-    // If not in detailed view, set the species and drying to the selected row, and then move
-    // to the detailed view.
     if (!ui->detailedViewCheckBox->isChecked())
     {
         // Species - Column 1 (2nd), Drying - Column 5 (6th)
         QString species = index.sibling(index.row(), 1).data().toString();
         QString drying = index.sibling(index.row(), 5).data().toString();
+        // match length exactly
+        double length = index.sibling(index.row(), 2).data().toDouble();
+        ui->logLengthMin->setValue(length);
+        ui->logLengthMax->setValue(length);
+        // match diameter exactly
+        double diameter = index.sibling(index.row(), 3).data().toDouble();
+        ui->logDiameterMin->setValue(diameter);
+        ui->logDiameterMax->setValue(diameter);
         ui->logSpeciesComboBox->setCurrentText(species);
         ui->logDryingComboBox->setCurrentText(drying);
         ui->detailedViewCheckBox->setChecked(true);
@@ -585,6 +595,14 @@ void InventoryPage::onDoubleClickCookieTable(const QModelIndex &index)
     // Same as above, but for cookies - species on 1, drying on 4, id on 0
     if (!ui->detailedViewCheckBox->isChecked())
     {
+        // match thickness exactly
+        double thickness = index.sibling(index.row(), 2).data().toDouble();
+        ui->cookieThicknessSpinBox->setValue(thickness);
+        ui->cookieThicknessMaxSpinBox->setValue(thickness);
+        // match diameter exactly
+        double diameter = index.sibling(index.row(), 3).data().toDouble();
+        ui->cookieDiameterMinSpinBox->setValue(diameter);
+        ui->cookieDiameterMaxSpinBox->setValue(diameter);
         QString species = index.sibling(index.row(), 1).data().toString();
         QString drying = index.sibling(index.row(), 4).data().toString();
         ui->cookiesSpeciesCombo->setCurrentText(species);
@@ -604,6 +622,18 @@ void InventoryPage::onDoubleClickSlabTable(const QModelIndex &index)
     // Slabs are on species (1), drying (5), surfacing (6) and id (0)
     if (!ui->detailedViewCheckBox->isChecked())
     {
+        // match length exactly
+        double length = index.sibling(index.row(), 2).data().toDouble();
+        ui->slabLengthMin->setValue(length);
+        ui->slabLengthMax->setValue(length);
+        // match width exactly
+        double width = index.sibling(index.row(), 3).data().toDouble();
+        ui->slabWidthMin->setValue(width);
+        ui->slabWidthMax->setValue(width);
+        // match thickness exactly
+        double thickness = index.sibling(index.row(), 4).data().toDouble();
+        ui->slabThicknessMin->setValue(thickness);
+        ui->slabThicknessMax->setValue(thickness);
         QString species = index.sibling(index.row(), 1).data().toString();
         QString drying = index.sibling(index.row(), 5).data().toString();
         QString surfacing = index.sibling(index.row(), 6).data().toString();
@@ -625,6 +655,14 @@ void InventoryPage::onDoubleClickLumberTable(const QModelIndex &index)
     // Lumber on species (1), thickness (3), drying (5), surfacing (6) and id (0)
     if (!ui->detailedViewCheckBox->isChecked())
     {
+        // match length exactly
+        double length = index.sibling(index.row(), 2).data().toDouble();
+        ui->lumberLengthMin->setValue(length);
+        ui->lumberLengthMax->setValue(length);
+        // match width exactly
+        double width = index.sibling(index.row(), 4).data().toDouble();
+        ui->lumberWidthMin->setValue(width);
+        ui->lumberWidthMax->setValue(width);
         QString species = index.sibling(index.row(), 1).data().toString();
         QString thickness = index.sibling(index.row(), 3).data().toString();
         QString drying = index.sibling(index.row(), 5).data().toString();
