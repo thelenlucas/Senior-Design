@@ -60,7 +60,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="squareOffButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -125,13 +125,34 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="addCutButton">
         <property name="text">
          <string>Add Cut</string>
         </property>
        </widget>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="QPushButton" name="finishCutButton">
+      <property name="text">
+       <string>Finish Cuts</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="locationLineEdit">
+      <property name="placeholderText">
+       <string>Location....</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="notesLineEdit">
+      <property name="placeholderText">
+       <string>Notes....</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

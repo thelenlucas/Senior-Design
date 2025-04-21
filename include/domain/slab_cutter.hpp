@@ -7,6 +7,7 @@
 #include <vector>
 #include <cmath>
 #include <optional>
+#include <QString>
 
 using namespace std;
 using namespace woodworks::infra;
@@ -50,7 +51,7 @@ namespace woodworks::domain::slabs
         {
             if (thickness + logDiameterUsed > log.diameter)
             {
-                throw std::invalid_argument("Thickness is greater than log diameter");
+                return getWidthAtOffset(logDiameterUsed);
             }
 
             // Otherwise, the average of the width at the current used and the width at the current used + thickness
@@ -62,13 +63,12 @@ namespace woodworks::domain::slabs
         // Add a slab to the planned cuts
         void addSlab(Length thickness)
         {
-            if (thickness > log.diameter)
-            {
-                throw std::invalid_argument("Thickness is greater than log diameter");
-            }
             if (thickness + logDiameterUsed > log.diameter)
             {
-                throw std::invalid_argument("Thickness is greater than remaining diameter");
+                // Use from now to the diameter of the log
+                InProgressSlab slab = {thickness, slabWidthAtThickness(Length::fromFeet(0))};
+                plannedCuts.push_back(slab);
+                logDiameterUsed = log.diameter;
             }
 
             // Add the slab to the planned cuts
@@ -94,6 +94,17 @@ namespace woodworks::domain::slabs
         {
             plannedCuts.clear();
             logDiameterUsed = Length::fromTicks(0);
+        }
+
+        // Creates a list of qstrings for use in a list view from the planned cuts
+        vector<QString> getPlannedCuts() const
+        {
+            vector<QString> cuts;
+            for (const auto &plannedSlab : plannedCuts)
+            {
+                cuts.push_back("Thickness: " + QString::number(plannedSlab.thickness.toInches()) + " inches, Width: " + QString::number(plannedSlab.width.toInches()) + " inches");
+            }
+            return cuts;
         }
 
         // Complete the planned cuts at a given length

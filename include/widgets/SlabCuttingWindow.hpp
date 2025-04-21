@@ -20,6 +20,12 @@ namespace woodworks::widgets {
         explicit SlabCuttingWindow(Log log, QWidget *parent = nullptr);
         ~SlabCuttingWindow();
 
+    private slots:
+        void onSquareOffButtonClicked();
+        void onAddCutButtonClicked();
+        void onSlabThicknessChanged();
+        void onFinishCutButtonClicked();
+
     private:
         Ui::slabCuttingWindow *ui;
         Log log; // The log being cut
