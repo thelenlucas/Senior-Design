@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <string>
 
+#include <vector>
+
 #include <QMetaType>
 
 namespace woodworks::domain::types {
@@ -58,6 +60,22 @@ namespace woodworks::domain::types {
         KILN_AND_AIR_DRIED,
     };
 
+    // Allowed transiton between drying states, for a drying enum
+    inline std::vector<Drying> allowedTransitions(Drying drying) {
+        switch (drying)
+        {
+            case Drying::GREEN:
+                return {Drying::KILN_DRIED, Drying::AIR_DRIED};
+            case Drying::KILN_DRIED:
+                return {Drying::GREEN, Drying::AIR_DRIED, Drying::KILN_AND_AIR_DRIED};
+            case Drying::AIR_DRIED:
+                return {Drying::GREEN, Drying::KILN_DRIED, Drying::KILN_AND_AIR_DRIED};
+            case Drying::KILN_AND_AIR_DRIED:
+                return {Drying::GREEN, Drying::KILN_DRIED, Drying::AIR_DRIED};
+        }
+        throw std::invalid_argument("Invalid drying state");
+    }
+
     // Enumeration for live edge surfacing states
     enum class SlabSurfacing : uint8_t
     {
@@ -65,6 +83,20 @@ namespace woodworks::domain::types {
         S1S,
         S2S,
     };
+
+    // Allowed transition between slab surfacing -> slab surfacing states
+    inline std::vector<SlabSurfacing> allowedTransitions(SlabSurfacing surf) {
+        switch (surf)
+        {
+            case SlabSurfacing::RGH:
+                return {SlabSurfacing::S1S, SlabSurfacing::S2S};
+            case SlabSurfacing::S1S:
+                return {SlabSurfacing::S2S};
+            case SlabSurfacing::S2S:
+                return {SlabSurfacing::S2S};
+        }
+        throw std::invalid_argument("Invalid surfacing state");
+    }
 
     // Enumeration for lumber surfacing states
     enum class LumberSurfacing : uint8_t
@@ -75,6 +107,24 @@ namespace woodworks::domain::types {
         S3S,
         S4S
     };
+
+    // Allowed transition between lumber surfacing
+    inline std::vector<LumberSurfacing> allowedTransitions(LumberSurfacing surf) {
+        switch (surf)
+        {
+            case LumberSurfacing::RGH:
+                return {LumberSurfacing::S1S, LumberSurfacing::S2S, LumberSurfacing::S3S, LumberSurfacing::S4S};
+            case LumberSurfacing::S1S:
+                return {LumberSurfacing::S2S, LumberSurfacing::S3S, LumberSurfacing::S4S};
+            case LumberSurfacing::S2S:
+                return {LumberSurfacing::S3S, LumberSurfacing::S4S};
+            case LumberSurfacing::S3S:
+                return {LumberSurfacing::S4S};
+            case LumberSurfacing::S4S:
+                return {LumberSurfacing::S4S};
+        }
+        throw std::invalid_argument("Invalid surfacing state");
+    }
 
     // Convert from live-edge to lumber surfacing
     inline LumberSurfacing toLumberSurfacing(SlabSurfacing surf)
@@ -129,3 +179,5 @@ namespace woodworks::domain::types {
 }
 
 Q_DECLARE_METATYPE(woodworks::domain::types::Drying);
+Q_DECLARE_METATYPE(woodworks::domain::types::SlabSurfacing);
+Q_DECLARE_METATYPE(woodworks::domain::types::LumberSurfacing);

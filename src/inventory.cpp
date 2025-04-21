@@ -33,6 +33,7 @@
 #include "infra/images.hpp"
 
 #include "widgets/SlabCuttingWindow.hpp"
+#include "widgets/slabSurfacingPopup.hpp"
 
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
@@ -111,9 +112,11 @@ InventoryPage::InventoryPage(QWidget *parent)
 
     // Context menu policy
     ui->logsTableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->slabsTableView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     // Bind context menu handlers
     connect(ui->logsTableView, &QWidget::customContextMenuRequested, this, &InventoryPage::logsCustomContextMenu);
+    connect(ui->slabsTableView, &QWidget::customContextMenuRequested, this, &InventoryPage::slabsCustomContextMenu);
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
@@ -123,6 +126,26 @@ InventoryPage::InventoryPage(QWidget *parent)
 InventoryPage::~InventoryPage()
 {
     delete ui;
+}
+
+void InventoryPage::slabsCustomContextMenu(const QPoint &pos) {
+    // Surfacing
+    QModelIndex index = ui->slabsTableView->indexAt(pos);
+    if (!index.isValid()) {
+        std::cout << "Invalid index" << std::endl;
+        return;
+    }
+    if (!ui->detailedViewCheckBox->isChecked()) {
+        return;
+    }
+
+    QMenu contextMenu;
+    contextMenu.addAction("Surfacing", [this, index]() {
+        auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(index.sibling(index.row(), 0).data().toInt());
+        slabSurfacingPopUp(slab.value());
+    });
+
+    contextMenu.exec(ui->slabsTableView->viewport()->mapToGlobal(pos));
 }
 
 void InventoryPage::logsCustomContextMenu(const QPoint &pos)
