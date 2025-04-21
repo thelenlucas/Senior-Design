@@ -68,7 +68,8 @@ void SlabCuttingWindow::updateUi()
     ui->slabWidthDisplayLabel->setText(QString::number(cutter.slabWidthAtThickness(Length::fromQuarters(ui->nextSlabThicknessSpin->value())).toQuarters()) + " quarters");
     ui->slabWidthDisplayLabel->setText(QString::number(cutter.slabWidthAtThickness(Length::fromQuarters(ui->nextSlabThicknessSpin->value())).toInches()) + " inches");
     ui->listWidget->clear();
-    ui->listWidget->addItems(QStringList::fromVector(QVector<QString>::fromStdVector(cutter.getPlannedCuts())));
+    auto planned = cutter.getPlannedCuts();
+    ui->listWidget->addItems(QStringList::fromVector(QVector<QString>(planned.begin(), planned.end())));
     ui->nextSlabThicknessSpin->setMaximum(cutter.getRemainingDiameter().toQuarters());
 }
 
