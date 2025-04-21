@@ -70,8 +70,8 @@ InventoryPage::InventoryPage(QWidget *parent)
     connect(ui->logSpeciesComboBox, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
     connect(ui->logLengthMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
     connect(ui->logLengthMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
-    connect(ui->logRadiusMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
-    connect(ui->logRadiusMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->logDiameterMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->logDiameterMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
     connect(ui->logSpeciesComboBox, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
     connect(ui->logDryingComboBox, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
     connect(ui->cookiesSpeciesCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
@@ -375,12 +375,12 @@ void InventoryPage::refreshModels()
             ui->logLengthMax->value()));
     }
 
-    if (ui->logRadiusMin->value() != 0 || ui->logRadiusMax->value() != 0)
+    if (ui->logDiameterMin->value() != 0 || ui->logDiameterMax->value() != 0)
     {
         logFilters.push_back(FieldFilter().between(
             "\"Diameter (in)\"",
-            ui->logRadiusMin->value(),
-            ui->logRadiusMax->value()));
+            ui->logDiameterMin->value(),
+            ui->logDiameterMax->value()));
     }
 
     if (ui->logDryingComboBox->currentText() != "All")
@@ -568,6 +568,7 @@ void InventoryPage::onDoubleClickLogTable(const QModelIndex &index)
         ui->logSpeciesComboBox->setCurrentText(species);
         ui->logDryingComboBox->setCurrentText(drying);
         ui->detailedViewCheckBox->setChecked(true);
+        
         refreshModels();
     }
     else
