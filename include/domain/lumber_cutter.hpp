@@ -95,6 +95,10 @@ struct LumberCutter {
             boards.push_back(board);
         }
         plannedBoards.clear();
+
+        // Delete the original slab
+        QtSqlRepository<LiveEdgeSlab>::spawn().remove(slab.id.id);
+
         return boards;
     }
 

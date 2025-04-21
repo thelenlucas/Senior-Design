@@ -35,6 +35,7 @@
 #include "widgets/SlabCuttingWindow.hpp"
 #include "widgets/slabSurfacingPopup.hpp"
 #include "widgets/dryingPopup.hpp"
+#include "widgets/LumberCuttingWindow.hpp"
 
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
@@ -160,6 +161,15 @@ void InventoryPage::slabsCustomContextMenu(const QPoint &pos) {
     contextMenu.addAction("Dry Board", [this, index]() {
         auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(index.sibling(index.row(), 0).data().toInt());
         dryingPopUp(slab.value());
+    });
+
+    contextMenu.addAction("Cut Lumber", [this, index]() {
+        auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(index.sibling(index.row(), 0).data().toInt());
+        if (slab) {
+            LumberCuttingWindow* win = new LumberCuttingWindow(slab.value(), this);
+            win->setAttribute(Qt::WA_DeleteOnClose);
+            win->show();
+        }
     });
 
     contextMenu.exec(ui->slabsTableView->viewport()->mapToGlobal(pos));

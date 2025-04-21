@@ -23,7 +23,7 @@ namespace woodworks::domain {
         std::string notes;
         QByteArray imageBuffer;  // image data buffer
 
-        inline static Lumber Lumber::uninitialized() {
+        inline static Lumber uninitialized() {
             return Lumber{
                 .id = Id{ -1 },
                 .species = Species{""},
