@@ -109,6 +109,7 @@ InventoryPage::InventoryPage(QWidget *parent)
 
     connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
+    connect(ui->clearFiltersPushButton, &QPushButton::clicked, this, &InventoryPage::onClearFiltersClicked);
 
     // Bind the double clicks
     connect(ui->logsTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickLogTable);
@@ -740,6 +741,43 @@ void InventoryPage::onImageButtonClicked()
 
     // TODO: Implement spreadsheet import parsing logic in logic module.
     QMessageBox::information(this, "Import Selected", "File selected: " + filename);
+}
+
+void InventoryPage::onClearFiltersClicked()
+{
+    ui->detailedViewCheckBox->setChecked(false);
+    ui->logSpeciesComboBox->setCurrentIndex(0);
+    ui->logLengthMin->setValue(0);
+    ui->logLengthMax->setValue(0);
+    ui->logDiameterMin->setValue(0);
+    ui->logDiameterMax->setValue(0);
+    ui->logDryingComboBox->setCurrentIndex(0);
+    ui->cookiesSpeciesCombo->setCurrentIndex(0);
+    ui->cookieThicknessSpinBox->setValue(0);
+    ui->cookieThicknessMaxSpinBox->setValue(0);
+    ui->cookieDiameterMinSpinBox->setValue(0);
+    ui->cookieDiameterMaxSpinBox->setValue(0);
+    ui->cookieDryingCombo->setCurrentIndex(0);
+    ui->slabsSpeciesCombo->setCurrentIndex(0);
+    ui->slabLengthMin->setValue(0);
+    ui->slabLengthMax->setValue(0);
+    ui->slabWidthMin->setValue(0);
+    ui->slabWidthMax->setValue(0);
+    ui->slabThicknessMin->setValue(0);
+    ui->slabThicknessMax->setValue(0);
+    ui->slabDryingCombo->setCurrentIndex(0);
+    ui->slabSurfacingCombo->setCurrentIndex(0);
+    ui->lumberSpeciesCombo->setCurrentIndex(0);
+    ui->lumberThicknessCombo->setCurrentIndex(0);
+    ui->lumberDryingCombo->setCurrentIndex(0);
+    ui->lumberSurfacingCombo->setCurrentIndex(0);
+    ui->lumberLengthMin->setValue(0);
+    ui->lumberLengthMax->setValue(0);
+    ui->lumberWidthMin->setValue(0);
+    ui->lumberWidthMax->setValue(0);
+    ui->firewoodSpeciesCombo->setCurrentIndex(0);
+    ui->firewoodDryingCombo->setCurrentIndex(0);
+    refreshModels();
 }
 
 void InventoryPage::mousePressEvent(QMouseEvent *event)

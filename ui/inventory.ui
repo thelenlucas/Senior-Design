@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>855</width>
-    <height>841</height>
+    <width>1084</width>
+    <height>906</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -20,6 +20,13 @@
    <string>Inventory Management</string>
   </property>
   <layout class="QVBoxLayout" name="mainLayout">
+   <item alignment="Qt::AlignRight">
+    <widget class="QPushButton" name="clearFiltersPushButton">
+     <property name="text">
+      <string>Clear Filters</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QTabWidget" name="inventoryTabs">
      <property name="tabPosition">

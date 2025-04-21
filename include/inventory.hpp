@@ -28,6 +28,7 @@ class InventoryPage : public QWidget
     void onCookieButtonClicked();
     void onSpreadsheetImportClicked();
     void onImageButtonClicked();
+    void onClearFiltersClicked();
     void refreshTableViews();
 
     void onDoubleClickLogTable(const QModelIndex& index);
