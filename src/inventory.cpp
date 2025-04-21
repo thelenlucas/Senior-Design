@@ -34,6 +34,7 @@
 
 #include "widgets/SlabCuttingWindow.hpp"
 #include "widgets/slabSurfacingPopup.hpp"
+#include "widgets/dryingPopup.hpp"
 
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
@@ -113,10 +114,16 @@ InventoryPage::InventoryPage(QWidget *parent)
     // Context menu policy
     ui->logsTableView->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->slabsTableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->cookiesTableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->lumberTableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->firewoodTableView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     // Bind context menu handlers
     connect(ui->logsTableView, &QWidget::customContextMenuRequested, this, &InventoryPage::logsCustomContextMenu);
     connect(ui->slabsTableView, &QWidget::customContextMenuRequested, this, &InventoryPage::slabsCustomContextMenu);
+    connect(ui->cookiesTableView, &QWidget::customContextMenuRequested, this, &InventoryPage::cookiesCustomContextMenu);
+    connect(ui->lumberTableView, &QWidget::customContextMenuRequested, this, &InventoryPage::lumberCustomContextMenu);
+    connect(ui->firewoodTableView, &QWidget::customContextMenuRequested, this, &InventoryPage::firewoodCustomContextMenu);
 
     setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Inventory Management");
@@ -140,9 +147,15 @@ void InventoryPage::slabsCustomContextMenu(const QPoint &pos) {
     }
 
     QMenu contextMenu;
-    contextMenu.addAction("Surfacing", [this, index]() {
+    contextMenu.addAction("Surface Board", [this, index]() {
         auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(index.sibling(index.row(), 0).data().toInt());
         slabSurfacingPopUp(slab.value());
+    });
+
+    // Dry board
+    contextMenu.addAction("Dry Board", [this, index]() {
+        auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(index.sibling(index.row(), 0).data().toInt());
+        dryingPopUp(slab.value());
     });
 
     contextMenu.exec(ui->slabsTableView->viewport()->mapToGlobal(pos));
@@ -173,6 +186,19 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
             if (log) {
                 // Show the image
                 viewImagePopup(*log, this);
+            }
+        });
+
+        // Dry log
+        contextMenu.addAction("Dry Log", [this, index]() {
+            // Get the log ID from the model
+            int logId = index.sibling(index.row(), 0).data().toInt();
+            // Get the log from the database
+            auto log = QtSqlRepository<Log>::spawn().get(logId);
+            if (log) {
+                // Show a dialog to select the drying state
+                dryingPopUp(*log);
+                refreshModels();
             }
         });
 
@@ -239,6 +265,42 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
 
         contextMenu.exec(ui->logsTableView->viewport()->mapToGlobal(pos));
     }
+}
+
+void InventoryPage::cookiesCustomContextMenu(const QPoint& pos) {
+    QModelIndex index = ui->cookiesTableView->indexAt(pos);
+    if (!index.isValid() || !ui->detailedViewCheckBox->isChecked()) return;
+    QMenu contextMenu;
+    contextMenu.addAction("Dry Cookie", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto cookie = QtSqlRepository<Cookie>::spawn().get(id);
+        if (cookie) { dryingPopUp(*cookie); refreshModels(); }
+    });
+    contextMenu.exec(ui->cookiesTableView->viewport()->mapToGlobal(pos));
+}
+
+void InventoryPage::lumberCustomContextMenu(const QPoint& pos) {
+    QModelIndex index = ui->lumberTableView->indexAt(pos);
+    if (!index.isValid() || !ui->detailedViewCheckBox->isChecked()) return;
+    QMenu contextMenu;
+    contextMenu.addAction("Dry Lumber", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto lumber = QtSqlRepository<Lumber>::spawn().get(id);
+        if (lumber) { dryingPopUp(*lumber); refreshModels(); }
+    });
+    contextMenu.exec(ui->lumberTableView->viewport()->mapToGlobal(pos));
+}
+
+void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
+    QModelIndex index = ui->firewoodTableView->indexAt(pos);
+    if (!index.isValid()) return;
+    QMenu contextMenu;
+    contextMenu.addAction("Dry Firewood", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto fw = QtSqlRepository<Firewood>::spawn().get(id);
+        if (fw) { dryingPopUp(*fw); refreshModels(); }
+    });
+    contextMenu.exec(ui->firewoodTableView->viewport()->mapToGlobal(pos));
 }
 
 void InventoryPage::buildFilterWidgets()

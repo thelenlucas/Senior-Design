@@ -37,6 +37,9 @@ class InventoryPage : public QWidget
 
     void logsCustomContextMenu(const QPoint& pos);
     void slabsCustomContextMenu(const QPoint& pos);
+    void cookiesCustomContextMenu(const QPoint& pos);
+    void lumberCustomContextMenu(const QPoint& pos);
+    void firewoodCustomContextMenu(const QPoint& pos);
 
   private:
     void refreshModels();                               // Refreshes all models from the DB.
