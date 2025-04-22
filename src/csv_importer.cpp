@@ -24,8 +24,9 @@ woodworks::domain::types::Drying Importer::returnDryingType(std::string dryStr){
 
     bool hasKiln = dryStr.find("KILN") != std::string::npos;
     bool hasAir  = dryStr.find("AIR")  != std::string::npos;
+    bool hasBoth = dryStr.find("BOTH") != std::string::npos;
 
-    if (hasKiln && hasAir)   return Drying::KILN_AND_AIR_DRIED;
+    if ((hasKiln && hasAir) || hasBoth)   return Drying::KILN_AND_AIR_DRIED;
     if (hasKiln)             return Drying::KILN_DRIED;
     if (hasAir)              return Drying::AIR_DRIED;
     return Drying::GREEN;
@@ -403,7 +404,7 @@ void Importer::importLumber(const std::string& filePath){
         };
 
         std::string speciesStr          = get("Species");
-        std::string lengthStr           = get("Thickness");
+        std::string lengthStr           = get("Length");
         std::string widthStr            = get("Width");
         std::string thickStr            = get("Thickness");
         std::string surfStr             = get("Surfacing");

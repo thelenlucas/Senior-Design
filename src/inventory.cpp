@@ -658,19 +658,39 @@ void InventoryPage::onSpreadsheetImportClicked()
     bool ok = false;
     QString userChoice = QInputDialog::getItem(this, QObject::tr("Sheet Picker"), QObject::tr("Please select which sheet you're importing:"), options, 0, false, &ok);
 
-    if(!ok){
-        std::cout << "User canceled input." << std::endl;
-        return;
-    }
+    if(!ok){return;}
     QMessageBox::information(this, "Import Selected", "File selected: " + filename + "\nSheet Type: " + userChoice);
     std::string filePath = filename.toStdString();
     Importer import;
-
-    if(userChoice == "Logs"){import.importLogs(filePath);}
-    else if(userChoice == "Firewood"){import.importFirewood(filePath);}
-    else if(userChoice == "Slabs"){import.importSlabs(filePath);}
-    else if(userChoice == "Cookies"){import.importCookies(filePath);}
-    else if(userChoice == "Lumber"){import.importLumber(filePath);}
+    try{
+        if(userChoice == "Logs"){
+            QMessageBox::information(this, "Advisory", 
+                "Please ensure your file includes the following headers:\nSpecies, Length (Ft'in\"), Diameter (in), Cost ($), Quality (1-5), Drying (AIR/KILN/BOTH/GREEN), Location, Notes");
+            import.importLogs(filePath);
+        }
+        if(userChoice == "Firewood"){
+            QMessageBox::information(this, "Advisory",
+                "Please ensure your file includes the following headers:\nSpecies, Chords (ft^3), Cost, Drying (AIR/KILN/BOTH/GREEN), Location, Notes");
+            import.importFirewood(filePath);
+        }
+        if(userChoice == "Slabs"){
+            QMessageBox::information(this, "Advisory",
+                "Please ensure your file includes the following headers:\nSpecies, Length (Quarters), Width (in), Thickness (in), Drying (AIR/KILN/BOTH/GREEN), Surfacing (RGH/S1S/S2S), Cost ($), Location, Notes");
+            import.importSlabs(filePath);
+        }
+        if(userChoice == "Cookies"){
+            QMessageBox::information(this, "Advisory",
+                "Please ensure your file includes the following headers:\nSpecies, Thickness (in), Diameter (in), Drying (AIR/KILN/BOTH/GREEN), Cost ($), Location, Notes");
+            import.importCookies(filePath);
+        }
+        if(userChoice == "Lumber"){
+            QMessageBox::information(this, "Advisory",
+                "Please ensure your file includes the following headers:\nSpecies, Length (Quarters), Width (in), Thickness (in), Surfacing (RGH/S1S/S2S/S3S/S4S), Drying (AIR/KILN/BOTH/GREEN), Cost ($), Location, Notes");
+            import.importLumber(filePath);
+       }
+    } catch(...) {
+        QMessageBox::critical(this, "Error", "Ran into an issue Importing.");
+    }
 
     refreshModels();
 }
