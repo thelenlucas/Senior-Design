@@ -15,8 +15,7 @@ std::vector<std::string> Importer::digestLine(const std::string& line){
     return parts;
 }
 
-woodworks::domain::types::Drying Importer::returnDryingType(std::string dryStr)
-{
+woodworks::domain::types::Drying Importer::returnDryingType(std::string dryStr){
     std::transform(dryStr.begin(), dryStr.end(), dryStr.begin(), ::toupper);
     if(dryStr == "KILN DRIED" || dryStr == "KILN") return Drying::KILN_DRIED;
     else if(dryStr == "AIR DRIED" || dryStr == "AIR") return Drying::AIR_DRIED;
@@ -28,9 +27,25 @@ woodworks::domain::types::Drying Importer::returnDryingType(std::string dryStr)
 //	   woodworks::domain::types::SlabSurfacing
 //	   RGH (rough), S1S, S2S
 
+
+woodworks::domain::types::SlabSurfacing Importer::returnSurfacingSlabs(std::string surfStr){
+    std::transform(surfStr.begin(), surfStr.end(), surfStr.begin(), ::toupper);
+    if(surfStr == "S1S") return SlabSurfacing::S1S;
+    else if (surfStr == "S2S") return SlabSurfacing::S2S;
+    else return SlabSurfacing::RGH;
+}
+
 //	   LUMBER_SURFACNG:
 //     woodworks::domain::types::LumberSurfacing
 //     RGH, S1S, S2S, S3S, S4S
+woodworks::domain::types::LumberSurfacing Importer::returnSurfacingLumber(std::string surfStr){
+    std::transform(surfStr.begin(), surfStr.end(), surfStr.begin(), ::toupper);
+    if(surfStr == "S1S") return LumberSurfacing::S1S;
+    else if (surfStr == "S2S") return LumberSurfacing::S2S;
+    else if (surfStr == "S3S") return LumberSurfacing::S3S;
+    else if (surfStr == "S4S") return LumberSurfacing::S4S;
+    else return LumberSurfacing::RGH;
+}
 
 /*
 uint Importer::returnSmoothed(std::string smd)
@@ -127,10 +142,10 @@ void Importer::importFirewood(const std::string& filePath){
     }
 }
 
-/*
+
 void Importer::importSlabs(const std::string& filePath){
-    //id, species, thickness (eighths), length (quarters), width (eighths), drying, smoothed, location, notes
-    //int, string, uint, uint, uint, Drying, bool, string, string
+    //id, species, length, width, thickness, drying, surfacing, worth, location, notes
+    //ignoring, species, length, length, length, drying, SlabSurfacing, dollar, string, string
     std::ifstream file(filePath);
     if(!file){
         std::cout << "File could not open at: " << filePath << std::endl;
@@ -140,24 +155,38 @@ void Importer::importSlabs(const std::string& filePath){
     std::string line;
     if(!std::getline(file, line)){return;}
 
+    woodworks::domain::LiveEdgeSlab slab = woodworks::domain::LiveEdgeSlab::uninitialized();
+
     while(std::getline(file, line)){
         if(line.empty()){continue;}
         auto cols = digestLine(line);
 
-        std::string species     = cols[1];
-        uint thickE             = std::stoul(cols[2]);
-        uint lenQ               = std::stoul(cols[3]);
-        uint widthE             = std::stoul(cols[4]);
-        Drying drying           = returnDryingType(cols[5]);
-        bool smoothed           = returnSmoothed(cols[6]);
-        std::string location    = (cols.size() > 7 && !cols[7].empty()) ? cols[7] : "";
-        std::string notes       = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";
+        Species slabSpecies         = {cols[1]};
+        Length slabLength           = Length::fromQuarters(std::stod(cols[2]));
+        Length slabWidth            = Length::fromInches(std::stod(cols[3]));
+        Length slabThick            = Length::fromInches(std::stod(cols[4]));
+        Drying slabDrying           = returnDryingType(cols[5]);
+        SlabSurfacing slabSurf      = returnSurfacingSlabs(cols[6]);
+        Dollar slabCost             = {static_cast<int>(std::stod(cols[7])*100)};
+        std::string location        = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";
+        std::string notes           = (cols.size() > 9 && !cols[9].empty()) ? cols[9] : "";
 
-        Slab newSlab(-1, species, thickE, lenQ, widthE, drying, smoothed, location, notes);
-        newSlab.insert();
+        slab.species                = slabSpecies;
+        slab.length                 = slabLength;
+        slab.width                  = slabWidth;
+        slab.thickness              = slabThick;
+        slab.drying                 = slabDrying;
+        slab.surfacing              = slabSurf;
+        slab.worth                  = slabCost;
+        slab.location               = location;
+        slab.notes                  = notes;
+
+        auto &db = woodworks::infra::DbConnection::instance();
+        auto repo = woodworks::infra::QtSqlRepository<woodworks::domain::LiveEdgeSlab>(db);
+        if(!repo.add(slab)) {std::cerr << "Failed to insert live edge slab: " + db.lastError().text().toStdString() << std::endl;}
     }
 }
-*/
+
 
 void Importer::importCookies(const std::string& filePath){
     //id, species, length, diameter, drying, worth, location, notes

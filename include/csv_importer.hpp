@@ -23,5 +23,6 @@ class Importer
     private:
         static std::vector<std::string> digestLine(const std::string& line);
         woodworks::domain::types::Drying returnDryingType(std::string dryStr);
-        uint returnSmoothed(std::string smd);
+        woodworks::domain::types::SlabSurfacing returnSurfacingSlabs(std::string surfStr);
+        woodworks::domain::types::LumberSurfacing returnSurfacingLumber(std::string surfStr);
 };
