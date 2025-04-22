@@ -26,6 +26,12 @@ namespace woodworks::domain::imperial {
             return fromSixteenths(ticks);
         }
 
+        // Construct from a rounded number of quarters
+        static constexpr Length fromQuarters(double quarters) noexcept
+        {
+            return fromSixteenths(static_cast<unsigned int>(std::round(quarters * 4)));
+        }
+
         // Construct by rounding to the nearest 1/16 from a double
         static constexpr Length fromInches(double inches) noexcept
         {
@@ -43,6 +49,12 @@ namespace woodworks::domain::imperial {
         [[nodiscard]] constexpr unsigned int toTicks() const noexcept
         {
             return sixteenths_;
+        }
+
+        // Number of quarters
+        [[nodiscard]] constexpr unsigned int toQuarters() const noexcept
+        {
+            return sixteenths_ / 4;
         }
 
         // Exact length in inches

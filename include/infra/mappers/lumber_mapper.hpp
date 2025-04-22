@@ -24,13 +24,16 @@ namespace woodworks::domain {
     }
 
     inline QString Lumber::individualViewSQL() {
-        return woodworks::infra::mappers::makeIndividualViewSQL(
+        return woodworks::infra::makeIndividualViewSQL(
             "display_lumber", "lumber",
             QStringList{
                 "id AS 'ID'",
                 "species AS 'Species'",
-                "ROUND(length/16.0,2) AS 'Length (in)'",
-                "ROUND(thickness/16.0,2) AS 'Thickness (in)'",
+                "ROUND(length/16.0) AS 'Length (in)'",
+                "printf('%d/4', thickness/4) AS 'Thickness'",
+                "ROUND(width/16.0) AS 'Width (in)'",
+                "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
+                "CASE surfacing WHEN 0 THEN 'RGH' WHEN 1 THEN 'S1S' WHEN 2 THEN 'S2S' WHEN 3 THEN 'S3S' WHEN 4 THEN 'S4S' END AS 'Surfacing'",
                 "printf('%.2f',worth/100.0) AS 'Cost ($)'",
                 "location AS 'Location'",
                 "notes AS 'Notes'"
@@ -39,19 +42,25 @@ namespace woodworks::domain {
     }
 
     inline QString Lumber::groupedViewSQL() {
-        return woodworks::infra::mappers::makeGroupedViewSQL(
+        return woodworks::infra::makeGroupedViewSQL(
             "display_lumber_grouped", "lumber",
             QStringList{
                 "COUNT(*) AS 'Count'",
                 "species AS 'Species'",
-                "ROUND(length/16.0,2) AS 'Length (in)'",
-                "ROUND(thickness/16.0,2) AS 'Thickness (in)'",
+                "ROUND(length/16.0) AS 'Length (in)'",
+                "printf('%d/4', thickness/4) AS 'Thickness'",
+                "ROUND(width/16.0) AS 'Width (in)'",
+                "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
+                "CASE surfacing WHEN 0 THEN 'RGH' WHEN 1 THEN 'S1S' WHEN 2 THEN 'S2S' WHEN 3 THEN 'S3S' WHEN 4 THEN 'S4S' END AS 'Surfacing'",
                 "ROUND(AVG(worth)/100.0,2) AS 'Avg Cost ($)'"
             },
             QStringList{
                 "species",
-                "ROUND(length/16.0,2)",
-                "ROUND(thickness/16.0,2)",
+                "ROUND(length/16.0)",
+                "printf('%d/4', thickness/4)",
+                "ROUND(width/16.0)",
+                "drying",
+                "surfacing"
             }
         );
     }

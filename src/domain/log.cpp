@@ -1,8 +1,12 @@
 #include "domain/log.hpp"
+#include "domain/cookie.hpp"
 #include "domain/units.hpp"
 #include "domain/types.hpp"
 #include "infra/repository.hpp"
 #include "infra/connection.hpp"
+
+#include <cmath>
+
 
 
 namespace woodworks::domain {
@@ -74,5 +78,30 @@ namespace woodworks::domain {
         repo.add(cookie);
         // Return the cookie
         return cookie;
+    }
+
+    // Cuts firewood
+    Firewood Log::cutFirewood(Length cutLength) {
+        // Check if the length is valid
+        if (length > this->length) {
+            throw std::invalid_argument("Cut length is greater than log length");
+        }
+        auto firewoodWorth = this->cut(cutLength);
+
+        // Create the firewood. We give, in general, 120% of the cut length's volume to the firewood
+        // to account for air
+        double firewoodVolume = cutLength.toFeet() * pow((this->diameter.toFeet() / 2), 2) * 3.14159 * 1.2;
+        auto firewood = Firewood::uninitialized();
+        firewood.species = species;
+        firewood.cubicFeet = firewoodVolume;
+        firewood.drying = drying;
+        firewood.cost = firewoodWorth;
+
+        auto repo = woodworks::infra::QtSqlRepository<Firewood>::spawn();
+        repo.add(firewood);
+        // Update the log in the database
+        woodworks::infra::QtSqlRepository<Log>::spawn().update(*this);
+
+        return firewood;
     }
 }

@@ -28,14 +28,24 @@ class InventoryPage : public QWidget
     void onCookieButtonClicked();
     void onSpreadsheetImportClicked();
     void onImageButtonClicked();
-    void ApplyActiveFilters();                          // Applies filters live when filter widgets change.
-    void ClearAllFilters();                             // Clears all filter fields.
+    void refreshTableViews();
+
+    void onDoubleClickLogTable(const QModelIndex& index);
+    void onDoubleClickCookieTable(const QModelIndex& index);
+    void onDoubleClickSlabTable(const QModelIndex& index);
+    void onDoubleClickLumberTable(const QModelIndex& index);
+
+    void logsCustomContextMenu(const QPoint& pos);
+    void slabsCustomContextMenu(const QPoint& pos);
+    void cookiesCustomContextMenu(const QPoint& pos);
+    void lumberCustomContextMenu(const QPoint& pos);
+    void firewoodCustomContextMenu(const QPoint& pos);
 
   private:
     void refreshModels();                               // Refreshes all models from the DB.
-    void SetupFilterSignals();                          // Connects signals for filter UI.
-    void ResetFilterColors();                           // Resets colors for all filter fields.
-    void UpdateFieldColor(QWidget* widget, bool valid); // Styles widget color for feedback.
+
+    // Builds the UI widgets (comboboxes, etc.)
+    void buildFilterWidgets();
 
     Ui::InventoryPage* ui;
 

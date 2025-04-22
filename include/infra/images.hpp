@@ -11,13 +11,16 @@
 #include <QMessageBox>
 #include <QObject>
 #include <QSize>
+#include <QInputDialog>
+#include <QTextEdit>
 #include "repository.hpp"
 #include <QCoreApplication>
 
-namespace woodworks::infra {
+namespace woodworks::infra
+{
     // Templated function to load a qpixmap from a domain item
-    template<typename T>
-    QPixmap loadImage(const T& item)
+    template <typename T>
+    QPixmap loadImage(const T &item)
     {
         QPixmap pixmap;
         pixmap.loadFromData(item.imageBuffer);
@@ -25,8 +28,8 @@ namespace woodworks::infra {
     }
 
     // Templated function to save a qpixmap to a domain item
-    template<typename T>
-    void saveImage(T& item, const QPixmap& pixmap)
+    template <typename T>
+    void saveImage(T &item, const QPixmap &pixmap)
     {
         QByteArray byteArray;
         QBuffer buffer(&byteArray);
@@ -36,45 +39,88 @@ namespace woodworks::infra {
     }
 
     // Templated function to show image popup with replace/save functionality
-    template<typename T>
-    void viewImagePopup(T& item, QWidget* parent = nullptr)
+    template <typename T>
+    void viewImagePopup(T &item, QWidget *parent = nullptr)
     {
         QPixmap pix = loadImage(item);
-        if (pix.isNull()) {
-            QMessageBox::information(parent,
-                                     QCoreApplication::translate("ImageViewer", "No Image"),
-                                     QCoreApplication::translate("ImageViewer", "There is no image to display."));
-            return;
+        if (pix.isNull())
+        {
+            QDialog dlg(parent);
+            dlg.setWindowTitle(QCoreApplication::translate("ImageViewer", "No Image"));
+            QVBoxLayout *layout2 = new QVBoxLayout(&dlg);
+            QLabel *lbl = new QLabel(QCoreApplication::translate("ImageViewer", "There is no image to display."), &dlg);
+            lbl->setAlignment(Qt::AlignCenter);
+            layout2->addWidget(lbl);
+            QHBoxLayout *btnLayout2 = new QHBoxLayout();
+            QPushButton *addBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Add Image"), &dlg);
+            QPushButton *cancelBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Cancel"), &dlg);
+            btnLayout2->addWidget(addBtn);
+            btnLayout2->addWidget(cancelBtn);
+            layout2->addLayout(btnLayout2);
+            QObject::connect(addBtn, &QPushButton::clicked, [&dlg, &item]() {
+                QString fn = QFileDialog::getOpenFileName(&dlg,
+                                                          QObject::tr("Open Image"),
+                                                          QString(),
+                                                          QObject::tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
+                if (!fn.isEmpty()) {
+                    QPixmap newPix(fn);
+                    if (!newPix.isNull()) {
+                        saveImage(item, newPix);
+                        QtSqlRepository<T>::spawn().update(item);
+                        dlg.accept();
+                    } else {
+                        QMessageBox::warning(&dlg,
+                                             QCoreApplication::translate("ImageViewer", "Add Failed"),
+                                             QCoreApplication::translate("ImageViewer", "Could not load the selected image."));
+                    }
+                }
+            });
+            QObject::connect(cancelBtn, &QPushButton::clicked, &dlg, &QDialog::reject);
+            if (dlg.exec() != QDialog::Accepted)
+                return;
+            pix = loadImage(item);
         }
 
         QPixmap displayPix = pix;
         {
             int maxW = 800, maxH = 600, minW = 200, minH = 200;
             QSize orig = pix.size();
-            if (orig.width() > maxW || orig.height() > maxH) {
+            if (orig.width() > maxW || orig.height() > maxH)
+            {
                 displayPix = pix.scaled(maxW, maxH, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            } else if (orig.width() < minW && orig.height() < minH) {
+            }
+            else if (orig.width() < minW && orig.height() < minH)
+            {
                 displayPix = pix.scaled(minW, minH, Qt::KeepAspectRatio, Qt::SmoothTransformation);
             }
         }
 
         QDialog dlg(parent);
         dlg.setWindowTitle(QCoreApplication::translate("ImageViewer", "Image Viewer"));
-        QVBoxLayout* layout = new QVBoxLayout(&dlg);
+        QVBoxLayout *layout = new QVBoxLayout(&dlg);
 
-        QLabel* imgLabel = new QLabel(&dlg);
+        QLabel *imgLabel = new QLabel(&dlg);
         imgLabel->setPixmap(displayPix);
         imgLabel->setAlignment(Qt::AlignCenter);
         layout->addWidget(imgLabel);
 
-        QHBoxLayout* btnLayout = new QHBoxLayout();
-        QPushButton* replaceBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Replace Image"), &dlg);
-        QPushButton* saveBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Save As…"), &dlg);
+        QLabel *notesLabel = new QLabel(QCoreApplication::translate("ImageViewer", "Notes:"), &dlg);
+        QTextEdit *notesEdit = new QTextEdit(QString::fromStdString(item.notes), &dlg);
+        notesEdit->setMinimumHeight(100);
+        layout->addWidget(notesLabel);
+        layout->addWidget(notesEdit);
+
+        QHBoxLayout *btnLayout = new QHBoxLayout();
+        QPushButton *replaceBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Replace Image"), &dlg);
+        QPushButton *saveBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Save As…"), &dlg);
+        QPushButton *closeBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Close"), &dlg);
         btnLayout->addWidget(replaceBtn);
         btnLayout->addWidget(saveBtn);
+        btnLayout->addWidget(closeBtn);
         layout->addLayout(btnLayout);
 
-        QObject::connect(replaceBtn, &QPushButton::clicked, [&dlg, &imgLabel, &item]() {
+        QObject::connect(replaceBtn, &QPushButton::clicked, [&dlg, &imgLabel, &item]()
+                         {
             QString fn = QFileDialog::getOpenFileName(&dlg,
                                                       QObject::tr("Open Image"),
                                                       QString(),
@@ -83,6 +129,7 @@ namespace woodworks::infra {
                 QPixmap newPix(fn);
                 if (!newPix.isNull()) {
                     saveImage(item, newPix);
+                    QtSqlRepository<T>::spawn().update(item);
                     QPixmap scaled = newPix;
                     int maxW = 800, maxH = 600, minW = 200, minH = 200;
                     QSize orig = newPix.size();
@@ -97,16 +144,21 @@ namespace woodworks::infra {
                                          QCoreApplication::translate("ImageViewer", "Replace Failed"),
                                          QCoreApplication::translate("ImageViewer", "Could not load or save the selected image."));
                 }
-            }
-        });
+            } });
 
-        QObject::connect(saveBtn, &QPushButton::clicked, [&dlg, displayPix]() {
+        QObject::connect(saveBtn, &QPushButton::clicked, [&dlg, displayPix]()
+                         {
             QString fn = QFileDialog::getSaveFileName(&dlg,
                                                       QObject::tr("Save Image"),
                                                       QString(),
                                                       QObject::tr("PNG Files (*.png);;JPEG Files (*.jpg *.jpeg);;Bitmap Files (*.bmp)"));
             if (!fn.isEmpty())
-                displayPix.save(fn);
+                displayPix.save(fn); });
+
+        QObject::connect(closeBtn, &QPushButton::clicked, [&dlg, &item, notesEdit]() {
+            item.notes = notesEdit->toPlainText().toStdString();
+            QtSqlRepository<T>::spawn().update(item);
+            dlg.accept();
         });
 
         dlg.exec();
