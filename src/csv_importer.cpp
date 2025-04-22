@@ -32,17 +32,19 @@ woodworks::domain::types::Drying Importer::returnDryingType(std::string dryStr)
 //     woodworks::domain::types::LumberSurfacing
 //     RGH, S1S, S2S, S3S, S4S
 
-// uint Importer::returnSmoothed(std::string smd)
-// {
-//     std::transform(smd.begin(), smd.end(), smd.begin(), ::toupper);
-//     if(smd == "Y" || smd == "YES") return true;
-//     else return false;
-// }
+/*
+uint Importer::returnSmoothed(std::string smd)
+{
+    std::transform(smd.begin(), smd.end(), smd.begin(), ::toupper);
+    if(smd == "Y" || smd == "YES") return true;
+    else return false;
+}
+*/
 
 
 void Importer::importLogs(const std::string& filePath){
-    //length (ft/in), diameter (in), species, quality, drying, cost, location, notes
-    //length, length, species, quality, drying, dollar, string, string
+    //id, length (ft/in), diameter (in), species, quality, drying, cost, location, notes
+    //ignoring, length, length, species, quality, drying, dollar, string, string
     std::ifstream file(filePath);
     if(!file){
         std::cout << "File could not open at: " << filePath << std::endl;
@@ -87,120 +89,135 @@ void Importer::importLogs(const std::string& filePath){
      }
 }
 
-// void Importer::importFirewood(const std::string& filePath){
-//     //id, species, drying, feet^3, location, notes
-//     //int, string, Drying, uint, string, string
-//     std::ifstream file(filePath);
-//     if(!file){
-//         std::cout << "File could not open at: " << filePath << std::endl;
-//         return;
-//     }
+void Importer::importFirewood(const std::string& filePath){
+    //id, species, feet^3, drying, cost, location, notes
+    //ignoring, species, double, drying, dollar, string, string
+    std::ifstream file(filePath);
+    if(!file){
+        std::cout << "File could not open at: " << filePath << std::endl;
+        return;
+    }
 
-//     std::string line;
-//     if(!std::getline(file, line)){return;}
+    std::string line;
+    if(!std::getline(file, line)){return;}
 
-//     while(std::getline(file, line)){
-//         if(line.empty()){continue;}
-//         auto cols = digestLine(line);
+    woodworks::domain::Firewood firewood = woodworks::domain::Firewood::uninitialized();
 
-//         std::string species     = cols[1];
-//         Drying drying           = returnDryingType(cols[2]);
-//         uint ft3                = std::stoul(cols[3]);
-//         std::string location    = (cols.size() > 4 && !cols[4].empty()) ? cols[4] : "";
-//         std::string notes       = (cols.size() > 5 && !cols[5].empty()) ? cols[5] : "";
+    while(std::getline(file, line)){
+        if(line.empty()){continue;}
+        auto cols = digestLine(line);
 
-//         uint taken_lenQ         = 150;
+        Species woodSpecies         = {cols[1]};
+        Drying woodDrying           = returnDryingType(cols[2]);
+        double ft3                  = std::stod(cols[3]);
+        Dollar woodCost             = {static_cast<int>(std::stod(cols[4])*100)};
+        std::string location        = (cols.size() > 5 && !cols[5].empty()) ? cols[5] : "";
+        std::string notes           = (cols.size() > 6 && !cols[6].empty()) ? cols[6] : "";
 
-//         Firewood newFirewood(-1, species, drying, ft3, taken_lenQ, location, notes);
-//         newFirewood.insert();
-//     }
-// }
+        firewood.species            = woodSpecies;
+        firewood.cubicFeet          = ft3;
+        firewood.drying             = woodDrying;
+        firewood.cost               = woodCost;
+        firewood.location           = location;
+        firewood.notes              = notes;
 
-// void Importer::importSlabs(const std::string& filePath){
-//     //id, species, thickness (eighths), length (quarters), width (eighths), drying, smoothed, location, notes
-//     //int, string, uint, uint, uint, Drying, bool, string, string
-//     std::ifstream file(filePath);
-//     if(!file){
-//         std::cout << "File could not open at: " << filePath << std::endl;
-//         return;
-//     }
+        auto &db = woodworks::infra::DbConnection::instance();
+        auto repo = woodworks::infra::QtSqlRepository<woodworks::domain::Firewood>(db);
+        if(!repo.add(firewood)) {std::cerr << "Failed to insert firewood: " + db.lastError().text().toStdString() << std::endl;}
+    }
+}
 
-//     std::string line;
-//     if(!std::getline(file, line)){return;}
+/*
+void Importer::importSlabs(const std::string& filePath){
+    //id, species, thickness (eighths), length (quarters), width (eighths), drying, smoothed, location, notes
+    //int, string, uint, uint, uint, Drying, bool, string, string
+    std::ifstream file(filePath);
+    if(!file){
+        std::cout << "File could not open at: " << filePath << std::endl;
+        return;
+    }
 
-//     while(std::getline(file, line)){
-//         if(line.empty()){continue;}
-//         auto cols = digestLine(line);
+    std::string line;
+    if(!std::getline(file, line)){return;}
 
-//         std::string species     = cols[1];
-//         uint thickE             = std::stoul(cols[2]);
-//         uint lenQ               = std::stoul(cols[3]);
-//         uint widthE             = std::stoul(cols[4]);
-//         Drying drying           = returnDryingType(cols[5]);
-//         bool smoothed           = returnSmoothed(cols[6]);
-//         std::string location    = (cols.size() > 7 && !cols[7].empty()) ? cols[7] : "";
-//         std::string notes       = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";
+    while(std::getline(file, line)){
+        if(line.empty()){continue;}
+        auto cols = digestLine(line);
 
-//         Slab newSlab(-1, species, thickE, lenQ, widthE, drying, smoothed, location, notes);
-//         newSlab.insert();
-//     }
-// }
+        std::string species     = cols[1];
+        uint thickE             = std::stoul(cols[2]);
+        uint lenQ               = std::stoul(cols[3]);
+        uint widthE             = std::stoul(cols[4]);
+        Drying drying           = returnDryingType(cols[5]);
+        bool smoothed           = returnSmoothed(cols[6]);
+        std::string location    = (cols.size() > 7 && !cols[7].empty()) ? cols[7] : "";
+        std::string notes       = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";
 
-// void Importer::importCookies(const std::string& filePath){
-//     //id, from_log, species, thickness (quarters), diameter (quarters), drying, location, notes
-//     //int, int, string, uint, uint, Drying, string, string
-//     std::ifstream file(filePath);
-//     if(!file){
-//         std::cout << "File could not open at: " << filePath << std::endl;
-//         return;
-//     }
+        Slab newSlab(-1, species, thickE, lenQ, widthE, drying, smoothed, location, notes);
+        newSlab.insert();
+    }
+}
+*/
 
-//     std::string line;
-//     if(!std::getline(file, line)){return;}
+/*
+void Importer::importCookies(const std::string& filePath){
+    //id, from_log, species, thickness (quarters), diameter (quarters), drying, location, notes
+    //int, int, string, uint, uint, Drying, string, string
+    std::ifstream file(filePath);
+    if(!file){
+        std::cout << "File could not open at: " << filePath << std::endl;
+        return;
+    }
 
-//     while(std::getline(file, line)){
-//         if(line.empty()){continue;}
-//         auto cols = digestLine(line);
+    std::string line;
+    if(!std::getline(file, line)){return;}
 
-//         std::string species     = cols[1];
-//         uint thickQ             = std::stoul(cols[2]);
-//         uint diamQ              = std::stoul(cols[3]);
-//         Drying drying           = returnDryingType(cols[4]);
-//         std::string location    = (cols.size() > 5 && !cols[5].empty()) ? cols[5] : "";
-//         std::string notes       = (cols.size() > 6 && !cols[6].empty()) ? cols[6] : "";
+    while(std::getline(file, line)){
+        if(line.empty()){continue;}
+        auto cols = digestLine(line);
 
-//         Cookie newCookie(-1, -1, species, thickQ, diamQ, drying, location, notes);
-//         newCookie.insert();
-//     }
-// }
+        std::string species     = cols[1];
+        uint thickQ             = std::stoul(cols[2]);
+        uint diamQ              = std::stoul(cols[3]);
+        Drying drying           = returnDryingType(cols[4]);
+        std::string location    = (cols.size() > 5 && !cols[5].empty()) ? cols[5] : "";
+        std::string notes       = (cols.size() > 6 && !cols[6].empty()) ? cols[6] : "";
 
-// void Importer::importLumber(const std::string& filePath){
-//     //id, species, thickness (quarters), length (quarters), width (quarters), drying, surfacing (smoothed), location, notes
-//     //int, string, uint, uint, uint, Drying, bool, string, string
+        Cookie newCookie(-1, -1, species, thickQ, diamQ, drying, location, notes);
+        newCookie.insert();
+    }
+}
+*/
 
-//     std::ifstream file(filePath);
-//     if(!file){
-//         std::cout << "File could not open at: " << filePath << std::endl;
-//         return;
-//     }
+/*
+void Importer::importLumber(const std::string& filePath){
+    //id, species, thickness (quarters), length (quarters), width (quarters), drying, surfacing (smoothed), location, notes
+    //int, string, uint, uint, uint, Drying, bool, string, string
 
-//     std::string line;
-//     if(!std::getline(file, line)){return;}
+    std::ifstream file(filePath);
+    if(!file){
+        std::cout << "File could not open at: " << filePath << std::endl;
+        return;
+    }
 
-//     while(std::getline(file, line)){
-//         if(line.empty()){continue;}
-//         auto cols = digestLine(line);
+    std::string line;
+    if(!std::getline(file, line)){return;}
 
-//         std::string species     = cols[1];
-//         uint thickQ             = std::stoul(cols[2]);
-//         uint lenQ               = std::stoul(cols[3]);
-//         uint widthQ             = std::stoul(cols[4]);
-//         Drying drying           = returnDryingType(cols[5]);
-//         bool smoothed           = returnSmoothed(cols[6]);
-//         std::string location    = (cols.size() > 7 && !cols[7].empty()) ? cols[7] : "";
-//         std::string notes       = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";        
+    while(std::getline(file, line)){
+        if(line.empty()){continue;}
+        auto cols = digestLine(line);
+
+        std::string species     = cols[1];
+        uint thickQ             = std::stoul(cols[2]);
+        uint lenQ               = std::stoul(cols[3]);
+        uint widthQ             = std::stoul(cols[4]);
+        Drying drying           = returnDryingType(cols[5]);
+        bool smoothed           = returnSmoothed(cols[6]);
+        std::string location    = (cols.size() > 7 && !cols[7].empty()) ? cols[7] : "";
+        std::string notes       = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";        
         
-//         Lumber newLumber(species, thickQ, lenQ, widthQ, drying, smoothed, location, notes);
-//         newLumber.insert();
-//     }
-// }
+        Lumber newLumber(species, thickQ, lenQ, widthQ, drying, smoothed, location, notes);
+        newLumber.insert();
+    }
+}
+*/
