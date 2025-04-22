@@ -148,8 +148,11 @@ void Importer::importFirewood(const std::string& filePath){
         return;
     }
 
-    std::string line;
-    if(!std::getline(file, line)){return;}
+    std::string headerLine, line;
+    if(!std::getline(file, headerLine)){return;}
+    auto headers = digestLine(headerLine);
+    std::unordered_map<std::string, size_t> idx;
+    for(size_t i = 0; i < headers.size(); i++){idx[headers[i]]=i;} 
 
     woodworks::domain::Firewood firewood = woodworks::domain::Firewood::uninitialized();
 
@@ -157,12 +160,39 @@ void Importer::importFirewood(const std::string& filePath){
         if(line.empty()){continue;}
         auto cols = digestLine(line);
 
-        Species woodSpecies         = {cols[1]};
-        Drying woodDrying           = returnDryingType(cols[2]);
-        double ft3                  = std::stod(cols[3]);
-        Dollar woodCost             = {static_cast<int>(std::stod(cols[4])*100)};
-        std::string location        = (cols.size() > 5 && !cols[5].empty()) ? cols[5] : "";
-        std::string notes           = (cols.size() > 6 && !cols[6].empty()) ? cols[6] : "";
+        auto get = [&](const std::string& name) -> std::string {
+            auto it = idx.find(name);
+            if (it != idx.end()) {
+                size_t i = it->second;
+                if (i < cols.size()) 
+                    return cols[i];
+                return "";
+            }
+            // Fallback: scan headers for a case‑insensitive substring match
+            std::string nlow = name;
+            std::transform(nlow.begin(), nlow.end(), nlow.begin(), ::tolower);
+            for (size_t j = 0; j < headers.size(); ++j) {
+                std::string hlow = headers[j];
+                std::transform(hlow.begin(), hlow.end(), hlow.begin(), ::tolower);
+                if (hlow.find(nlow) != std::string::npos) {
+                    if (j < cols.size()) {return cols[j];}
+                    break;
+                }
+            }
+            return "";
+        };
+
+        std::string volumeStr       = get("Chords");
+        std::string speciesStr      = get("Species");
+        std::string costStr         = get("Cost");
+        std::string dryingStr       = get("Drying");
+        std::string location        = get("Location");
+        std::string notes           = get("Notes");
+
+        Species woodSpecies         = {speciesStr};
+        Drying woodDrying           = returnDryingType(dryingStr);
+        double ft3                  = std::stod(volumeStr);
+        Dollar woodCost             = {static_cast<int>(std::stod(costStr)*100)};
 
         firewood.species            = woodSpecies;
         firewood.cubicFeet          = ft3;
