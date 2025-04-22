@@ -63,5 +63,15 @@ namespace woodworks::domain {
         static void bindForInsert(QSqlQuery&, const LiveEdgeSlab&);
         static void bindForUpdate(QSqlQuery&, const LiveEdgeSlab&);
         static LiveEdgeSlab fromRecord(const QSqlRecord&);
+
+        static bool matches(const LiveEdgeSlab& item, const LiveEdgeSlab& example) noexcept {
+            return item.species.name == example.species.name &&
+                   item.thickness.toTicks() == example.thickness.toTicks() &&
+                   item.width.toTicks() == example.width.toTicks() &&
+                   item.length.toTicks() == example.length.toTicks() &&
+                   item.drying == example.drying &&
+                   item.surfacing == example.surfacing &&
+                   item.location == example.location;
+        }
     };
 }
