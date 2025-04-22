@@ -43,43 +43,6 @@ namespace woodworks::infra
     void viewImagePopup(T &item, QWidget *parent = nullptr)
     {
         QPixmap pix = loadImage(item);
-        if (pix.isNull())
-        {
-            QDialog dlg(parent);
-            dlg.setWindowTitle(QCoreApplication::translate("ImageViewer", "No Image"));
-            QVBoxLayout *layout2 = new QVBoxLayout(&dlg);
-            QLabel *lbl = new QLabel(QCoreApplication::translate("ImageViewer", "There is no image to display."), &dlg);
-            lbl->setAlignment(Qt::AlignCenter);
-            layout2->addWidget(lbl);
-            QHBoxLayout *btnLayout2 = new QHBoxLayout();
-            QPushButton *addBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Add Image"), &dlg);
-            QPushButton *cancelBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Cancel"), &dlg);
-            btnLayout2->addWidget(addBtn);
-            btnLayout2->addWidget(cancelBtn);
-            layout2->addLayout(btnLayout2);
-            QObject::connect(addBtn, &QPushButton::clicked, [&dlg, &item]() {
-                QString fn = QFileDialog::getOpenFileName(&dlg,
-                                                          QObject::tr("Open Image"),
-                                                          QString(),
-                                                          QObject::tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
-                if (!fn.isEmpty()) {
-                    QPixmap newPix(fn);
-                    if (!newPix.isNull()) {
-                        saveImage(item, newPix);
-                        QtSqlRepository<T>::spawn().update(item);
-                        dlg.accept();
-                    } else {
-                        QMessageBox::warning(&dlg,
-                                             QCoreApplication::translate("ImageViewer", "Add Failed"),
-                                             QCoreApplication::translate("ImageViewer", "Could not load the selected image."));
-                    }
-                }
-            });
-            QObject::connect(cancelBtn, &QPushButton::clicked, &dlg, &QDialog::reject);
-            if (dlg.exec() != QDialog::Accepted)
-                return;
-            pix = loadImage(item);
-        }
 
         QPixmap displayPix = pix;
         {
@@ -100,7 +63,11 @@ namespace woodworks::infra
         QVBoxLayout *layout = new QVBoxLayout(&dlg);
 
         QLabel *imgLabel = new QLabel(&dlg);
-        imgLabel->setPixmap(displayPix);
+        if (pix.isNull()) {
+            imgLabel->setText(QCoreApplication::translate("ImageViewer", "No Image"));
+        } else {
+            imgLabel->setPixmap(displayPix);
+        }
         imgLabel->setAlignment(Qt::AlignCenter);
         layout->addWidget(imgLabel);
 
@@ -111,11 +78,9 @@ namespace woodworks::infra
         layout->addWidget(notesEdit);
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
-        QPushButton *replaceBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Replace Image"), &dlg);
-        QPushButton *saveBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Save As…"), &dlg);
+        QPushButton *replaceBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Add/Replace Image"), &dlg);
         QPushButton *closeBtn = new QPushButton(QCoreApplication::translate("ImageViewer", "Close"), &dlg);
         btnLayout->addWidget(replaceBtn);
-        btnLayout->addWidget(saveBtn);
         btnLayout->addWidget(closeBtn);
         layout->addLayout(btnLayout);
 
@@ -146,19 +111,11 @@ namespace woodworks::infra
                 }
             } });
 
-        QObject::connect(saveBtn, &QPushButton::clicked, [&dlg, displayPix]()
-                         {
-            QString fn = QFileDialog::getSaveFileName(&dlg,
-                                                      QObject::tr("Save Image"),
-                                                      QString(),
-                                                      QObject::tr("PNG Files (*.png);;JPEG Files (*.jpg *.jpeg);;Bitmap Files (*.bmp)"));
-            if (!fn.isEmpty())
-                displayPix.save(fn); });
+        QObject::connect(closeBtn, &QPushButton::clicked, [&dlg]() { dlg.accept(); });
 
-        QObject::connect(closeBtn, &QPushButton::clicked, [&dlg, &item, notesEdit]() {
+        QObject::connect(&dlg, &QDialog::finished, [&item, notesEdit](int) {
             item.notes = notesEdit->toPlainText().toStdString();
             QtSqlRepository<T>::spawn().update(item);
-            dlg.accept();
         });
 
         dlg.exec();
