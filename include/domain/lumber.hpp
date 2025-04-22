@@ -26,7 +26,6 @@ namespace woodworks::domain {
         inline static Lumber uninitialized() {
             return Lumber{
                 .id = Id{ -1 },
-                .id = Id{-1},
                 .species = Species{""},
                 .length = Length::fromTicks(0),
                 .width = Length::fromTicks(0),
