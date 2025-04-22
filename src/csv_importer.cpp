@@ -217,8 +217,11 @@ void Importer::importSlabs(const std::string& filePath){
         return;
     }
 
-    std::string line;
-    if(!std::getline(file, line)){return;}
+    std::string headerLine, line;
+    if(!std::getline(file, headerLine)){return;}
+    auto headers = digestLine(headerLine);
+    std::unordered_map<std::string, size_t> idx;
+    for(size_t i = 0; i < headers.size(); i++){idx[headers[i]]=i;} 
 
     woodworks::domain::LiveEdgeSlab slab = woodworks::domain::LiveEdgeSlab::uninitialized();
 
@@ -226,15 +229,45 @@ void Importer::importSlabs(const std::string& filePath){
         if(line.empty()){continue;}
         auto cols = digestLine(line);
 
-        Species slabSpecies         = {cols[1]};
-        Length slabLength           = Length::fromQuarters(std::stod(cols[2]));
-        Length slabWidth            = Length::fromInches(std::stod(cols[3]));
-        Length slabThick            = Length::fromInches(std::stod(cols[4]));
-        Drying slabDrying           = returnDryingType(cols[5]);
-        SlabSurfacing slabSurf      = returnSurfacingSlabs(cols[6]);
-        Dollar slabCost             = {static_cast<int>(std::stod(cols[7])*100)};
-        std::string location        = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";
-        std::string notes           = (cols.size() > 9 && !cols[9].empty()) ? cols[9] : "";
+        auto get = [&](const std::string& name) -> std::string {
+            auto it = idx.find(name);
+            if (it != idx.end()) {
+                size_t i = it->second;
+                if (i < cols.size()) 
+                    return cols[i];
+                return "";
+            }
+            // Fallback: scan headers for a case‑insensitive substring match
+            std::string nlow = name;
+            std::transform(nlow.begin(), nlow.end(), nlow.begin(), ::tolower);
+            for (size_t j = 0; j < headers.size(); ++j) {
+                std::string hlow = headers[j];
+                std::transform(hlow.begin(), hlow.end(), hlow.begin(), ::tolower);
+                if (hlow.find(nlow) != std::string::npos) {
+                    if (j < cols.size()) {return cols[j];}
+                    break;
+                }
+            }
+            return "";
+        };
+
+        std::string speciesStr      = get("Species");
+        std::string lenStr          = get("Length");
+        std::string widthStr        = get("Width");
+        std::string thickStr        = get("Thickness");
+        std::string dryingStr       = get("Drying");
+        std::string surfStr         = get("Surfacing");
+        std::string costStr         = get("Cost");
+        std::string location        = get("Location");
+        std::string notes           = get("Notes");
+
+        Species slabSpecies         = {speciesStr};
+        Length slabLength           = Length::fromQuarters(std::stod(lenStr));
+        Length slabWidth            = Length::fromInches(std::stod(widthStr));
+        Length slabThick            = Length::fromInches(std::stod(thickStr));
+        Drying slabDrying           = returnDryingType(dryingStr);
+        SlabSurfacing slabSurf      = returnSurfacingSlabs(surfStr);
+        Dollar slabCost             = {static_cast<int>(std::stod(costStr)*100)};
 
         slab.species                = slabSpecies;
         slab.length                 = slabLength;
@@ -262,8 +295,11 @@ void Importer::importCookies(const std::string& filePath){
         return;
     }
 
-    std::string line;
-    if(!std::getline(file, line)){return;}
+    std::string headerLine, line;
+    if(!std::getline(file, headerLine)){return;}
+    auto headers = digestLine(headerLine);
+    std::unordered_map<std::string, size_t> idx;
+    for(size_t i = 0; i < headers.size(); i++){idx[headers[i]]=i;} 
 
     woodworks::domain::Cookie cookie = woodworks::domain::Cookie::uninitialized();
 
@@ -271,13 +307,41 @@ void Importer::importCookies(const std::string& filePath){
         if(line.empty()){continue;}
         auto cols = digestLine(line);
 
-        Species cookieSpecies           = {cols[1]};
-        Length cookieLen                = Length::fromInches(std::stod(cols[2]));
-        Length cookieDiam               = Length::fromInches(std::stod(cols[3]));
-        Drying cookieDrying             = returnDryingType(cols[4]);
-        Dollar cookieCost               = {static_cast<int>(std::stod(cols[5])*100)};
-        std::string location            = (cols.size() > 6 && !cols[6].empty()) ? cols[6] : "";
-        std::string notes               = (cols.size() > 7 && !cols[7].empty()) ? cols[7] : "";
+        auto get = [&](const std::string& name) -> std::string {
+            auto it = idx.find(name);
+            if (it != idx.end()) {
+                size_t i = it->second;
+                if (i < cols.size()) 
+                    return cols[i];
+                return "";
+            }
+            // Fallback: scan headers for a case‑insensitive substring match
+            std::string nlow = name;
+            std::transform(nlow.begin(), nlow.end(), nlow.begin(), ::tolower);
+            for (size_t j = 0; j < headers.size(); ++j) {
+                std::string hlow = headers[j];
+                std::transform(hlow.begin(), hlow.end(), hlow.begin(), ::tolower);
+                if (hlow.find(nlow) != std::string::npos) {
+                    if (j < cols.size()) {return cols[j];}
+                    break;
+                }
+            }
+            return "";
+        };
+
+        std::string speciesStr          = get("Species");
+        std::string lengthStr           = get("Thickness");
+        std::string diamStr             = get("Diameter");
+        std::string dryingStr           = get("Drying");
+        std::string costStr             = get("Cost");
+        std::string location            = get("Location");
+        std::string notes               = get("Notes");
+
+        Species cookieSpecies           = {speciesStr};
+        Length cookieLen                = Length::fromInches(std::stod(lengthStr));
+        Length cookieDiam               = Length::fromInches(std::stod(diamStr));
+        Drying cookieDrying             = returnDryingType(dryingStr);
+        Dollar cookieCost               = {static_cast<int>(std::stod(costStr)*100)};
 
         cookie.species                  = cookieSpecies;
         cookie.length                   = cookieLen;
@@ -304,8 +368,11 @@ void Importer::importLumber(const std::string& filePath){
         return;
     }
 
-    std::string line;
-    if(!std::getline(file, line)){return;}
+    std::string headerLine, line;
+    if(!std::getline(file, headerLine)){return;}
+    auto headers = digestLine(headerLine);
+    std::unordered_map<std::string, size_t> idx;
+    for(size_t i = 0; i < headers.size(); i++){idx[headers[i]]=i;} 
 
     woodworks::domain::Lumber lumber = woodworks::domain::Lumber::uninitialized();
 
@@ -313,15 +380,45 @@ void Importer::importLumber(const std::string& filePath){
         if(line.empty()){continue;}
         auto cols = digestLine(line);
 
-        Species lumbSpecies             = {cols[1]};
-        Length lumbLen                  = Length::fromQuarters(std::stod(cols[2]));
-        Length lumbWid                  = Length::fromInches(std::stod(cols[3]));
-        Length lumbThk                  = Length::fromInches(std::stod(cols[4]));
-        Drying lumbDry                  = returnDryingType(cols[5]);
-        LumberSurfacing lumbSurf        = returnSurfacingLumber(cols[6]);
-        Dollar lumbCost                 = {static_cast<int>(std::stod(cols[7])*100)};
-        std::string location            = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";
-        std::string notes               = (cols.size() > 9 && !cols[9].empty()) ? cols[9] : "";
+        auto get = [&](const std::string& name) -> std::string {
+            auto it = idx.find(name);
+            if (it != idx.end()) {
+                size_t i = it->second;
+                if (i < cols.size()) 
+                    return cols[i];
+                return "";
+            }
+            // Fallback: scan headers for a case‑insensitive substring match
+            std::string nlow = name;
+            std::transform(nlow.begin(), nlow.end(), nlow.begin(), ::tolower);
+            for (size_t j = 0; j < headers.size(); ++j) {
+                std::string hlow = headers[j];
+                std::transform(hlow.begin(), hlow.end(), hlow.begin(), ::tolower);
+                if (hlow.find(nlow) != std::string::npos) {
+                    if (j < cols.size()) {return cols[j];}
+                    break;
+                }
+            }
+            return "";
+        };
+
+        std::string speciesStr          = get("Species");
+        std::string lengthStr           = get("Thickness");
+        std::string widthStr            = get("Width");
+        std::string thickStr            = get("Thickness");
+        std::string surfStr             = get("Surfacing");
+        std::string dryingStr           = get("Drying");
+        std::string costStr             = get("Cost");
+        std::string location            = get("Location");
+        std::string notes               = get("Notes");
+
+        Species lumbSpecies             = {speciesStr};
+        Length lumbLen                  = Length::fromQuarters(std::stod(lengthStr));
+        Length lumbWid                  = Length::fromInches(std::stod(widthStr));
+        Length lumbThk                  = Length::fromInches(std::stod(thickStr));
+        Drying lumbDry                  = returnDryingType(dryingStr);
+        LumberSurfacing lumbSurf        = returnSurfacingLumber(surfStr);
+        Dollar lumbCost                 = {static_cast<int>(std::stod(costStr)*100)};
 
         lumber.species                  = lumbSpecies;
         lumber.length                   = lumbLen;
