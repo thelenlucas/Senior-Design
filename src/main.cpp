@@ -54,13 +54,13 @@ int main(int argc, char* argv[])
 
     // Delete all existing views
     {
-        QSqlQuery query(debee.db());
+        QSqlQuery query(debee);
         query.exec("SELECT name FROM sqlite_master WHERE type='view'");
         while(query.next()) {
             QString viewName = query.value(0).toString();
-            QSqlError err = debee.db().exec(QString("DROP VIEW IF EXISTS %1").arg(viewName)).lastError();
-            if(err.isValid()) {
-                qWarning() << "Failed to drop view" << viewName << ":" << err.text();
+            QSqlQuery dropQuery(debee);
+            if(!dropQuery.exec(QString("DROP VIEW IF EXISTS %1").arg(viewName))) {
+                qWarning() << "Failed to drop view" << viewName << ":" << dropQuery.lastError().text();
             }
         }
     }

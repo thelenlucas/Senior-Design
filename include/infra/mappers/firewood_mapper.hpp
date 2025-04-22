@@ -45,7 +45,7 @@ namespace woodworks::domain
                 "species AS 'Species'",
                 "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
                 "ROUND(sum(cubicFeet),2) AS 'Cubic Feet'",
-                "ROUND(sume(cubicFeet)/128.0,2) AS 'Chords'",
+                "ROUND(sum(cubicFeet)/128.0,2) AS 'Chords'",
                 "ROUND(SUM(cost)/100.0,2) AS 'Cost ($)'"},
             QStringList{
                 "species",
