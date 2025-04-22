@@ -35,6 +35,7 @@
 #include "widgets/SlabCuttingWindow.hpp"
 #include "widgets/slabSurfacingPopup.hpp"
 #include "widgets/dryingPopup.hpp"
+#include "widgets/LumberCuttingWindow.hpp"
 
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
@@ -53,6 +54,10 @@ InventoryPage::InventoryPage(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Subscribe to repository changes
+    connect(&woodworks::infra::RepositoryNotifier::instance(), &woodworks::infra::RepositoryNotifier::repositoryChanged,
+            this, &InventoryPage::refreshModels);
+
     // Killed dynamic resizing
 
     // Add drying options to the combo box
@@ -70,8 +75,8 @@ InventoryPage::InventoryPage(QWidget *parent)
     connect(ui->logSpeciesComboBox, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
     connect(ui->logLengthMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
     connect(ui->logLengthMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
-    connect(ui->logRadiusMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
-    connect(ui->logRadiusMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->logDiameterMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
+    connect(ui->logDiameterMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &InventoryPage::refreshModels);
     connect(ui->logSpeciesComboBox, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
     connect(ui->logDryingComboBox, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
     connect(ui->cookiesSpeciesCombo, &QComboBox::currentTextChanged, this, &InventoryPage::refreshModels);
@@ -104,6 +109,7 @@ InventoryPage::InventoryPage(QWidget *parent)
 
     connect(ui->addLogButton, &QPushButton::clicked, this, &InventoryPage::onAddLogClicked);
     connect(ui->spreadsheetImporterButton, &QPushButton::clicked, this, &InventoryPage::onSpreadsheetImportClicked);
+    connect(ui->clearFiltersPushButton, &QPushButton::clicked, this, &InventoryPage::onClearFiltersClicked);
 
     // Bind the double clicks
     connect(ui->logsTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickLogTable);
@@ -158,6 +164,22 @@ void InventoryPage::slabsCustomContextMenu(const QPoint &pos) {
         dryingPopUp(slab.value());
     });
 
+    contextMenu.addAction("Cut Lumber", [this, index]() {
+        auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(index.sibling(index.row(), 0).data().toInt());
+        if (slab) {
+            LumberCuttingWindow* win = new LumberCuttingWindow(slab.value(), this);
+            win->setAttribute(Qt::WA_DeleteOnClose);
+            win->show();
+        }
+    });
+
+    // add scrap board
+    contextMenu.addAction("Scrap Board", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(id);
+        if (slab) { scrapPopUp(*slab, this); refreshModels(); }
+    });
+
     contextMenu.exec(ui->slabsTableView->viewport()->mapToGlobal(pos));
 }
 
@@ -203,20 +225,11 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
         });
 
         contextMenu.addAction("Scrap Log", [this, index]() {
-            // Get the log ID from the model
             int logId = index.sibling(index.row(), 0).data().toInt();
-            // Get the log from the database
             auto log = QtSqlRepository<Log>::spawn().get(logId);
             if (log) {
-                // Show a confirmation dialog
-                QMessageBox::StandardButton reply;
-                reply = QMessageBox::question(this, "Confirm", "Are you sure you want to scrap this log?",
-                                              QMessageBox::Yes | QMessageBox::No);
-                if (reply == QMessageBox::Yes) {
-                    // Scrap the log
-                    QtSqlRepository<Log>::spawn().remove(logId);
-                    refreshModels();
-                }
+                scrapPopUp(*log, this);
+                refreshModels();
             }
         });
 
@@ -276,6 +289,12 @@ void InventoryPage::cookiesCustomContextMenu(const QPoint& pos) {
         auto cookie = QtSqlRepository<Cookie>::spawn().get(id);
         if (cookie) { dryingPopUp(*cookie); refreshModels(); }
     });
+    
+    contextMenu.addAction("Scrap Cookie", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto cookie = QtSqlRepository<Cookie>::spawn().get(id);
+        if (cookie) { scrapPopUp(*cookie, this); refreshModels(); }
+    });
     contextMenu.exec(ui->cookiesTableView->viewport()->mapToGlobal(pos));
 }
 
@@ -288,6 +307,45 @@ void InventoryPage::lumberCustomContextMenu(const QPoint& pos) {
         auto lumber = QtSqlRepository<Lumber>::spawn().get(id);
         if (lumber) { dryingPopUp(*lumber); refreshModels(); }
     });
+    
+    contextMenu.addAction("Scrap Lumber", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto lumber = QtSqlRepository<Lumber>::spawn().get(id);
+        if (lumber) { scrapPopUp(*lumber, this); refreshModels(); }
+    });
+
+    // Surface lumber
+    contextMenu.addAction("Surface Lumber", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto lumber = QtSqlRepository<Lumber>::spawn().get(id);
+        if (lumber) {
+            auto toSurface = lumber.value();
+            std::vector<LumberSurfacing> allowed = allowedTransitions(toSurface.surfacing);
+            QDialog dialog;
+            dialog.setWindowTitle("Surface Lumber");
+            dialog.setModal(true);
+            dialog.setLayout(new QVBoxLayout());
+            dialog.setMinimumWidth(300);
+            QComboBox* comboBox = new QComboBox();
+            for (const auto& surf : allowed) {
+                comboBox->addItem(QString::fromStdString(toString(surf)), QVariant(static_cast<int>(surf)));
+            }
+            dialog.layout()->addWidget(comboBox);
+            QPushButton* confirmButton = new QPushButton("Confirm");
+            dialog.layout()->addWidget(confirmButton);
+            QPushButton* cancelButton = new QPushButton("Cancel");
+            dialog.layout()->addWidget(cancelButton);
+            QObject::connect(confirmButton, &QPushButton::clicked, [&dialog]() { dialog.accept(); });
+            QObject::connect(cancelButton, &QPushButton::clicked, [&dialog]() { dialog.reject(); });
+            if (dialog.exec() == QDialog::Accepted) {
+                LumberSurfacing selectedSurfacing = static_cast<LumberSurfacing>(comboBox->currentData().toInt());
+                toSurface.surfacing = selectedSurfacing;
+                QtSqlRepository<Lumber>::spawn().update(toSurface);
+                refreshModels();
+            }
+        }
+    });
+
     contextMenu.exec(ui->lumberTableView->viewport()->mapToGlobal(pos));
 }
 
@@ -299,6 +357,12 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto fw = QtSqlRepository<Firewood>::spawn().get(id);
         if (fw) { dryingPopUp(*fw); refreshModels(); }
+    });
+    
+    contextMenu.addAction("Scrap Firewood", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto fw = QtSqlRepository<Firewood>::spawn().get(id);
+        if (fw) { scrapPopUp(*fw, this); refreshModels(); }
     });
     contextMenu.exec(ui->firewoodTableView->viewport()->mapToGlobal(pos));
 }
@@ -375,12 +439,12 @@ void InventoryPage::refreshModels()
             ui->logLengthMax->value()));
     }
 
-    if (ui->logRadiusMin->value() != 0 || ui->logRadiusMax->value() != 0)
+    if (ui->logDiameterMin->value() != 0 || ui->logDiameterMax->value() != 0)
     {
         logFilters.push_back(FieldFilter().between(
             "\"Diameter (in)\"",
-            ui->logRadiusMin->value(),
-            ui->logRadiusMax->value()));
+            ui->logDiameterMin->value(),
+            ui->logDiameterMax->value()));
     }
 
     if (ui->logDryingComboBox->currentText() != "All")
@@ -558,16 +622,23 @@ void InventoryPage::onAddLogClicked()
 
 void InventoryPage::onDoubleClickLogTable(const QModelIndex &index)
 {
-    // If not in detailed view, set the species and drying to the selected row, and then move
-    // to the detailed view.
     if (!ui->detailedViewCheckBox->isChecked())
     {
         // Species - Column 1 (2nd), Drying - Column 5 (6th)
         QString species = index.sibling(index.row(), 1).data().toString();
         QString drying = index.sibling(index.row(), 5).data().toString();
+        // match length exactly
+        double length = index.sibling(index.row(), 2).data().toDouble();
+        ui->logLengthMin->setValue(length);
+        ui->logLengthMax->setValue(length);
+        // match diameter exactly
+        double diameter = index.sibling(index.row(), 3).data().toDouble();
+        ui->logDiameterMin->setValue(diameter);
+        ui->logDiameterMax->setValue(diameter);
         ui->logSpeciesComboBox->setCurrentText(species);
         ui->logDryingComboBox->setCurrentText(drying);
         ui->detailedViewCheckBox->setChecked(true);
+        
         refreshModels();
     }
     else
@@ -584,6 +655,14 @@ void InventoryPage::onDoubleClickCookieTable(const QModelIndex &index)
     // Same as above, but for cookies - species on 1, drying on 4, id on 0
     if (!ui->detailedViewCheckBox->isChecked())
     {
+        // match thickness exactly
+        double thickness = index.sibling(index.row(), 2).data().toDouble();
+        ui->cookieThicknessSpinBox->setValue(thickness);
+        ui->cookieThicknessMaxSpinBox->setValue(thickness);
+        // match diameter exactly
+        double diameter = index.sibling(index.row(), 3).data().toDouble();
+        ui->cookieDiameterMinSpinBox->setValue(diameter);
+        ui->cookieDiameterMaxSpinBox->setValue(diameter);
         QString species = index.sibling(index.row(), 1).data().toString();
         QString drying = index.sibling(index.row(), 4).data().toString();
         ui->cookiesSpeciesCombo->setCurrentText(species);
@@ -603,6 +682,18 @@ void InventoryPage::onDoubleClickSlabTable(const QModelIndex &index)
     // Slabs are on species (1), drying (5), surfacing (6) and id (0)
     if (!ui->detailedViewCheckBox->isChecked())
     {
+        // match length exactly
+        double length = index.sibling(index.row(), 2).data().toDouble();
+        ui->slabLengthMin->setValue(length);
+        ui->slabLengthMax->setValue(length);
+        // match width exactly
+        double width = index.sibling(index.row(), 3).data().toDouble();
+        ui->slabWidthMin->setValue(width);
+        ui->slabWidthMax->setValue(width);
+        // match thickness exactly
+        double thickness = index.sibling(index.row(), 4).data().toDouble();
+        ui->slabThicknessMin->setValue(thickness);
+        ui->slabThicknessMax->setValue(thickness);
         QString species = index.sibling(index.row(), 1).data().toString();
         QString drying = index.sibling(index.row(), 5).data().toString();
         QString surfacing = index.sibling(index.row(), 6).data().toString();
@@ -624,6 +715,14 @@ void InventoryPage::onDoubleClickLumberTable(const QModelIndex &index)
     // Lumber on species (1), thickness (3), drying (5), surfacing (6) and id (0)
     if (!ui->detailedViewCheckBox->isChecked())
     {
+        // match length exactly
+        double length = index.sibling(index.row(), 2).data().toDouble();
+        ui->lumberLengthMin->setValue(length);
+        ui->lumberLengthMax->setValue(length);
+        // match width exactly
+        double width = index.sibling(index.row(), 4).data().toDouble();
+        ui->lumberWidthMin->setValue(width);
+        ui->lumberWidthMax->setValue(width);
         QString species = index.sibling(index.row(), 1).data().toString();
         QString thickness = index.sibling(index.row(), 3).data().toString();
         QString drying = index.sibling(index.row(), 5).data().toString();
@@ -704,6 +803,43 @@ void InventoryPage::onImageButtonClicked()
 
     // TODO: Implement spreadsheet import parsing logic in logic module.
     QMessageBox::information(this, "Import Selected", "File selected: " + filename);
+}
+
+void InventoryPage::onClearFiltersClicked()
+{
+    ui->detailedViewCheckBox->setChecked(false);
+    ui->logSpeciesComboBox->setCurrentIndex(0);
+    ui->logLengthMin->setValue(0);
+    ui->logLengthMax->setValue(0);
+    ui->logDiameterMin->setValue(0);
+    ui->logDiameterMax->setValue(0);
+    ui->logDryingComboBox->setCurrentIndex(0);
+    ui->cookiesSpeciesCombo->setCurrentIndex(0);
+    ui->cookieThicknessSpinBox->setValue(0);
+    ui->cookieThicknessMaxSpinBox->setValue(0);
+    ui->cookieDiameterMinSpinBox->setValue(0);
+    ui->cookieDiameterMaxSpinBox->setValue(0);
+    ui->cookieDryingCombo->setCurrentIndex(0);
+    ui->slabsSpeciesCombo->setCurrentIndex(0);
+    ui->slabLengthMin->setValue(0);
+    ui->slabLengthMax->setValue(0);
+    ui->slabWidthMin->setValue(0);
+    ui->slabWidthMax->setValue(0);
+    ui->slabThicknessMin->setValue(0);
+    ui->slabThicknessMax->setValue(0);
+    ui->slabDryingCombo->setCurrentIndex(0);
+    ui->slabSurfacingCombo->setCurrentIndex(0);
+    ui->lumberSpeciesCombo->setCurrentIndex(0);
+    ui->lumberThicknessCombo->setCurrentIndex(0);
+    ui->lumberDryingCombo->setCurrentIndex(0);
+    ui->lumberSurfacingCombo->setCurrentIndex(0);
+    ui->lumberLengthMin->setValue(0);
+    ui->lumberLengthMax->setValue(0);
+    ui->lumberWidthMin->setValue(0);
+    ui->lumberWidthMax->setValue(0);
+    ui->firewoodSpeciesCombo->setCurrentIndex(0);
+    ui->firewoodDryingCombo->setCurrentIndex(0);
+    refreshModels();
 }
 
 void InventoryPage::mousePressEvent(QMouseEvent *event)

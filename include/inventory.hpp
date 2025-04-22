@@ -28,6 +28,7 @@ class InventoryPage : public QWidget
     void onCookieButtonClicked();
     void onSpreadsheetImportClicked();
     void onImageButtonClicked();
+    void onClearFiltersClicked();
     void refreshTableViews();
 
     void onDoubleClickLogTable(const QModelIndex& index);
@@ -42,7 +43,7 @@ class InventoryPage : public QWidget
     void firewoodCustomContextMenu(const QPoint& pos);
 
   private:
-    void refreshModels();                               // Refreshes all models from the DB.
+    void refreshModels(); // Refreshes all models from the DB.
 
     // Builds the UI widgets (comboboxes, etc.)
     void buildFilterWidgets();

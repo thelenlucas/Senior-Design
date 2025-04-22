@@ -23,10 +23,9 @@ namespace woodworks::domain {
         std::string notes;
         QByteArray imageBuffer;  // image data buffer
 
-        static Lumber uninitialized() noexcept
-        {
+        inline static Lumber uninitialized() {
             return Lumber{
-                .id = Id{-1},
+                .id = Id{ -1 },
                 .species = Species{""},
                 .length = Length::fromTicks(0),
                 .width = Length::fromTicks(0),
@@ -52,5 +51,15 @@ namespace woodworks::domain {
         static void bindForInsert(QSqlQuery&, const Lumber&);
         static void bindForUpdate(QSqlQuery&, const Lumber&);
         static Lumber fromRecord(const QSqlRecord&);
+
+        static bool matches(const Lumber& item, const Lumber& example) noexcept {
+            return item.species.name == example.species.name &&
+                   item.thickness.toTicks() == example.thickness.toTicks() &&
+                   item.width.toTicks() == example.width.toTicks() &&
+                   item.length.toTicks() == example.length.toTicks() &&
+                   item.drying == example.drying &&
+                   item.surfacing == example.surfacing &&
+                   item.location == example.location;
+        }
     };
 }

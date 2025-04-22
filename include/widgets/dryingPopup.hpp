@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QComboBox>
 #include <QPushButton>
+#include <QMessageBox>
 
 namespace woodworks::domain
 {
@@ -18,7 +19,7 @@ namespace woodworks::domain
         std::vector<Drying> allowed = allowedTransitions(toDry.drying);
 
         QDialog dialog;
-        dialog.setWindowTitle("Set Drying State");
+        dialog.setWindowTitle("Dry Item");
         dialog.setModal(true);
         dialog.setMinimumSize(300, 200);
         dialog.setLayout(new QVBoxLayout());
@@ -45,6 +46,20 @@ namespace woodworks::domain
         if (dialog.exec() == QDialog::Accepted)
         {
             QtSqlRepository<T>::spawn().update(toDry);
+        }
+    }
+
+    template<typename T>
+    inline void scrapPopUp(const T &entity, QWidget *parent)
+    {
+        QMessageBox::StandardButton reply = QMessageBox::question(
+            parent,
+            "Confirm",
+            "Are you sure you want to scrap this?",
+            QMessageBox::Yes | QMessageBox::No
+        );
+        if (reply == QMessageBox::Yes) {
+            QtSqlRepository<T>::spawn().remove(entity.id.id);
         }
     }
 }

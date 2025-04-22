@@ -57,5 +57,13 @@ namespace woodworks::domain {
         static void bindForInsert(QSqlQuery&, const Cookie&);
         static void bindForUpdate(QSqlQuery&, const Cookie&);
         static Cookie fromRecord(const QSqlRecord&);
+
+        static bool matches(const Cookie& item, const Cookie& example) noexcept {
+            return item.species.name == example.species.name &&
+                   item.length.toTicks() == example.length.toTicks() &&
+                   item.diameter.toTicks() == example.diameter.toTicks() &&
+                   item.drying == example.drying &&
+                   item.location == example.location;
+        }
     };
 }

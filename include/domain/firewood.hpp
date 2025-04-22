@@ -60,5 +60,11 @@ namespace woodworks::domain {
         static void bindForInsert(QSqlQuery&, const Firewood&);
         static void bindForUpdate(QSqlQuery&, const Firewood&);
         static Firewood fromRecord(const QSqlRecord&);
+
+        static bool matches(const Firewood& item, const Firewood& example) noexcept {
+            return item.species.name == example.species.name &&
+                   item.location == example.location &&
+                   item.drying == example.drying;
+        }
     };
 }

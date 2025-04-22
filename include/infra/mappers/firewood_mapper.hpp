@@ -4,8 +4,10 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 
-namespace woodworks::domain {
-    inline QString Firewood::createDbSQL() {
+namespace woodworks::domain
+{
+    inline QString Firewood::createDbSQL()
+    {
         return u8R"(
             CREATE TABLE IF NOT EXISTS firewood (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,7 +23,8 @@ namespace woodworks::domain {
     }
 
     // No individual view for firewood, but we still need to define the function
-    inline QString Firewood::individualViewSQL() {
+    inline QString Firewood::individualViewSQL()
+    {
         return woodworks::infra::makeIndividualViewSQL(
             "display_firewood", "firewood",
             QStringList{
@@ -31,37 +34,36 @@ namespace woodworks::domain {
                 "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
                 "ROUND(cost/100.0,2) AS 'Cost ($)'",
                 "location AS 'Location'",
-                "notes AS 'Notes'"
-            }
-        );
+                "notes AS 'Notes'"});
     }
 
-    inline QString Firewood::groupedViewSQL() {
+    inline QString Firewood::groupedViewSQL()
+    {
         return woodworks::infra::makeGroupedViewSQL(
             "display_firewood_grouped", "firewood",
             QStringList{
                 "species AS 'Species'",
-                "ROUND(cubicFeet,2) AS 'Cubic Feet'",
-                "ROUND(cubicFeet/128.0,2) AS 'Chords'",
                 "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
-                "ROUND(SUM(cost)/100.0,2) AS 'Cost ($)'"
-            },
+                "ROUND(sum(cubicFeet),2) AS 'Cubic Feet'",
+                "ROUND(sum(cubicFeet)/128.0,2) AS 'Chords'",
+                "ROUND(SUM(cost)/100.0,2) AS 'Cost ($)'"},
             QStringList{
                 "species",
-                "drying"
-            }
-        );
+                "drying"});
     }
-    inline QString Firewood::insertSQL() {
+    inline QString Firewood::insertSQL()
+    {
         return "INSERT INTO firewood (species, cubicFeet, drying, cost, location, notes, image) VALUES (:species, :cubicFeet, :drying, :cost, :location, :notes, :image)";
     }
-    inline QString Firewood::updateSQL() {
+    inline QString Firewood::updateSQL()
+    {
         return "UPDATE firewood SET species = :species, cubicFeet = :cubicFeet, drying = :drying, cost = :cost, location = :location, notes = :notes, image = :image WHERE id = :id";
     }
     inline QString Firewood::selectOneSQL() { return u8R"(SELECT * FROM firewood WHERE id=:id)"; }
     inline QString Firewood::selectAllSQL() { return u8R"(SELECT * FROM firewood)"; }
     inline QString Firewood::deleteSQL() { return u8R"(DELETE FROM firewood WHERE id=:id)"; }
-    inline void Firewood::bindForInsert(QSqlQuery& q, const Firewood& firewood) {
+    inline void Firewood::bindForInsert(QSqlQuery &q, const Firewood &firewood)
+    {
         q.bindValue(":species", QString::fromStdString(firewood.species.name));
         q.bindValue(":cubicFeet", firewood.cubicFeet);
         q.bindValue(":drying", static_cast<int>(firewood.drying));
@@ -71,7 +73,8 @@ namespace woodworks::domain {
         q.bindValue(":image", firewood.imageBuffer);
     }
 
-    inline void Firewood::bindForUpdate(QSqlQuery& q, const Firewood& firewood) {
+    inline void Firewood::bindForUpdate(QSqlQuery &q, const Firewood &firewood)
+    {
         q.bindValue(":id", firewood.id.id);
         q.bindValue(":species", QString::fromStdString(firewood.species.name));
         q.bindValue(":cubicFeet", firewood.cubicFeet);
@@ -82,7 +85,8 @@ namespace woodworks::domain {
         q.bindValue(":image", firewood.imageBuffer);
     }
 
-    inline Firewood Firewood::fromRecord(const QSqlRecord& record) {
+    inline Firewood Firewood::fromRecord(const QSqlRecord &record)
+    {
         return Firewood{
             .id = {record.value("id").toInt()},
             .species = {record.value("species").toString().toStdString()},
@@ -91,7 +95,6 @@ namespace woodworks::domain {
             .cost = {record.value("cost").toInt()},
             .location = record.value("location").toString().toStdString(),
             .notes = record.value("notes").toString().toStdString(),
-            .imageBuffer = record.value("image").toByteArray()
-        };
+            .imageBuffer = record.value("image").toByteArray()};
     }
 }

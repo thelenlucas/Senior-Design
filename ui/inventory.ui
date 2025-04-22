@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>855</width>
-    <height>841</height>
+    <width>1084</width>
+    <height>906</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -20,6 +20,13 @@
    <string>Inventory Management</string>
   </property>
   <layout class="QVBoxLayout" name="mainLayout">
+   <item alignment="Qt::AlignRight">
+    <widget class="QPushButton" name="clearFiltersPushButton">
+     <property name="text">
+      <string>Clear Filters</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QTabWidget" name="inventoryTabs">
      <property name="tabPosition">
@@ -98,12 +105,12 @@
          <item alignment="Qt::AlignRight">
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Radius: </string>
+            <string>Diameter</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="logRadiusMin">
+          <widget class="QDoubleSpinBox" name="logDiameterMin">
            <property name="suffix">
             <string> in</string>
            </property>
@@ -117,7 +124,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="logRadiusMax">
+          <widget class="QDoubleSpinBox" name="logDiameterMax">
            <property name="suffix">
             <string> in</string>
            </property>
@@ -163,7 +170,7 @@
          <property name="title">
           <string>Log Entry</string>
          </property>
-         <layout class="QGridLayout" name="logEntryLayout" rowstretch="0,0,0,0,0,0,0,0,0,0,0">
+         <layout class="QGridLayout" name="logEntryLayout" rowstretch="0,0,0">
           <item row="0" column="4">
            <widget class="QLabel" name="locationLabel">
             <property name="text">
