@@ -3,6 +3,7 @@
 #include "infra/repository.hpp"
 #include <vector>
 #include <algorithm>
+#include <string>
 
 namespace woodworks::infra {
 
@@ -27,8 +28,14 @@ public:
         for (auto& item : items_) func(item);
     }
 
-    void commitUpdates() {
-        for (auto& item : items_) repo_.update(item);
+    void commitUpdates(std::optional<int> limit = std::nullopt) {
+        // Update up to the limit if it is set
+        int count = 0;
+        for (auto& item : items_) {
+            if (limit && count >= *limit) break;
+            repo_.update(item);
+            ++count;
+        }
     }
 
     void removeAll() {
@@ -36,9 +43,14 @@ public:
         items_.clear();
     }
 
+    // Set same location for all items
+    void setLocation(const std::string& location) {
+        for (auto& item : items_) item.location = location;
+    }
+
 private:
     QtSqlRepository<T>& repo_;
     std::vector<T> items_;
 };
 
-} // namespace woodworks::infra
+}
