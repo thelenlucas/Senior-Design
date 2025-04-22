@@ -159,10 +159,9 @@ void Importer::importSlabs(const std::string& filePath){
 }
 */
 
-/*
 void Importer::importCookies(const std::string& filePath){
-    //id, from_log, species, thickness (quarters), diameter (quarters), drying, location, notes
-    //int, int, string, uint, uint, Drying, string, string
+    //id, species, length, diameter, drying, worth, location, notes
+    //ignoring, species, length, length, drying, dollar, string, string
     std::ifstream file(filePath);
     if(!file){
         std::cout << "File could not open at: " << filePath << std::endl;
@@ -172,22 +171,33 @@ void Importer::importCookies(const std::string& filePath){
     std::string line;
     if(!std::getline(file, line)){return;}
 
+    woodworks::domain::Cookie cookie = woodworks::domain::Cookie::uninitialized();
+
     while(std::getline(file, line)){
         if(line.empty()){continue;}
         auto cols = digestLine(line);
 
-        std::string species     = cols[1];
-        uint thickQ             = std::stoul(cols[2]);
-        uint diamQ              = std::stoul(cols[3]);
-        Drying drying           = returnDryingType(cols[4]);
-        std::string location    = (cols.size() > 5 && !cols[5].empty()) ? cols[5] : "";
-        std::string notes       = (cols.size() > 6 && !cols[6].empty()) ? cols[6] : "";
+        Species cookieSpecies           = {cols[1]};
+        Length cookieLen                = Length::fromInches(std::stod(cols[2]));
+        Length cookieDiam               = Length::fromInches(std::stod(cols[3]));
+        Drying cookieDrying             = returnDryingType(cols[4]);
+        Dollar cookieCost               = {static_cast<int>(std::stod(cols[5])*100)};
+        std::string location            = (cols.size() > 6 && !cols[6].empty()) ? cols[6] : "";
+        std::string notes               = (cols.size() > 7 && !cols[7].empty()) ? cols[7] : "";
 
-        Cookie newCookie(-1, -1, species, thickQ, diamQ, drying, location, notes);
-        newCookie.insert();
+        cookie.species                  = cookieSpecies;
+        cookie.length                   = cookieLen;
+        cookie.diameter                 = cookieDiam;
+        cookie.drying                   = cookieDrying;
+        cookie.worth                    = cookieCost;
+        cookie.location                 = location;
+        cookie.notes                    = notes;
+
+        auto &db = woodworks::infra::DbConnection::instance();
+        auto repo = woodworks::infra::QtSqlRepository<woodworks::domain::Cookie>(db);
+        if(!repo.add(cookie)) {std::cerr << "Failed to insert cookie: " + db.lastError().text().toStdString() << std::endl;}
     }
 }
-*/
 
 /*
 void Importer::importLumber(const std::string& filePath){
