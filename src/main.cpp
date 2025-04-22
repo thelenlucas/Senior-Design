@@ -11,6 +11,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QDir>
+#include <QSqlQuery>
 
 #include "types.hpp"
 #include "mainwindow.hpp"
@@ -50,6 +51,20 @@ int main(int argc, char* argv[])
 {
     // Mock open the types so that we ensure their tables + views are created
     auto &debee = woodworks::infra::DbConnection::instance();
+
+    // Delete all existing views
+    {
+        QSqlQuery query(debee.db());
+        query.exec("SELECT name FROM sqlite_master WHERE type='view'");
+        while(query.next()) {
+            QString viewName = query.value(0).toString();
+            QSqlError err = debee.db().exec(QString("DROP VIEW IF EXISTS %1").arg(viewName)).lastError();
+            if(err.isValid()) {
+                qWarning() << "Failed to drop view" << viewName << ":" << err.text();
+            }
+        }
+    }
+
     woodworks::infra::QtSqlRepository<woodworks::domain::Log> logRepo(debee);
     woodworks::infra::QtSqlRepository<woodworks::domain::Cookie> cookieRepo(debee);
     woodworks::infra::QtSqlRepository<woodworks::domain::LiveEdgeSlab> liveEdgeSlabRepo(debee);
