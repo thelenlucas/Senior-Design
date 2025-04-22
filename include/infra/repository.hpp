@@ -8,6 +8,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QObject>
+#include <functional>
 
 // STD output
 #include <iostream>
@@ -116,6 +117,21 @@ signals:
                     throw std::runtime_error(std::string("Failed to delete item: ") + q.lastError().text().toStdString());
                 }
                 RepositoryNotifier::instance().repositoryChanged();
+            }
+
+            template<typename Predicate>
+            std::vector<T> filter(Predicate pred) {
+                auto all = list();
+                std::vector<T> result;
+                for (const auto& item : all) {
+                    if (pred(item)) result.push_back(item);
+                }
+                return result;
+            }
+
+            std::vector<T> filterByExample(const T& example) {
+                // Requires T::matches(const T&, const T&)
+                return filter([&](const T& item) { return T::matches(item, example); });
             }
 
         private:
