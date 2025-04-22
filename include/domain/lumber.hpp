@@ -23,6 +23,23 @@ namespace woodworks::domain {
         std::string notes;
         QByteArray imageBuffer;  // image data buffer
 
+        static Lumber uninitialized() noexcept
+        {
+            return Lumber{
+                .id = Id{-1},
+                .species = Species{""},
+                .length = Length::fromTicks(0),
+                .width = Length::fromTicks(0),
+                .thickness = Length::fromTicks(0),
+                .drying = Drying::GREEN,
+                .surfacing = LumberSurfacing::RGH,
+                .worth = Dollar{0},
+                .location = "",
+                .notes = "",
+                .imageBuffer = QByteArray(),
+            };
+        }
+
         // ---- Mapping -----
         static QString createDbSQL();
         static QString individualViewSQL();

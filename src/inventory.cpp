@@ -670,7 +670,7 @@ void InventoryPage::onSpreadsheetImportClicked()
     else if(userChoice == "Firewood"){import.importFirewood(filePath);}
     else if(userChoice == "Slabs"){import.importSlabs(filePath);}
     else if(userChoice == "Cookies"){import.importCookies(filePath);}
-    //else if(userChoice == "Lumber"){import.importLumber(filePath);}
+    else if(userChoice == "Lumber"){import.importLumber(filePath);}
 
     refreshModels();
 }

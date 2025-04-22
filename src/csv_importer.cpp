@@ -228,10 +228,10 @@ void Importer::importCookies(const std::string& filePath){
     }
 }
 
-/*
+
 void Importer::importLumber(const std::string& filePath){
-    //id, species, thickness (quarters), length (quarters), width (quarters), drying, surfacing (smoothed), location, notes
-    //int, string, uint, uint, uint, Drying, bool, string, string
+    //id, species, length, width, thickness, drying, surfacing, worth, location, notes
+    //ignoring, species, length, length, length, drying, LumberSurfacing, dollar, string, string
 
     std::ifstream file(filePath);
     if(!file){
@@ -242,21 +242,34 @@ void Importer::importLumber(const std::string& filePath){
     std::string line;
     if(!std::getline(file, line)){return;}
 
+    woodworks::domain::Lumber lumber = woodworks::domain::Lumber::uninitialized();
+
     while(std::getline(file, line)){
         if(line.empty()){continue;}
         auto cols = digestLine(line);
 
-        std::string species     = cols[1];
-        uint thickQ             = std::stoul(cols[2]);
-        uint lenQ               = std::stoul(cols[3]);
-        uint widthQ             = std::stoul(cols[4]);
-        Drying drying           = returnDryingType(cols[5]);
-        bool smoothed           = returnSmoothed(cols[6]);
-        std::string location    = (cols.size() > 7 && !cols[7].empty()) ? cols[7] : "";
-        std::string notes       = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";        
+        Species lumbSpecies             = {cols[1]};
+        Length lumbLen                  = Length::fromQuarters(std::stod(cols[2]));
+        Length lumbWid                  = Length::fromInches(std::stod(cols[3]));
+        Length lumbThk                  = Length::fromInches(std::stod(cols[4]));
+        Drying lumbDry                  = returnDryingType(cols[5]);
+        LumberSurfacing lumbSurf        = returnSurfacingLumber(cols[6]);
+        Dollar lumbCost                 = {static_cast<int>(std::stod(cols[7])*100)};
+        std::string location            = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";
+        std::string notes               = (cols.size() > 9 && !cols[9].empty()) ? cols[9] : "";
+
+        lumber.species                  = lumbSpecies;
+        lumber.length                   = lumbLen;
+        lumber.width                    = lumbWid;
+        lumber.thickness                = lumbThk;
+        lumber.drying                   = lumbDry;
+        lumber.surfacing                = lumbSurf;
+        lumber.worth                    = lumbCost;
+        lumber.location                 = location;
+        lumber.notes                    = notes;
         
-        Lumber newLumber(species, thickQ, lenQ, widthQ, drying, smoothed, location, notes);
-        newLumber.insert();
+        auto &db = woodworks::infra::DbConnection::instance();
+        auto repo = woodworks::infra::QtSqlRepository<woodworks::domain::Lumber>(db);
+        if(!repo.add(lumber)) {std::cerr << "Failed to insert lumber: " + db.lastError().text().toStdString() << std::endl;}
     }
 }
-*/
