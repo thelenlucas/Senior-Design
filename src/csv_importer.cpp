@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <unordered_map>
 
 #include "csv_importer.hpp"
 #include "domain/log.hpp"
@@ -17,19 +18,27 @@ std::vector<std::string> Importer::digestLine(const std::string& line){
 
 woodworks::domain::types::Drying Importer::returnDryingType(std::string dryStr){
     std::transform(dryStr.begin(), dryStr.end(), dryStr.begin(), ::toupper);
-    if(dryStr == "KILN DRIED" || dryStr == "KILN") return Drying::KILN_DRIED;
-    else if(dryStr == "AIR DRIED" || dryStr == "AIR") return Drying::AIR_DRIED;
-    else if(dryStr == "AIR AND KILN DRIED" || dryStr == "KILN AND AIR DRIED" || dryStr == "AIR AND KILN" || dryStr == "KILN AND AIR") return Drying::KILN_AND_AIR_DRIED;
-    else return Drying::GREEN;
+    dryStr.erase(std::remove_if(dryStr.begin(), dryStr.end(),
+        [](char c){ return c == '\r' || c == '\n'; }),
+        dryStr.end());
+
+    bool hasKiln = dryStr.find("KILN") != std::string::npos;
+    bool hasAir  = dryStr.find("AIR")  != std::string::npos;
+
+    if (hasKiln && hasAir)   return Drying::KILN_AND_AIR_DRIED;
+    if (hasKiln)             return Drying::KILN_DRIED;
+    if (hasAir)              return Drying::AIR_DRIED;
+    return Drying::GREEN;
 }
 
 //	   SLAB_SURFACNG: 
 //	   woodworks::domain::types::SlabSurfacing
 //	   RGH (rough), S1S, S2S
-
-
 woodworks::domain::types::SlabSurfacing Importer::returnSurfacingSlabs(std::string surfStr){
     std::transform(surfStr.begin(), surfStr.end(), surfStr.begin(), ::toupper);
+    surfStr.erase(std::remove_if(surfStr.begin(), surfStr.end(),
+        [](char c){ return c == '\r' || c == '\n'; }),
+        surfStr.end());
     if(surfStr == "S1S") return SlabSurfacing::S1S;
     else if (surfStr == "S2S") return SlabSurfacing::S2S;
     else return SlabSurfacing::RGH;
@@ -40,21 +49,15 @@ woodworks::domain::types::SlabSurfacing Importer::returnSurfacingSlabs(std::stri
 //     RGH, S1S, S2S, S3S, S4S
 woodworks::domain::types::LumberSurfacing Importer::returnSurfacingLumber(std::string surfStr){
     std::transform(surfStr.begin(), surfStr.end(), surfStr.begin(), ::toupper);
+    surfStr.erase(std::remove_if(surfStr.begin(), surfStr.end(),
+        [](char c){ return c == '\r' || c == '\n'; }),
+        surfStr.end());
     if(surfStr == "S1S") return LumberSurfacing::S1S;
     else if (surfStr == "S2S") return LumberSurfacing::S2S;
     else if (surfStr == "S3S") return LumberSurfacing::S3S;
     else if (surfStr == "S4S") return LumberSurfacing::S4S;
     else return LumberSurfacing::RGH;
 }
-
-/*
-uint Importer::returnSmoothed(std::string smd)
-{
-    std::transform(smd.begin(), smd.end(), smd.begin(), ::toupper);
-    if(smd == "Y" || smd == "YES") return true;
-    else return false;
-}
-*/
 
 
 void Importer::importLogs(const std::string& filePath){
@@ -66,8 +69,11 @@ void Importer::importLogs(const std::string& filePath){
         return;
     }
 
-    std::string line;
-    if(!std::getline(file, line)){return;}
+    std::string headerLine, line;
+    if(!std::getline(file, headerLine)){return;}
+    auto headers = digestLine(headerLine);
+    std::unordered_map<std::string, size_t> idx;
+    for(size_t i = 0; i < headers.size(); i++){idx[headers[i]]=i;} 
 
     woodworks::domain::Log log = woodworks::domain::Log::uninitialized();
 
@@ -75,19 +81,48 @@ void Importer::importLogs(const std::string& filePath){
         if(line.empty()){continue;}
         auto cols = digestLine(line);
 
-        cols[2].erase(std::remove(cols[2].begin(), cols[2].end(),'\"'), cols[2].end());
-        size_t pos = cols[2].find('\'');
-        std::string ft = cols[2].substr(0, pos);
-        std::string in = cols[2].substr(pos + 1);
+        auto get = [&](const std::string& name) -> std::string {
+            auto it = idx.find(name);
+            if (it != idx.end()) {
+                size_t i = it->second;
+                if (i < cols.size()) 
+                    return cols[i];
+                return "";
+            }
+            // Fallback: scan headers for a case‑insensitive substring match
+            std::string nlow = name;
+            std::transform(nlow.begin(), nlow.end(), nlow.begin(), ::tolower);
+            for (size_t j = 0; j < headers.size(); ++j) {
+                std::string hlow = headers[j];
+                std::transform(hlow.begin(), hlow.end(), hlow.begin(), ::tolower);
+                if (hlow.find(nlow) != std::string::npos) {
+                    if (j < cols.size()) {return cols[j];}
+                    break;
+                }
+            }
+            return "";
+        };
 
-        Species logSpecies          = {cols[1]};
+        std::string speciesStr      = get("Species");
+        std::string lenStr          = get("Length");
+        std::string diamStr         = get("Diameter");
+        std::string costStr         = get("Cost");
+        std::string qualityStr      = get("Quality");
+        std::string dryingStr       = get("Drying");
+        std::string location        = get("Location");
+        std::string notes           = get("Notes");
+
+        lenStr.erase(std::remove(lenStr.begin(), lenStr.end(),'\"'), lenStr.end());
+        size_t pos = lenStr.find('\'');
+        std::string ft = lenStr.substr(0, pos);
+        std::string in = lenStr.substr(pos + 1);
+
+        Species logSpecies          = {speciesStr};
         Length logLen               = Length::fromFeet(std::stod(ft)) + Length::fromInches(std::stod(in));
-        Length logDiam              = Length::fromInches(std::stoul(cols[3]));
-        Dollar logCost              = {static_cast<int>(std::stod(cols[4])*100)};
-        Quality logQuality          = {std::stoi(cols[5])};
-        Drying logDrying            = returnDryingType(cols[6]);
-        std::string location        = (cols.size() > 7 && !cols[7].empty()) ? cols[7] : "";
-        std::string notes           = (cols.size() > 8 && !cols[8].empty()) ? cols[8] : "";
+        Length logDiam              = Length::fromInches(std::stoul(diamStr));
+        Dollar logCost              = {static_cast<int>(std::stod(costStr)*100)};
+        Quality logQuality          = {std::stoi(qualityStr)};
+        Drying logDrying            = returnDryingType(dryingStr);
 
         log.length                  = logLen;
         log.diameter                = logDiam;
