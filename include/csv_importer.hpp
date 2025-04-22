@@ -2,13 +2,14 @@
 
 #include <vector>
 #include "domain/types.hpp"
-#include "types.hpp"
-// #include "logs.hpp"
-// #include "firewood.hpp"
-// #include "live_edge_slabs.hpp"
-// #include "cookies.hpp"
-// #include "lumber.hpp"
-//#include "cutlist.hpp"
+#include "domain/units.hpp"
+#include "domain/log.hpp"
+#include "domain/firewood.hpp"
+#include "domain/live_edge_slab.hpp"
+#include "domain/cookie.hpp"
+#include "domain/lumber.hpp"
+#include "infra/connection.hpp"
+#include "infra/repository.hpp"
 
 class Importer
 {
@@ -22,5 +23,6 @@ class Importer
     private:
         static std::vector<std::string> digestLine(const std::string& line);
         woodworks::domain::types::Drying returnDryingType(std::string dryStr);
-        static bool returnSmoothed(std::string smd);
+        woodworks::domain::types::SlabSurfacing returnSurfacingSlabs(std::string surfStr);
+        woodworks::domain::types::LumberSurfacing returnSurfacingLumber(std::string surfStr);
 };

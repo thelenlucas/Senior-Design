@@ -26,16 +26,17 @@ namespace woodworks::domain {
         inline static Lumber uninitialized() {
             return Lumber{
                 .id = Id{ -1 },
+                .id = Id{-1},
                 .species = Species{""},
                 .length = Length::fromTicks(0),
                 .width = Length::fromTicks(0),
                 .thickness = Length::fromTicks(0),
                 .drying = Drying::GREEN,
                 .surfacing = LumberSurfacing::RGH,
-                .worth = Dollar{ 0 },
+                .worth = Dollar{0},
                 .location = "",
                 .notes = "",
-                .imageBuffer = QByteArray{}
+                .imageBuffer = QByteArray(),
             };
         }
 

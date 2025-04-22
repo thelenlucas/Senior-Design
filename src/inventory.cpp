@@ -748,37 +748,30 @@ void InventoryPage::onCookieButtonClicked()
 
 void InventoryPage::onSpreadsheetImportClicked()
 {
-    QString filename =
-        QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(),
-                                     "Spreadsheets (*.csv *.xls *.xlsx)");
+    QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv)");
 
-    if (filename.isEmpty())
-        // QMessageBox::information(this, "Warning", "\nPlease ensure that it is in the following format: CSV (Comma delimited)");
-        // QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv)");
-        // // .csv only, import one sheet at a time
-        // if (filename.isEmpty())
-        //     return;
-        // QStringList options;
-        // options << "Logs" << "Firewood" << "Slabs" << "Cookies" << "Lumber";
-        // bool ok = false;
-        // QString userChoice = QInputDialog::getItem(this, QObject::tr("Sheet Picker"), QObject::tr("Please select which sheet you're importing:"), options, 0, false, &ok);
+    if (filename.isEmpty()){return;}
 
-        // if(!ok){
-        //     std::cout << "User canceled input." << std::endl;
-        //     return;
-        // }
-        // // TODO: Implement spreadsheet import parsing logic in logic module.
-        // QMessageBox::information(this, "Import Selected", "File selected: " + filename + "\nSheet Type: " + userChoice);
-        // std::string filePath = filename.toStdString();
-        // Importer import;
+    QStringList options;
+    options << "Logs" << "Firewood" << "Slabs" << "Cookies" << "Lumber";
+    bool ok = false;
+    QString userChoice = QInputDialog::getItem(this, QObject::tr("Sheet Picker"), QObject::tr("Please select which sheet you're importing:"), options, 0, false, &ok);
 
-        // if(userChoice == "Logs"){import.importLogs(filePath);}
-        // else if(userChoice == "Firewood"){import.importFirewood(filePath);}
-        // else if(userChoice == "Slabs"){import.importSlabs(filePath);}
-        // else if(userChoice == "Cookies"){import.importCookies(filePath);}
-        // else if(userChoice == "Lumber"){import.importLumber(filePath);}
+    if(!ok){
+        std::cout << "User canceled input." << std::endl;
+        return;
+    }
+    QMessageBox::information(this, "Import Selected", "File selected: " + filename + "\nSheet Type: " + userChoice);
+    std::string filePath = filename.toStdString();
+    Importer import;
 
-        refreshModels();
+    if(userChoice == "Logs"){import.importLogs(filePath);}
+    else if(userChoice == "Firewood"){import.importFirewood(filePath);}
+    else if(userChoice == "Slabs"){import.importSlabs(filePath);}
+    else if(userChoice == "Cookies"){import.importCookies(filePath);}
+    else if(userChoice == "Lumber"){import.importLumber(filePath);}
+
+    refreshModels();
 }
 
 void InventoryPage::onImageButtonClicked()
