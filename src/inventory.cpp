@@ -173,6 +173,13 @@ void InventoryPage::slabsCustomContextMenu(const QPoint &pos) {
         }
     });
 
+    // add scrap board
+    contextMenu.addAction("Scrap Board", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(id);
+        if (slab) { scrapPopUp(*slab, this); refreshModels(); }
+    });
+
     contextMenu.exec(ui->slabsTableView->viewport()->mapToGlobal(pos));
 }
 
@@ -218,20 +225,11 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
         });
 
         contextMenu.addAction("Scrap Log", [this, index]() {
-            // Get the log ID from the model
             int logId = index.sibling(index.row(), 0).data().toInt();
-            // Get the log from the database
             auto log = QtSqlRepository<Log>::spawn().get(logId);
             if (log) {
-                // Show a confirmation dialog
-                QMessageBox::StandardButton reply;
-                reply = QMessageBox::question(this, "Confirm", "Are you sure you want to scrap this log?",
-                                              QMessageBox::Yes | QMessageBox::No);
-                if (reply == QMessageBox::Yes) {
-                    // Scrap the log
-                    QtSqlRepository<Log>::spawn().remove(logId);
-                    refreshModels();
-                }
+                scrapPopUp(*log, this);
+                refreshModels();
             }
         });
 
@@ -291,6 +289,12 @@ void InventoryPage::cookiesCustomContextMenu(const QPoint& pos) {
         auto cookie = QtSqlRepository<Cookie>::spawn().get(id);
         if (cookie) { dryingPopUp(*cookie); refreshModels(); }
     });
+    
+    contextMenu.addAction("Scrap Cookie", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto cookie = QtSqlRepository<Cookie>::spawn().get(id);
+        if (cookie) { scrapPopUp(*cookie, this); refreshModels(); }
+    });
     contextMenu.exec(ui->cookiesTableView->viewport()->mapToGlobal(pos));
 }
 
@@ -303,6 +307,45 @@ void InventoryPage::lumberCustomContextMenu(const QPoint& pos) {
         auto lumber = QtSqlRepository<Lumber>::spawn().get(id);
         if (lumber) { dryingPopUp(*lumber); refreshModels(); }
     });
+    
+    contextMenu.addAction("Scrap Lumber", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto lumber = QtSqlRepository<Lumber>::spawn().get(id);
+        if (lumber) { scrapPopUp(*lumber, this); refreshModels(); }
+    });
+
+    // Surface lumber
+    contextMenu.addAction("Surface Lumber", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto lumber = QtSqlRepository<Lumber>::spawn().get(id);
+        if (lumber) {
+            auto toSurface = lumber.value();
+            std::vector<LumberSurfacing> allowed = allowedTransitions(toSurface.surfacing);
+            QDialog dialog;
+            dialog.setWindowTitle("Surface Lumber");
+            dialog.setModal(true);
+            dialog.setLayout(new QVBoxLayout());
+            dialog.setMinimumWidth(300);
+            QComboBox* comboBox = new QComboBox();
+            for (const auto& surf : allowed) {
+                comboBox->addItem(QString::fromStdString(toString(surf)), QVariant(static_cast<int>(surf)));
+            }
+            dialog.layout()->addWidget(comboBox);
+            QPushButton* confirmButton = new QPushButton("Confirm");
+            dialog.layout()->addWidget(confirmButton);
+            QPushButton* cancelButton = new QPushButton("Cancel");
+            dialog.layout()->addWidget(cancelButton);
+            QObject::connect(confirmButton, &QPushButton::clicked, [&dialog]() { dialog.accept(); });
+            QObject::connect(cancelButton, &QPushButton::clicked, [&dialog]() { dialog.reject(); });
+            if (dialog.exec() == QDialog::Accepted) {
+                LumberSurfacing selectedSurfacing = static_cast<LumberSurfacing>(comboBox->currentData().toInt());
+                toSurface.surfacing = selectedSurfacing;
+                QtSqlRepository<Lumber>::spawn().update(toSurface);
+                refreshModels();
+            }
+        }
+    });
+
     contextMenu.exec(ui->lumberTableView->viewport()->mapToGlobal(pos));
 }
 
@@ -314,6 +357,12 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto fw = QtSqlRepository<Firewood>::spawn().get(id);
         if (fw) { dryingPopUp(*fw); refreshModels(); }
+    });
+    
+    contextMenu.addAction("Scrap Firewood", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto fw = QtSqlRepository<Firewood>::spawn().get(id);
+        if (fw) { scrapPopUp(*fw, this); refreshModels(); }
     });
     contextMenu.exec(ui->firewoodTableView->viewport()->mapToGlobal(pos));
 }
