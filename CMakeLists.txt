@@ -24,7 +24,7 @@ find_package(Qt5 COMPONENTS Widgets Sql REQUIRED)
 file(GLOB includes ${CMAKE_SOURCE_DIR}/include)
 
 # Specify the source files for the executable.
-file(GLOB SRC_TOP        "${CMAKE_SOURCE_DIR}/src/*.cpp")          # new
+file(GLOB_RECURSE SRC_TOP        "${CMAKE_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE SRC_REST CONFIGURE_DEPENDS
      "${CMAKE_SOURCE_DIR}/src/**/*.cpp")
 

@@ -43,13 +43,6 @@ namespace woodworks::sales
         // Empty constructor
         Product() : type(COOKIE), species(""), price(0.0), pricingUnits("") {}
 
-        // Creates a product from a type with toProduct (teehee, rust)
-        template <typename T>
-        static Product from(const T &other)
-        {
-            return other.toProduct();
-        }
-
         void addDetails(const std::string &detail)
         {
             detailsLines.push_back(detail);
@@ -73,3 +66,6 @@ namespace woodworks::sales
         }
     };
 }
+
+// Makes ProductType usabe
+Q_DECLARE_METATYPE(woodworks::sales::ProductType)

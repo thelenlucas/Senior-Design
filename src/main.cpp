@@ -75,9 +75,10 @@ int main(int argc, char* argv[])
 
     QApplication app(argc, argv);
 
-    Container *container = new Container(&app);
+    MainWindow window;
+    window.show();
 
-    container->run();
+    return app.exec();
 }
 
 #endif

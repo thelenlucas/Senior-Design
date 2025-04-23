@@ -9,9 +9,12 @@ using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
 using namespace woodworks::sales;
 
+//! CAN"T BE INLINE C++ WILL OPTIMIZE IT OUT
+//! WHYYYYYYYYYYYYYYY - Lucas
+
 namespace woodworks::domain
 {
-    inline Product Cookie::toProduct()
+    Product Cookie::toProduct()
     {
         Product product;
         product.type = COOKIE;
@@ -25,7 +28,7 @@ namespace woodworks::domain
         return product;
     }
 
-    inline Product LiveEdgeSlab::toProduct()
+    Product LiveEdgeSlab::toProduct()
     {
         Product product;
         product.type = SLAB;
@@ -40,7 +43,7 @@ namespace woodworks::domain
         return product;
     }
 
-    inline Product Lumber::toProduct()
+    Product Lumber::toProduct()
     {
         Product product;
         product.type = LUMBER;
@@ -67,7 +70,7 @@ namespace woodworks::domain
         return product;
     }
 
-    inline Product Firewood::toProduct()
+    Product Firewood::toProduct()
     {
         Product product;
         product.type = FIREWOOD;

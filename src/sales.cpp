@@ -15,261 +15,94 @@
 #include <QSqlRecord>
 #include <QStyle>
 #include <QVBoxLayout>
+#include <QMessageBox>
+
+#include "widgets/product_editing_widget.hpp"
 
 #include "sales.hpp"
 #include "ui_sales.h"
 
-// TODO: Make this configurable via a config file or database table.
-const constexpr double DEFAULT_WINDOW_SIZE_RATIO = 0.6;
+#include "domain/cookie.hpp"
+#include "domain/firewood.hpp"
+#include "domain/live_edge_slab.hpp"
+#include "domain/lumber.hpp"
 
-SalesPage::SalesPage(QWidget *parent)
-    : QWidget(parent), ui(new Ui::SalesPage),
-      inventoryModel(new QSqlQueryModel(this)), selectedIndex(-1),
-      runningTotal(0.0)
+#include "infra/repository.hpp"
+
+using namespace woodworks::domain;
+using namespace woodworks::domain::imperial;
+using namespace woodworks::domain::types;
+using namespace woodworks::infra;
+using namespace woodworks::sales;
+
+
+SalesPage::SalesPage(QWidget *parent) : QWidget(parent), ui(new Ui::SalesPage)
 {
-    ui->setupUi(this);
-
-    ResizeToDisplayPercentage(DEFAULT_WINDOW_SIZE_RATIO, DEFAULT_WINDOW_SIZE_RATIO);
-
-    ui->inventoryTable->setModel(inventoryModel);
-    RefreshInventoryModel();
-
-    connect(ui->addButton, &QPushButton::clicked, this,
-            [this]()
-            {
-                QItemSelectionModel *selectionModel = ui->inventoryTable->selectionModel();
-                if (!selectionModel)
-                    return;
-
-                QModelIndex index = selectionModel->currentIndex();
-                if (!index.isValid())
-                    return;
-
-                int idCol = inventoryModel->record(0).indexOf("ID");
-                int speciesCol = inventoryModel->record(0).indexOf("Species");
-                int valueCol = inventoryModel->record(0).indexOf("Value ($)");
-
-                if (idCol == -1 || speciesCol == -1 || valueCol == -1)
-                {
-                    qDebug() << "Expected columns not found in inventory model";
-                    return;
-                }
-
-                QString id = inventoryModel->data(inventoryModel->index(index.row(), idCol)).toString();
-                QString species = inventoryModel->data(inventoryModel->index(index.row(), speciesCol)).toString();
-                QString value = inventoryModel->data(inventoryModel->index(index.row(), valueCol)).toString();
-
-                AddSelectedInventoryRow(id, species, value);
-            });
-
-    connect(ui->removeButton, &QPushButton::clicked, this,
-            [this]()
-            {
-                if (selectedIndex >= 0 && selectedIndex < itemWidgets.size())
-                {
-                    QWidget *widgetToRemove = itemWidgets[selectedIndex];
-                    double value = widgetToRemove->property("value").toDouble();
-                    int quantity = widgetToRemove->property("quantity").toInt();
-                    UpdateTotal(-value * quantity);
-
-                    ui->amountEntryLayout->removeWidget(widgetToRemove);
-                    widgetToRemove->deleteLater();
-                    itemWidgets.removeAt(selectedIndex);
-                    selectedIndex = -1;
-
-                    // for (int i = 0; i < itemWidgets.size(); ++i)
-                    //     itemWidgets[i]->setStyleSheet((i % 2 == 0) ?
-                    //     "background-color: #f0f0f0;" : "background-color:
-                    //     #e0e0e0;");
-                }
-            });
-
-    connect(ui->previewButton, &QPushButton::clicked, this,
-            []() { qDebug() << "Preview Webpage clicked"; });
-
-    connect(ui->exportButton, &QPushButton::clicked, this,
-            []() { qDebug() << "Export Webpage clicked"; });
-
-    ui->amountScrollContents->setSizePolicy(QSizePolicy::Preferred,
-                                            QSizePolicy::Maximum);
+    // Add product type to dropdown
+    ui->typeCombo->addItem("Cookie", COOKIE);
+    ui->typeCombo->addItem("Slab", SLAB);
+    ui->typeCombo->addItem("Lumber", LUMBER);
+    ui->typeCombo->addItem("Firewood", FIREWOOD);
+    ui->typeCombo->setCurrentIndex(0);
 }
 
 SalesPage::~SalesPage() { delete ui; }
 
-void SalesPage::RefreshInventoryModel()
+void SalesPage::addProduct(Product product)
 {
-    inventoryModel->setQuery("SELECT * FROM logs_view", QSqlDatabase::database());
+    auto scrollArea = ui->amountScrollArea;
+    auto scrollContents = ui->salesScrollContents;
+    auto productWidget = new ProductEditorWidget(product, scrollContents);
 
-    if (inventoryModel->lastError().isValid())
-        qDebug() << "Inventory model error:" << inventoryModel->lastError().text();
+    // Add the product widget to the scroll area
+    scrollArea->setWidgetResizable(true);
+    scrollArea->widget()->layout()->addWidget(productWidget);
 }
 
-void SalesPage::ResizeToDisplayPercentage(double width_ratio,
-                                          double height_ratio)
+void SalesPage::onAddItemButtonClicked()
 {
-    QScreen *screen = QGuiApplication::primaryScreen();
-    if (screen)
-    {
-        QSize screenSize = screen->availableGeometry().size();
-        QSize windowSize(screenSize.width() * width_ratio, screenSize.height() * height_ratio);
-        resize(windowSize);
-    }
-}
+    // Id from spin
+    int id = ui->serialNumberSpinBox->value();
 
-void SalesPage::AddSelectedInventoryRow(QString const &id,
-                                        QString const &species,
-                                        QString const &value)
-{
-    QString labelText = QString("ID: %1 | Species: %2 | Value: %3").arg(id, species, value);
-
-    QWidget* rowWidget = new QWidget;
-    rowWidget->setFixedHeight(100);
-    rowWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-    QHBoxLayout* rowLayout = new QHBoxLayout(rowWidget);
-    rowLayout->setContentsMargins(6, 2, 6, 2);
-    rowLayout->setSpacing(6);
-
-    QLabel* imageLabel = new QLabel;
-    imageLabel->setFixedSize(80, 80);
-    imageLabel->setPixmap(QPixmap(":/images/placeholder.png").scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-    QLabel* label = new QLabel(labelText);
-    label->setMinimumWidth(200);
-
-    QLineEdit* quantityEdit = new QLineEdit("1");
-    quantityEdit->setFixedWidth(40);
-    quantityEdit->setAlignment(Qt::AlignCenter);
-
-    QPushButton* plusButton = new QPushButton("+");
-    plusButton->setFixedSize(24, 24);
-
-    QPushButton* minusButton = new QPushButton("-");
-    minusButton->setFixedSize(24, 24);
-
-    QLineEdit* priceEdit = new QLineEdit(value);
-    priceEdit->setFixedWidth(60);
-    priceEdit->setAlignment(Qt::AlignRight);
-    priceEdit->setPlaceholderText("Price");
-
-    QPushButton* removeButton = new QPushButton("×");
-    removeButton->setFixedSize(24, 24);
-    removeButton->setToolTip("Remove entry");
-
-    rowLayout->addWidget(imageLabel);
-    rowLayout->addWidget(label);
-    rowLayout->addWidget(minusButton);
-    rowLayout->addWidget(quantityEdit);
-    rowLayout->addWidget(plusButton);
-    rowLayout->addWidget(priceEdit);
-    rowLayout->addWidget(removeButton);
-
-    double rowValue = value.toDouble();
-    int rowQuantity = 1;
-    double rowTotal = rowValue * rowQuantity;
-
-    rowWidget->setProperty("value", rowValue);
-    rowWidget->setProperty("quantity", rowQuantity);
-    rowWidget->setProperty("rowTotal", rowTotal);
-
-    ui->amountEntryLayout->addWidget(rowWidget);
-    itemWidgets.append(rowWidget);
-    UpdateTotal(rowTotal); // Initial addition
-
-    connect(plusButton, &QPushButton::clicked, this,
-            [this, quantityEdit, rowWidget, priceEdit]()
-            {
-                int newQty = quantityEdit->text().toInt() + 1;
-                quantityEdit->setText(QString::number(newQty));
-                UpdateRowTotal(rowWidget, newQty, priceEdit->text().toDouble());
-            });
-
-    connect(minusButton, &QPushButton::clicked, this,
-            [this, quantityEdit, rowWidget, priceEdit]()
-            {
-                int newQty = qMax(0, quantityEdit->text().toInt() - 1);
-                quantityEdit->setText(QString::number(newQty));
-                UpdateRowTotal(rowWidget, newQty, priceEdit->text().toDouble());
-            });
-
-    connect(quantityEdit, &QLineEdit::editingFinished, this,
-            [this, quantityEdit, rowWidget, priceEdit]()
-            {
-                int newQty = quantityEdit->text().toInt();
-                UpdateRowTotal(rowWidget, newQty, priceEdit->text().toDouble());
-            });
-
-    connect(priceEdit, &QLineEdit::editingFinished, this,
-            [this, quantityEdit, rowWidget, priceEdit]()
-            {
-                double newVal = priceEdit->text().toDouble();
-                UpdateRowTotal(rowWidget, quantityEdit->text().toInt(), newVal);
-            });
-
-    connect(removeButton, &QPushButton::clicked, this,
-            [this, rowWidget]()
-            {
-                double prevTotal = rowWidget->property("rowTotal").toDouble();
-                UpdateTotal(-prevTotal);
-
-                ui->amountEntryLayout->removeWidget(rowWidget);
-                itemWidgets.removeOne(rowWidget);
-                rowWidget->deleteLater();
-                ReapplyStripedBackgrounds();
-            });
-
-    rowWidget->installEventFilter(this);
-}
-
-void SalesPage::ReapplyStripedBackgrounds()
-{
-    for (int i = 0; i < itemWidgets.size(); ++i)
-    {
-        QString color = (i % 2 == 0) ? "#f0f0f0" : "#e0e0e0";
-        itemWidgets[i]->setStyleSheet(
-            QString("background-color: %1;").arg(color));
-    }
-}
-
-void SalesPage::UpdateTotal(double delta)
-{
-    runningTotal += delta;
-    ui->totalValueDisplay->setText(QString::number(runningTotal, 'f', 2));
-}
-
-bool SalesPage::eventFilter(QObject *obj, QEvent *event)
-{
-    if (event->type() == QEvent::MouseButtonPress)
-    {
-        for (QWidget *widget : itemWidgets)
-        {
-            QFrame *frame = widget->findChild<QFrame *>();
-            if (frame)
-                frame->setStyleSheet("QFrame { background-color: white; }");
+    // Get product type from combo
+    bool found = false;
+    auto type = static_cast<ProductType>(ui->typeCombo->currentData().toInt());
+    if (type == COOKIE) {
+        auto p = QtSqlRepository<Cookie>::spawn().get(id);
+        if (p) {
+            addProduct(p.value().toProduct());
+            found = true;
         }
-
-        QWidget *clickedWidget = qobject_cast<QWidget *>(obj);
-        if (clickedWidget)
-        {
-            QFrame *frame = clickedWidget->findChild<QFrame *>();
-            if (frame)
-                frame->setStyleSheet("QFrame { background-color: #cce6ff; }");
-
-            lastClickedWidget = clickedWidget;
+    } else if (type == SLAB)
+    {
+        auto p = QtSqlRepository<LiveEdgeSlab>::spawn().get(id);
+        if (p) {
+            addProduct(p.value().toProduct());
+            found = true;
+        }
+    } else if (type == LUMBER) {
+        auto p = QtSqlRepository<Lumber>::spawn().get(id);
+        if (p) {
+            addProduct(p.value().toProduct());
+            found = true;
+        }
+    } else if (type == FIREWOOD) {
+        auto p = QtSqlRepository<Firewood>::spawn().get(id);
+        if (p) {
+            addProduct(p.value().toProduct());
+            found = true;
         }
     }
 
-    return QWidget::eventFilter(obj, event);
-}
-
-void SalesPage::UpdateRowTotal(QWidget* rowWidget, int newQty, double newVal)
-{
-    double oldTotal = rowWidget->property("rowTotal").toDouble();
-    double newTotal = newQty * newVal;
-
-    UpdateTotal(newTotal - oldTotal);
-
-    rowWidget->setProperty("quantity", newQty);
-    rowWidget->setProperty("value", newVal);
-    rowWidget->setProperty("rowTotal", newTotal);
+    if (!found) {
+        // Warn with popup
+        auto msgBox = new QMessageBox(this);
+        msgBox->setText("Product not found");
+        msgBox->setInformativeText("No product found with the given ID.");
+        msgBox->setStandardButtons(QMessageBox::Ok);
+        msgBox->setDefaultButton(QMessageBox::Ok);
+        msgBox->setIcon(QMessageBox::Warning);
+        msgBox->setWindowTitle("Product Not Found");
+        msgBox->setAttribute(Qt::WA_DeleteOnClose);
+    }   
 }
