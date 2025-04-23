@@ -12,8 +12,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install Qt      
-      uses: jurplel/install-qt-action@v4.1.1
+    # 2 — Toolchain for docs
+    - name: Install Qt + Webengine
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qt5-default qt5-qmake qtbase5-dev libqt5webkit5-dev qtwebengine5-dev
+        
     - name: Create build directory
       run: mkdir build
     - name: Check for CMakeLists.txt

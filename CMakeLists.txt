@@ -20,7 +20,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # QT5
-find_package(Qt5 COMPONENTS Widgets Sql REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Sql WebEngineWidgets REQUIRED)
 file(GLOB includes ${CMAKE_SOURCE_DIR}/include)
 
 # Specify the source files for the executable.
@@ -101,8 +101,8 @@ set_target_properties(Woodworks_test PROPERTIES
 target_include_directories(logdb PUBLIC ${includes})
 target_include_directories(Woodworks_test PUBLIC ${includes})
 
-target_link_libraries(logdb PRIVATE Qt5::Widgets Qt5::Sql)
-target_link_libraries(Woodworks_test PRIVATE Qt5::Widgets Qt5::Sql)
+target_link_libraries(logdb PRIVATE Qt5::Widgets Qt5::Sql Qt5::WebEngineWidgets)
+target_link_libraries(Woodworks_test PRIVATE Qt5::Widgets Qt5::Sql Qt5::WebEngineWidgets)
 
 add_compile_options(
     # Standard warnings.
