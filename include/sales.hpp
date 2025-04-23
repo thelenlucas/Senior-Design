@@ -23,6 +23,8 @@ public:
 private slots:
     void onAddItemButtonClicked();
     void onProductItemDoubleClicked(QListWidgetItem *item);
+    void onPreviewHtmlButtonClicked();
+    void onSaveHtmlButtonClicked();
 
 private:
     Ui::SalesPage* ui;

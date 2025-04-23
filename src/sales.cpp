@@ -22,6 +22,10 @@
 #include <QFormLayout>
 #include <QDoubleSpinBox>
 #include <QDialogButtonBox>
+#include <QDir>
+#include <QFileDialog>
+
+#include <QWebEngineView>
 
 #include "sales.hpp"
 #include "ui_sales.h"
@@ -30,6 +34,9 @@
 #include "domain/firewood.hpp"
 #include "domain/live_edge_slab.hpp"
 #include "domain/lumber.hpp"
+
+#include "sales/product.hpp"
+#include "sales/generator.hpp"
 
 #include "infra/repository.hpp"
 
@@ -56,23 +63,88 @@ SalesPage::SalesPage(QWidget *parent) : QWidget(parent), ui(new Ui::SalesPage)
 
     // Connect double-click on list to edit price
     connect(ui->productsListWidget, &QListWidget::itemDoubleClicked, this, &SalesPage::onProductItemDoubleClicked);
+
+    // Connect preview button to slot
+    connect(ui->previewButton, &QPushButton::clicked, this, &SalesPage::onPreviewHtmlButtonClicked);
+    // Connect save button to slot
+    connect(ui->exportButton, &QPushButton::clicked, this, &SalesPage::onSaveHtmlButtonClicked);
 }
 
 SalesPage::~SalesPage() { delete ui; }
 
+void SalesPage::onPreviewHtmlButtonClicked()
+{
+    // Get all of the products
+    auto products = this->products();
+
+    auto generator = SalesPageGenerator();
+    for (const auto &p : products)
+    {
+        generator.addProduct(p);
+    }
+    auto html = generator.generate();
+    // Save  right next to executable
+    QString filename = QDir::currentPath() + "/sales.html";
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << "Failed to open file for writing";
+        return;
+    }
+    QTextStream out(&file);
+    out << QString::fromStdString(html);
+    file.close();
+
+    // Open the file in a web view
+    QDialog *dialog = new QDialog(this);
+    dialog->setWindowTitle("Sales Preview");
+    QVBoxLayout *layout = new QVBoxLayout(dialog);
+    QWebEngineView *view = new QWebEngineView(dialog);
+    layout->addWidget(view);
+    connect(dialog, &QDialog::finished, view, &QObject::deleteLater);
+    connect(dialog, &QDialog::finished, view->page(), &QObject::deleteLater);
+    view->setUrl(QUrl::fromLocalFile(filename));
+    dialog->resize(800, 600);
+    dialog->show();
+}
+
+void SalesPage::onSaveHtmlButtonClicked()
+{
+    // Save instead of previewing
+    auto products = this->products();
+    auto generator = SalesPageGenerator();
+    for (const auto &p : products)
+    {
+        generator.addProduct(p);
+    }
+    auto html = generator.generate();
+
+    // Choose location to save, html file
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save HTML"), QDir::currentPath(), tr("HTML Files (*.html);;All Files (*)"));
+    if (filename.isEmpty())
+    {
+        return; // User canceled
+    }
+    if (!filename.endsWith(".html"))
+    {
+        filename += ".html"; // Add .html extension if not present
+    }
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << "Failed to open file for writing";
+        return;
+    }
+    QTextStream out(&file);
+    out << QString::fromStdString(html);
+    file.close();
+}
+
 void SalesPage::addProduct(Product product)
 {
     // Add product entry to the list widget
-    // Build display string: type, species, details, price/unit
-    QStringList parts;
-    parts << QString::fromStdString(toString(product.type) + " - " + product.species);
-    for (const auto &detail : product.detailsLines) {
-        parts << QString::fromStdString(detail);
-    }
-    parts << QString("$%1 / %2")
-                 .arg(product.price, 0, 'f', 2)
-                 .arg(QString::fromStdString(product.pricingUnits));
-    QString text = parts.join(" | ");
+    // Use Product::toListString for display
+    QString text = QString::fromStdString(product.toListString());
     auto item = new QListWidgetItem(text);
     item->setData(Qt::UserRole, QVariant::fromValue(product));
     ui->productsListWidget->addItem(item);
@@ -157,19 +229,12 @@ void SalesPage::onProductItemDoubleClicked(QListWidgetItem *item)
     form.addRow(buttons);
     connect(buttons, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
-    if (dlg.exec() == QDialog::Accepted) {
+    if (dlg.exec() == QDialog::Accepted)
+    {
         product.price = priceSpin->value();
         product.pricingUnits = unitsEdit->text().toStdString();
-        // Rebuild display string with details and updated price/unit
-        QStringList parts;
-        parts << QString::fromStdString(toString(product.type) + " - " + product.species);
-        for (const auto &detail : product.detailsLines) {
-            parts << QString::fromStdString(detail);
-        }
-        parts << QString("$%1 / %2")
-                     .arg(product.price, 0, 'f', 2)
-                     .arg(QString::fromStdString(product.pricingUnits));
-        QString text = parts.join(" | ");
+        // Update display using Product::toListString
+        QString text = QString::fromStdString(product.toListString());
         item->setText(text);
         item->setData(Qt::UserRole, QVariant::fromValue(product));
     }
@@ -178,7 +243,8 @@ void SalesPage::onProductItemDoubleClicked(QListWidgetItem *item)
 QVector<woodworks::sales::Product> SalesPage::products() const
 {
     QVector<woodworks::sales::Product> list;
-    for (int i = 0; i < ui->productsListWidget->count(); ++i) {
+    for (int i = 0; i < ui->productsListWidget->count(); ++i)
+    {
         auto item = ui->productsListWidget->item(i);
         list.append(item->data(Qt::UserRole).value<woodworks::sales::Product>());
     }
