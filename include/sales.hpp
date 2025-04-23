@@ -18,8 +18,11 @@ public:
     explicit SalesPage(QWidget* parent = nullptr);
     ~SalesPage();
 
+    QVector<woodworks::sales::Product> products() const;
+
 private slots:
     void onAddItemButtonClicked();
+    void onProductItemDoubleClicked(QListWidgetItem *item);
 
 private:
     Ui::SalesPage* ui;

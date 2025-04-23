@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <QByteArray>
+#include <QListWidgetItem>
 
 namespace woodworks::sales
 {
@@ -55,9 +56,13 @@ namespace woodworks::sales
             html += "<img src=\"data:image/png;base64," + imageBase64.toStdString() + "\" alt=\"Product Image\" class=\"product_image\"/>\n";
             html += "<div class=\"product_details\">\n";
             html += "<h3>" + toString(type) + " " + std::to_string(number) + " - " + species + "</h3>\n";
-            for (const auto &line : detailsLines)
-            {
-                html += "<p>" + line + "</p>\n";
+            if (!detailsLines.empty()) {
+                std::string detailStr;
+                for (size_t i = 0; i < detailsLines.size(); ++i) {
+                    detailStr += detailsLines[i];
+                    if (i + 1 < detailsLines.size()) detailStr += " | ";
+                }
+                html += "<p>" + detailStr + "</p>\n";
             }
             html += "<p class=\"price\">Price: $" + std::to_string(price) + " / " + pricingUnits + "</p>\n";
             html += "</article>";
@@ -67,5 +72,6 @@ namespace woodworks::sales
     };
 }
 
-// Makes ProductType usabe
+// Makes ProductType and Product usable
 Q_DECLARE_METATYPE(woodworks::sales::ProductType)
+Q_DECLARE_METATYPE(woodworks::sales::Product)

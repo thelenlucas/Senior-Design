@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>844</width>
-    <height>500</height>
+    <width>603</width>
+    <height>581</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>800</width>
+    <width>300</width>
     <height>500</height>
    </size>
   </property>
@@ -75,39 +75,47 @@
         </widget>
        </item>
        <item>
-        <widget class="QScrollArea" name="amountScrollArea">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="salesScrollContents">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>838</width>
-            <height>443</height>
-           </rect>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>500</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </widget>
+        <widget class="QListWidget" name="productsListWidget"/>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QComboBox" name="typeCombo"/>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="serialNumberSpinBox">
+           <property name="prefix">
+            <string>Serial Number: </string>
+           </property>
+           <property name="maximum">
+            <number>9999</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addItem">
+           <property name="text">
+            <string>Add Item</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacerLeft">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -115,42 +123,6 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="bottomButtonLayout">
-     <item>
-      <widget class="QComboBox" name="typeCombo"/>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="serialNumberSpinBox">
-       <property name="prefix">
-        <string>Serial Number: </string>
-       </property>
-       <property name="maximum">
-        <number>9999</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="addItem">
-       <property name="text">
-        <string>Add Item</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="spacerLeft">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Expanding</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
      <item>
       <widget class="QPushButton" name="previewButton">
        <property name="text">
