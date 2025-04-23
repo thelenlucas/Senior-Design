@@ -19,8 +19,6 @@ jobs:
         # uses: jurplel/install-qt-action@12aa0336e1e410b3c6dff5e0722547f7a37e8c60
         uses: jurplel/install-qt-action@v4.2.1
         with:
-          # Directory to install Qt
-          dir: # optional
           # Version of Qt to install
           version: 5.15.2
           modules: qtwebengine
@@ -39,6 +37,12 @@ jobs:
         run: |
           cd build
           cmake --build . --config Release
+
+      - name: Bundle Qt DLLs with windeployqt
+        run: |
+          cd build/Release
+          # Qt5 deployment
+          & "$Env:QTDIR\bin\windeployqt.exe" --release logdb.exe
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4.6.2
