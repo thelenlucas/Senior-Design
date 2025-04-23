@@ -48,4 +48,4 @@ jobs:
         uses: actions/upload-artifact@v4.6.2
         with:
           name: logdb-windows
-          path: build/Release/logdb.exe
+          path: build/Release
