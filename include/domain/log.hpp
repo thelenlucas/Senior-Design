@@ -31,6 +31,10 @@ namespace woodworks::domain {
         std::string notes;
         QByteArray imageBuffer;  // image data buffer
 
+        Log(Id id, Species species, Length length, Length diameter,
+            Quality quality, Drying drying, Dollar cost, std::string location,
+            std::string notes, QByteArray imageBuffer);
+
         // Validity check
         bool isValid() const noexcept
         {
@@ -46,18 +50,17 @@ namespace woodworks::domain {
 
         static Log uninitialized() noexcept
         {
-            return Log{
-                .id = Id{-1},
-                .species = Species{""},
-                .length = Length::fromTicks(0),
-                .diameter = Length::fromTicks(0),
-                .quality = Quality{-1},
-                .drying = Drying::GREEN,
-                .cost = Dollar{0},
-                .location = "",
-                .notes = "",
-                .imageBuffer = QByteArray(),
-            };
+            return Log(
+                /*id*/ Id{-1},
+                /*species*/ Species{""},
+                /*length*/ Length::fromTicks(0),
+                /*diameter*/ Length::fromTicks(0),
+                /*quality*/ Quality{-1},
+                /*drying*/ Drying::GREEN,
+                /*cost*/ Dollar{0},
+                /*location*/ "",
+                /*notes*/ "",
+                /*imageBuffer*/ QByteArray());
         }
 
         // ---- Mapping -----

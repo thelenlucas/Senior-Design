@@ -83,15 +83,14 @@ namespace woodworks::domain {
     }
 
     inline Firewood Firewood::fromRecord(const QSqlRecord& record) {
-        return Firewood{
-            .id = {record.value("id").toInt()},
-            .species = {record.value("species").toString().toStdString()},
-            .cubicFeet = record.value("cubicFeet").toDouble(),
-            .drying = static_cast<Drying>(record.value("drying").toInt()),
-            .cost = {record.value("cost").toInt()},
-            .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString(),
-            .imageBuffer = record.value("image").toByteArray()
-        };
+        return Firewood(
+            /*id*/ {record.value("id").toInt()},
+            /*species*/ {record.value("species").toString().toStdString()},
+            /*cubicFeet*/ record.value("cubicFeet").toDouble(),
+            /*drying*/ static_cast<Drying>(record.value("drying").toInt()),
+            /*cost*/ Dollar{record.value("cost").toInt()},
+            /*location*/ record.value("location").toString().toStdString(),
+            /*notes*/ record.value("notes").toString().toStdString(),
+            /*imageBuffer*/ record.value("image").toByteArray());
     }
 }

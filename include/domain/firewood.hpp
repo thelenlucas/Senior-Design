@@ -26,6 +26,14 @@ namespace woodworks::domain {
         std::string notes;
         QByteArray imageBuffer;  // image data buffer
 
+        Firewood(Id id, Species species, double cubicFeet, Drying drying,
+                 Dollar cost, std::string location, std::string notes,
+                 QByteArray imageBuffer)
+            : id(id), species(std::move(species)), cubicFeet(cubicFeet),
+              drying(drying), cost(cost), location(std::move(location)),
+              notes(std::move(notes)), imageBuffer(std::move(imageBuffer))
+        {}
+
         // Chords - a unit of measure for firewood, equal to 128 cubic feet
         // 1 chord = 128 cubic feet
         double toChords() const noexcept

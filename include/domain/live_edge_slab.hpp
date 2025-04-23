@@ -33,6 +33,17 @@ namespace woodworks::domain {
         std::string notes;
         QByteArray imageBuffer;  // image data buffer
 
+        LiveEdgeSlab(Id id, Species species, Length length, Length width,
+                     Length thickness, Drying drying, SlabSurfacing surfacing,
+                     Dollar worth, std::string location, std::string notes,
+                     QByteArray imageBuffer) : 
+              id(id), species(std::move(species)), length(length), width(width),
+              thickness(thickness), drying(drying), surfacing(surfacing),
+              worth(worth), location(std::move(location)),
+              notes(std::move(notes)), imageBuffer(std::move(imageBuffer))
+        {
+        }
+
         // ---- Mapping -----
         static QString createDbSQL();
         static QString insertSQL();

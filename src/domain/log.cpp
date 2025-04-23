@@ -6,6 +6,17 @@
 
 
 namespace woodworks::domain {
+
+    Log::Log(Id id, Species species, Length length,
+             Length diameter, Quality quality, Drying drying,
+             Dollar cost, std::string location,
+             std::string notes, QByteArray imageBuffer)
+        : id(id), species(std::move(species)), length(length), diameter(diameter),
+        quality(quality), drying(drying), cost(cost),
+        location(std::move(location)), notes(std::move(notes)),
+        imageBuffer(std::move(imageBuffer))
+    {}
+
     Dollar Log::cut(Length cutLength) {
         if (cutLength > length) {
             throw std::invalid_argument("Cut length is greater than log length");
@@ -57,16 +68,11 @@ namespace woodworks::domain {
 
         
         // Create the cookie
-        Cookie cookie {
-            .id = {-1},
-            .species = species,
-            .length = length,
-            .diameter = diameter,
-            .drying = drying,
-            .worth = cookieWorth,
-            .location = "",
-            .notes = ""
-        };
+        Cookie cookie(Id{-1}, species, length, diameter, drying, cookieWorth,
+                      "",          // location
+                      "",          // notes
+                      QByteArray() // imageBuffer
+        );
 
         // Insert the cookie into the database
         auto& deebee = woodworks::infra::DbConnection::instance();

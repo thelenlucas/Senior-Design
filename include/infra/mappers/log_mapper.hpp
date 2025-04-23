@@ -106,19 +106,17 @@ namespace woodworks::domain {
 
     inline Log Log::fromRecord(const QSqlRecord& record)
     {
-        Log log {
-            .id = {record.value("id").toInt()},
-            .species = {record.value("species").toString().toStdString()},
-            .length = Length::fromTicks(record.value("length").toDouble()),
-            .diameter = Length::fromTicks(record.value("diameter").toDouble()),
-            .quality = Quality(record.value("quality").toInt()),
-            .drying = static_cast<Drying>(record.value("drying").toInt()),
-            .cost = {Dollar(record.value("cost").toInt())},
-            .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString(),
-            .imageBuffer = record.value("image").toByteArray(),
-        };
-        
-        return log;
+        // Doing it this way to hopefully fix the issue with msvc and C++20 features being used in the gcc C++17 compatible code.
+        return Log(
+            /*id*/ {record.value("id").toInt()},
+            /*species*/ {record.value("species").toString().toStdString()},
+            /*length*/ Length::fromTicks(record.value("length").toDouble()),
+            /*diameter*/ Length::fromTicks(record.value("diameter").toDouble()),
+            /*quality*/ Quality(record.value("quality").toInt()),
+            /*drying*/ static_cast<Drying>(record.value("drying").toInt()),
+            /*cost*/ Dollar{record.value("cost").toInt()},
+            /*location*/ record.value("location").toString().toStdString(),
+            /*notes*/ record.value("notes").toString().toStdString(),
+            /*image*/ record.value("image").toByteArray());
     }
 }

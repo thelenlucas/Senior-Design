@@ -1,41 +1,38 @@
 #ifdef BUILDING_WOODWORKS_TEST
 
+#include "domain/cookie.hpp"
+#include "domain/firewood.hpp"
+#include "domain/live_edge_slab.hpp"
+#include "domain/log.hpp"
+#include "domain/lumber.hpp"
+#include "infra/connection.hpp"
+#include "infra/mappers/cookie_mapper.hpp"
+#include "infra/mappers/live_edge_slab_mapper.hpp"
+#include "infra/mappers/log_mapper.hpp"
+#include "infra/mappers/lumber_mapper.hpp"
+#include "infra/repository.hpp"
+#include "infra/unit_of_work.hpp"
+
 #include <cassert>
 #include <optional>
 #include <stdio.h>
-#include "domain/log.hpp"
-#include "domain/cookie.hpp"
-#include "domain/live_edge_slab.hpp"
-#include "domain/lumber.hpp"
-#include "infra/repository.hpp"
-#include "infra/unit_of_work.hpp"
-#include "infra/connection.hpp"
-#include "infra/mappers/log_mapper.hpp"
-#include "infra/mappers/cookie_mapper.hpp"
-#include "infra/mappers/live_edge_slab_mapper.hpp"
-#include "infra/mappers/lumber_mapper.hpp"
+
 
 using namespace woodworks::domain;
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
 using namespace woodworks::infra;
 
-int main(int argc, char* argv[]) {
-    auto& db = DbConnection::instance();
+int main(int argc, char* argv[])
+{
+    auto &db = DbConnection::instance();
     UnitOfWork uow(db);
     QtSqlRepository<Log> logs(db);
 
-    woodworks::domain::Log log {
-        .id = {-1},
-        .species = {"Oak"},
-        .length = woodworks::domain::imperial::Length::fromFeet(10),
-        .diameter = woodworks::domain::imperial::Length::fromInches(12),
-        .quality = {5},
-        .drying = woodworks::domain::types::Drying::KILN_DRIED,
-        .cost = {500},
-        .location = "Storage",
-        .notes = "Test log"
-    };
+    woodworks::domain::Log log(Id{-1}, Species{"Oak"}, Length::fromFeet(10),
+                               Length::fromInches(12), Quality{5},
+                               Drying::KILN_DRIED, Dollar{500}, "Storage",
+                               "Test log", QByteArray());
     logs.add(log);
     uow.commit();
     auto log2 = logs.get(1);
@@ -44,16 +41,10 @@ int main(int argc, char* argv[]) {
     UnitOfWork uow2(db);
     // Cookie insertion test
     QtSqlRepository<Cookie> cookies(db);
-    woodworks::domain::Cookie cookie {
-        .id = {-1},
-        .species = {"Maple"},
-        .length = woodworks::domain::imperial::Length::fromFeet(5),
-        .diameter = woodworks::domain::imperial::Length::fromInches(6),
-        .drying = woodworks::domain::types::Drying::AIR_DRIED,
-        .worth = {100},
-        .location = "Warehouse",
-        .notes = "Test cookie"
-    };
+    woodworks::domain::Cookie cookie(Id{-1}, Species{"Maple"},
+                                     Length::fromFeet(5), Length::fromInches(6),
+                                     Drying::AIR_DRIED, Dollar{100},
+                                     "Warehouse", "Test cookie", QByteArray());
     cookies.add(cookie);
     uow2.commit();
     auto cookie2 = cookies.get(1);
@@ -63,18 +54,10 @@ int main(int argc, char* argv[]) {
     // LiveEdgeSlab insertion test
     UnitOfWork uow3(db);
     QtSqlRepository<LiveEdgeSlab> slabs(db);
-    woodworks::domain::LiveEdgeSlab slab {
-        .id = {-1},
-        .species = {"Walnut"},
-        .length = woodworks::domain::imperial::Length::fromFeet(8),
-        .width = woodworks::domain::imperial::Length::fromInches(10),
-        .thickness = woodworks::domain::imperial::Length::fromInches(2),
-        .drying = woodworks::domain::types::Drying::KILN_DRIED,
-        .surfacing = SlabSurfacing::RGH,
-        .worth = {300},
-        .location = "Shop",
-        .notes = "Test slab"
-    };
+    woodworks::domain::LiveEdgeSlab slab(
+        Id{-1}, Species{"Walnut"}, Length::fromFeet(8), Length::fromInches(10),
+        Length::fromInches(2), Drying::KILN_DRIED, SlabSurfacing::RGH,
+        Dollar{300}, "Shop", "Test slab", QByteArray());
     slabs.add(slab);
     uow3.commit();
     auto slab2 = slabs.get(1);
@@ -85,18 +68,10 @@ int main(int argc, char* argv[]) {
     // Lumber insertion test
     UnitOfWork uow4(db);
     QtSqlRepository<Lumber> lumbers(db);
-    woodworks::domain::Lumber lumber {
-        .id = {-1},
-        .species = {"Pine"},
-        .length = woodworks::domain::imperial::Length::fromFeet(12),
-        .width = woodworks::domain::imperial::Length::fromInches(4),
-        .thickness = woodworks::domain::imperial::Length::fromInches(1),
-        .drying = woodworks::domain::types::Drying::AIR_DRIED,
-        .surfacing = LumberSurfacing::S4S,
-        .worth = {200},
-        .location = "Storage",
-        .notes = "Test lumber"
-    };
+    woodworks::domain::Lumber lumber(
+        Id{-1}, Species{"Pine"}, Length::fromFeet(12), Length::fromInches(4),
+        Length::fromInches(1), Drying::AIR_DRIED, LumberSurfacing::S4S,
+        Dollar{200}, "Storage", "Test lumber", QByteArray());
     lumbers.add(lumber);
     uow4.commit();
     auto lumber2 = lumbers.get(1);
@@ -108,15 +83,9 @@ int main(int argc, char* argv[]) {
     // Firewood insertion test
     UnitOfWork uow5(db);
     QtSqlRepository<Firewood> firewoods(db);
-    woodworks::domain::Firewood firewood {
-        .id = {-1},
-        .species = {"Birch"},
-        .cubicFeet = 10.0,
-        .drying = woodworks::domain::types::Drying::KILN_DRIED,
-        .cost = {150},
-        .location = "Storage",
-        .notes = "Test firewood"
-    };
+    woodworks::domain::Firewood firewood(
+        Id{-1}, Species{"Birch"}, 10.0, Drying::KILN_DRIED, Dollar{150},
+        "Storage", "Test firewood", QByteArray());
     firewoods.add(firewood);
     uow5.commit();
     auto firewood2 = firewoods.get(1);
@@ -127,21 +96,15 @@ int main(int argc, char* argv[]) {
 
     // Create a log and cut a cookie
     UnitOfWork uow6(db);
-    woodworks::domain::Log log3 {
-        .id = {-1},
-        .species = {"Oak"},
-        .length = woodworks::domain::imperial::Length::fromFeet(10),
-        .diameter = woodworks::domain::imperial::Length::fromInches(12),
-        .quality = {5},
-        .drying = woodworks::domain::types::Drying::KILN_DRIED,
-        .cost = {5000},
-        .location = "Storage",
-        .notes = "Cookie cutting log"
-    };
+    woodworks::domain::Log log3(Id{-1}, Species{"Oak"}, Length::fromFeet(10),
+                                Length::fromInches(12), Quality{5},
+                                Drying::KILN_DRIED, Dollar{5000}, "Storage",
+                                "Cookie cutting log", QByteArray());
     int id = logs.add(log3);
     uow6.commit();
     auto log3_2 = logs.get(id).value();
-    auto cookie3 = log3_2.cutCookie(woodworks::domain::imperial::Length::fromInches(6));
+    auto cookie3 =
+        log3_2.cutCookie(woodworks::domain::imperial::Length::fromInches(6));
 }
 
 #endif

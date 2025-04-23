@@ -1,10 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 project(LogDBProject)
 
+option(CROSS_COMPILE_WINDOWS "Build for Windows using MinGW." OFF)
+if (CROSS_COMPILE_WINDOWS)
+    message(STATUS "Cross compiling for Windows using MinGW.")
+    set(CMAKE_SYSTEM_NAME Windows)
+endif()
+
 # For analysis with clangd.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Require C++17
+# We must switch to C++20 in order to use designated initializers in the code when building with msvc toolchain since the standard
+# is followed far more strictly than with gcc. Designated initializers are technically a C++20 feature.
+# Require C++20 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 

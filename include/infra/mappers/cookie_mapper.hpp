@@ -102,16 +102,14 @@ namespace woodworks::domain {
 
     inline Cookie Cookie::fromRecord(const QSqlRecord& record)
     {
-        return {
-            .id = {record.value("id").toInt()},
-            .species = {record.value("species").toString().toStdString()},
-            .length = Length::fromTicks(record.value("length").toDouble()),
-            .diameter = Length::fromTicks(record.value("diameter").toDouble()),
-            .drying = static_cast<Drying>(record.value("drying").toInt()),
-            .worth = Dollar{record.value("worth").toInt()},
-            .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString(),
-            .imageBuffer = record.value("image").toByteArray()
-        };
+        return Cookie(Id{record.value("id").toInt()},
+                      Species{record.value("species").toString().toStdString()},
+                      Length::fromTicks(record.value("length").toDouble()),
+                      Length::fromTicks(record.value("diameter").toDouble()),
+                      static_cast<Drying>(record.value("drying").toInt()),
+                      Dollar{record.value("worth").toInt()},
+                      record.value("location").toString().toStdString(),
+                      record.value("notes").toString().toStdString(),
+                      record.value("image").toByteArray());
     }
 }

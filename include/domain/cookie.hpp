@@ -29,6 +29,15 @@ namespace woodworks::domain {
         std::string notes;
         QByteArray imageBuffer;  // image data buffer
 
+        Cookie(Id id, Species species, Length length, Length diameter,
+               Drying drying, Dollar worth, std::string location,
+               std::string notes, QByteArray imageBuffer) : 
+              id(id), species(std::move(species)), length(length),
+              diameter(diameter), drying(drying), worth(worth),
+              location(std::move(location)), notes(std::move(notes)),
+              imageBuffer(std::move(imageBuffer))
+        {}
+
         // ---- Mapping -----
         static QString createDbSQL();
         static QString individualViewSQL();
