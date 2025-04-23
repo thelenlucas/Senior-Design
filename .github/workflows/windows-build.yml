@@ -41,8 +41,8 @@ jobs:
       - name: Bundle Qt DLLs with windeployqt
         run: |
           cd build/Release
-          # Qt5 deployment
-          & "$Env:QTDIR\bin\windeployqt.exe" --release logdb.exe
+          $windeploy = (Get-Command windeployqt.exe -ErrorAction Stop).Source
+          & $windeploy --release logdb.exe
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4.6.2
