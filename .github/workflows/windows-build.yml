@@ -1,0 +1,46 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install Qt
+        # You may pin to the exact commit or the version.
+        # uses: jurplel/install-qt-action@12aa0336e1e410b3c6dff5e0722547f7a37e8c60
+        uses: jurplel/install-qt-action@v4.2.1
+        with:
+          # Directory to install Qt
+          dir: # optional
+          # Version of Qt to install
+          version: 5.15.2        
+
+      - name: Configure with CMake
+        run: |
+          mkdir build
+          cd build
+          cmake .. `
+            -G "Visual Studio 17 2022" `
+            -A x64 `
+            -DCMAKE_PREFIX_PATH="$Env:QTDIR" `
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build (Release)
+        run: |
+          cd build
+          cmake --build . --config Release
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: logdb-windows
+          path: build/Release/logdb.exe
