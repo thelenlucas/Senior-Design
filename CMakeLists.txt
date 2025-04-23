@@ -53,7 +53,16 @@ set(UI_FILES
 list(APPEND SOURCES ${UI_FILES})
 
 # Create the executable target.
-add_executable(logdb ${SOURCES})
+if (WIN32)
+  add_executable(logdb
+    WIN32 # Supress console output
+    ${SOURCES}
+  )
+else()
+  add_executable(logdb
+    ${SOURCES}
+  )
+endif()
 # New executable for the test harness. Includes everything except main.cpp
 add_executable(Woodworks_test src/main_testing.cpp ${SOURCES})
 target_link_libraries(Woodworks_test PRIVATE Qt5::Widgets)
