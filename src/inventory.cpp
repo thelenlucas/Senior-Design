@@ -173,6 +173,25 @@ void InventoryPage::slabsCustomContextMenu(const QPoint &pos) {
         }
     });
 
+    contextMenu.addAction("Change Location", [this, index]() {
+        int slabId = index.sibling(index.row(), 0).data().toInt();
+        auto repo = QtSqlRepository<LiveEdgeSlab>::spawn();
+        auto slabOpt = repo.get(slabId);
+    
+        if (slabOpt) {
+            LiveEdgeSlab slab = slabOpt.value();
+            bool ok;
+            QString currentLoc = QString::fromStdString(slab.location);
+            QString newLoc = QInputDialog::getText(this, "Relocate", "Enter new location:", QLineEdit::Normal, currentLoc, &ok);
+            
+            if (ok && !newLoc.isEmpty()) {
+                slab.location = newLoc.toStdString();
+                repo.update(slab);
+                refreshModels();    
+            }
+        }
+    });
+
     // add scrap board
     contextMenu.addAction("Scrap Board", [this, index]() {
         int id = index.sibling(index.row(), 0).data().toInt();
@@ -276,6 +295,25 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
             }
         });
 
+        contextMenu.addAction("Change Location", [this, index]() {
+            int logId = index.sibling(index.row(), 0).data().toInt();
+            auto repo = QtSqlRepository<Log>::spawn();
+            auto logOpt = repo.get(logId);
+        
+            if (logOpt) {
+                Log log = logOpt.value();
+                bool ok;
+                QString currentLoc = QString::fromStdString(log.location);
+                QString newLoc = QInputDialog::getText(this, "Relocate", "Enter new location:", QLineEdit::Normal, currentLoc, &ok);
+                
+                if (ok && !newLoc.isEmpty()) {
+                    log.location = newLoc.toStdString();
+                    repo.update(log);
+                    refreshModels();    
+                }
+            }
+        });
+
         contextMenu.exec(ui->logsTableView->viewport()->mapToGlobal(pos));
     }
 }
@@ -295,6 +333,26 @@ void InventoryPage::cookiesCustomContextMenu(const QPoint& pos) {
         auto cookie = QtSqlRepository<Cookie>::spawn().get(id);
         if (cookie) { scrapPopUp(*cookie, this); refreshModels(); }
     });
+
+    contextMenu.addAction("Change Location", [this, index]() {
+        int cookieId = index.sibling(index.row(), 0).data().toInt();
+        auto repo = QtSqlRepository<Cookie>::spawn();
+        auto cookieOpt = repo.get(cookieId);
+    
+        if (cookieOpt) {
+            Cookie cookie = cookieOpt.value();
+            bool ok;
+            QString currentLoc = QString::fromStdString(cookie.location);
+            QString newLoc = QInputDialog::getText(this, "Relocate", "Enter new location:", QLineEdit::Normal, currentLoc, &ok);
+            
+            if (ok && !newLoc.isEmpty()) {
+                cookie.location = newLoc.toStdString();
+                repo.update(cookie);
+                refreshModels();    
+            }
+        }
+    });
+
     contextMenu.exec(ui->cookiesTableView->viewport()->mapToGlobal(pos));
 }
 
@@ -346,6 +404,25 @@ void InventoryPage::lumberCustomContextMenu(const QPoint& pos) {
         }
     });
 
+    contextMenu.addAction("Change Location", [this, index]() {
+        int lumbId = index.sibling(index.row(), 0).data().toInt();
+        auto repo = QtSqlRepository<Lumber>::spawn();
+        auto lumbOpt = repo.get(lumbId);
+    
+        if (lumbOpt) {
+            Lumber lumber = lumbOpt.value();
+            bool ok;
+            QString currentLoc = QString::fromStdString(lumber.location);
+            QString newLoc = QInputDialog::getText(this, "Relocate", "Enter new location:", QLineEdit::Normal, currentLoc, &ok);
+            
+            if (ok && !newLoc.isEmpty()) {
+                lumber.location = newLoc.toStdString();
+                repo.update(lumber);
+                refreshModels();    
+            }
+        }
+    });
+
     contextMenu.exec(ui->lumberTableView->viewport()->mapToGlobal(pos));
 }
 
@@ -364,6 +441,26 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
         auto fw = QtSqlRepository<Firewood>::spawn().get(id);
         if (fw) { scrapPopUp(*fw, this); refreshModels(); }
     });
+
+    contextMenu.addAction("Change Location", [this, index]() {
+        int firewoodId = index.sibling(index.row(), 0).data().toInt();
+        auto repo = QtSqlRepository<Firewood>::spawn();
+        auto firewoodOpt = repo.get(firewoodId);
+    
+        if (firewoodOpt) {
+            Firewood firewood = firewoodOpt.value();
+            bool ok;
+            QString currentLoc = QString::fromStdString(firewood.location);
+            QString newLoc = QInputDialog::getText(this, "Relocate", "Enter new location:", QLineEdit::Normal, currentLoc, &ok);
+            
+            if (ok && !newLoc.isEmpty()) {
+                firewood.location = newLoc.toStdString();
+                repo.update(firewood);
+                refreshModels();    
+            }
+        }
+    });
+
     contextMenu.exec(ui->firewoodTableView->viewport()->mapToGlobal(pos));
 }
 
