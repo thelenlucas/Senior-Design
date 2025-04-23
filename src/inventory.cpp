@@ -36,6 +36,7 @@
 #include "widgets/slabSurfacingPopup.hpp"
 #include "widgets/dryingPopup.hpp"
 #include "widgets/LumberCuttingWindow.hpp"
+#include "domain/firewood_bundle.hpp"
 
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
@@ -430,35 +431,64 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
     QModelIndex index = ui->firewoodTableView->indexAt(pos);
     if (!index.isValid()) return;
     QMenu contextMenu;
-    contextMenu.addAction("Dry Firewood", [this, index]() {
-        int id = index.sibling(index.row(), 0).data().toInt();
-        auto fw = QtSqlRepository<Firewood>::spawn().get(id);
-        if (fw) { dryingPopUp(*fw); refreshModels(); }
-    });
-    
-    contextMenu.addAction("Scrap Firewood", [this, index]() {
-        int id = index.sibling(index.row(), 0).data().toInt();
-        auto fw = QtSqlRepository<Firewood>::spawn().get(id);
-        if (fw) { scrapPopUp(*fw, this); refreshModels(); }
-    });
 
-    contextMenu.addAction("Change Location", [this, index]() {
-        int firewoodId = index.sibling(index.row(), 0).data().toInt();
-        auto repo = QtSqlRepository<Firewood>::spawn();
-        auto firewoodOpt = repo.get(firewoodId);
-    
-        if (firewoodOpt) {
-            Firewood firewood = firewoodOpt.value();
-            bool ok;
-            QString currentLoc = QString::fromStdString(firewood.location);
-            QString newLoc = QInputDialog::getText(this, "Relocate", "Enter new location:", QLineEdit::Normal, currentLoc, &ok);
-            
-            if (ok && !newLoc.isEmpty()) {
-                firewood.location = newLoc.toStdString();
-                repo.update(firewood);
-                refreshModels();    
-            }
+    // Add move and delete volume actions for firewood bundles
+    contextMenu.addAction("Move Firewood Volume...", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto fwOpt = QtSqlRepository<Firewood>::spawn().get(id);
+        if (!fwOpt) return;
+        Firewood example = fwOpt.value();
+        // create bundle and get total volume
+        auto bundle = FirewoodBundle::fromExample(example);
+        double maxVol = bundle.totalVolume();
+        bool okVol;
+        double volume = QInputDialog::getDouble(this, "Move Firewood", "Enter volume (cubic feet):", 0, 0, maxVol, 2, &okVol);
+        if (!okVol || volume <= 0) return;
+        bool okLoc;
+        QString newLoc = QInputDialog::getText(this, "New Location", "Enter new location:", QLineEdit::Normal, QString::fromStdString(example.location), &okLoc);
+        if (!okLoc || newLoc.isEmpty()) return;
+        bundle.moveVolume(volume, newLoc.toStdString());
+        refreshModels();
+    });
+    contextMenu.addAction("Delete Firewood Volume...", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto fwOpt = QtSqlRepository<Firewood>::spawn().get(id);
+        if (!fwOpt) return;
+        Firewood example = fwOpt.value();
+        // create bundle and get total volume
+        auto bundleDel = FirewoodBundle::fromExample(example);
+        double maxDel = bundleDel.totalVolume();
+        bool okVol;
+        double volume = QInputDialog::getDouble(this, "Delete Firewood", "Enter volume (cubic feet to delete):", 0, 0, maxDel, 2, &okVol);
+        if (!okVol || volume <= 0) return;
+        auto bundle = FirewoodBundle::fromExample(example);
+        bundle.deleteVolume(volume);
+        refreshModels();
+    });
+    contextMenu.addAction("Dry Firewood Volume...", [this, index]() {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto fwOpt = QtSqlRepository<Firewood>::spawn().get(id);
+        if (!fwOpt) return;
+        Firewood example = fwOpt.value();
+        auto bundle = FirewoodBundle::fromExample(example);
+        double maxVol = bundle.totalVolume();
+        bool okVol = false;
+        double volume = QInputDialog::getDouble(this, "Dry Firewood", "Enter volume (cubic feet):", 0, 0, maxVol, 2, &okVol);
+        if (!okVol || volume <= 0) return;
+        using woodworks::domain::types::allowedTransitions;
+        using woodworks::domain::types::toString;
+        auto allowed = allowedTransitions(example.drying);
+        QStringList dryingOptions;
+        for (auto state : allowed) {
+            dryingOptions << QString::fromStdString(toString(state));
         }
+        bool okDry = false;
+        QString sel = QInputDialog::getItem(this, "Dry Firewood", "Select drying:", dryingOptions, 0, false, &okDry);
+        if (!okDry) return;
+        int selectedIndex = dryingOptions.indexOf(sel);
+        types::Drying newDry = allowed[selectedIndex];
+        bundle.dryVolume(volume, newDry);
+        refreshModels();
     });
 
     contextMenu.exec(ui->firewoodTableView->viewport()->mapToGlobal(pos));
