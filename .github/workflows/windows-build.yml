@@ -22,7 +22,8 @@ jobs:
           # Directory to install Qt
           dir: # optional
           # Version of Qt to install
-          version: 5.15.2        
+          version: 5.15.2
+          modules: qtwebengine
 
       - name: Configure with CMake
         run: |
