@@ -16,6 +16,7 @@
 #include <QFormLayout>
 #include <QHeaderView>
 #include <QHBoxLayout>
+#include <QMenu>
 
 #include "adjust_log_length_dialog.hpp"
 #include "cutlist.hpp"
@@ -41,8 +42,15 @@ CutlistPage::CutlistPage(QWidget *parent) : QWidget(parent), ui(new Ui::CutlistP
     connect(ui->markCompleteFinishedButton, &QPushButton::clicked, this, &CutlistPage::partCompleteFinished);
     connect(ui->projectSelectorCombo, &QComboBox::currentTextChanged, this, &CutlistPage::refreshModels);
 
+    // Subscribe to repository changes and auto-refresh when data updates
+    connect(&RepositoryNotifier::instance(), &RepositoryNotifier::repositoryChanged,
+            this, &CutlistPage::refreshModels);
+
     updateProjects();
     refreshModels();
+    ui->orderMarkerTable->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->orderMarkerTable, &QWidget::customContextMenuRequested,
+            this, &CutlistPage::cutsCustomContextMenu);
 }
 
 void CutlistPage::newPart()
@@ -274,6 +282,26 @@ void CutlistPage::updateProjects()
     }
     // Update the cutlist table
     refreshModels();
+}
+
+// Custom context menu for deleting a planned cut
+void CutlistPage::cutsCustomContextMenu(const QPoint &pos)
+{
+    QModelIndex index = ui->orderMarkerTable->indexAt(pos);
+    if (!index.isValid()) {
+        return;
+    }
+    QMenu contextMenu(this);
+    contextMenu.addAction("Delete Cut", [this, index]() {
+        int cutId = index.sibling(index.row(), 0).data().toInt();
+        auto repo = QtSqlRepository<CustomCut>::spawn();
+        if (QMessageBox::question(this, "Delete Cut", "Are you sure you want to delete this cut?", QMessageBox::Yes | QMessageBox::No)
+            == QMessageBox::Yes) {
+            repo.remove(cutId);
+            refreshModels();
+        }
+    });
+    contextMenu.exec(ui->orderMarkerTable->viewport()->mapToGlobal(pos));
 }
 
 CutlistPage::~CutlistPage()

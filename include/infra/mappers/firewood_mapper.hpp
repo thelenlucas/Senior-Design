@@ -3,12 +3,13 @@
 #include "view_helpers.hpp"
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QString>
 
 namespace woodworks::domain
 {
     inline QString Firewood::createDbSQL()
     {
-        return u8R"(
+        return QString::fromStdString(u8R"(
             CREATE TABLE IF NOT EXISTS firewood (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 species TEXT NOT NULL,
@@ -19,7 +20,7 @@ namespace woodworks::domain
                 notes TEXT,
                 image BLOB
             )
-        )";
+        )");
     }
 
     // No individual view for firewood, but we still need to define the function
@@ -42,14 +43,19 @@ namespace woodworks::domain
         return woodworks::infra::makeGroupedViewSQL(
             "display_firewood_grouped", "firewood",
             QStringList{
+                "id AS 'ID'",
                 "species AS 'Species'",
+                "location AS 'Location'",
                 "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
                 "ROUND(sum(cubicFeet),2) AS 'Cubic Feet'",
                 "ROUND(sum(cubicFeet)/128.0,2) AS 'Chords'",
                 "ROUND(SUM(cost)/100.0,2) AS 'Cost ($)'"},
             QStringList{
                 "species",
-                "drying"});
+                "drying",
+                "location"
+            }
+        );
     }
     inline QString Firewood::insertSQL()
     {

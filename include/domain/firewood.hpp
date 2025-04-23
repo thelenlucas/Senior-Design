@@ -68,7 +68,8 @@ namespace woodworks::domain {
         static bool matches(const Firewood& item, const Firewood& example) noexcept {
             return item.species.name == example.species.name &&
                    item.location == example.location &&
-                   item.drying == example.drying;
+                   item.drying == example.drying &&
+                   item.location == example.location;
         }
     };
 }
