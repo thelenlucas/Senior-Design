@@ -279,7 +279,7 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
             }
         });
 
-        contextMenu.addAction("Break Firewood", [this, index]() {
+        contextMenu.addAction("Break into Firewood", [this, index]() {
             // Get the log ID from the model
             int logId = index.sibling(index.row(), 0).data().toInt();
             std::cout << "Log ID: " << logId << std::endl;
@@ -288,9 +288,9 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
             if (log) {
                 // Show a dialog to cut firewood
                 bool ok;
-                double length = QInputDialog::getDouble(this, "Cut Firewood", "Enter length (in):", 0, 0, log.value().length.toInches(), 2, &ok);
+                double length = QInputDialog::getDouble(this, "Cut Firewood", "Enter length (ft):", 0, 0, log.value().length.toFeet(), 2, &ok);
                 if (ok) {
-                    log->cutFirewood(Length::fromInches(length));
+                    log->cutFirewood(Length::fromFeet(length));
                     refreshModels();
                 }
             }

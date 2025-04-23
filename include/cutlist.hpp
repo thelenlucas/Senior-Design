@@ -11,6 +11,7 @@
 #include <QStack>
 #include <QString>
 #include <QVariant>
+#include <QPoint>
 
 namespace Ui
 {
@@ -32,6 +33,7 @@ class CutlistPage : public QWidget
     void partCompleteRough();
     void partCompleteFinished();
     void refreshModels();
+    void cutsCustomContextMenu(const QPoint &pos);
     
     private:
     Ui::CutlistPage* ui;
