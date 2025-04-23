@@ -13,32 +13,32 @@ using namespace woodworks::domain::imperial;
 
 namespace woodworks::domain {
     struct Lumber {
-        Id id;
-        Species species;
-        Length length;
-        Length width;
-        Length thickness;
-        Drying drying;
-        LumberSurfacing surfacing;
-        Dollar worth;
-        std::string location;
-        std::string notes;
-        QByteArray imageBuffer;  // image data buffer
+        Id id{-1};
+        Species species{""};
+        Length length{Length::fromTicks(0)};
+        Length width{Length::fromTicks(0)};
+        Length thickness{Length::fromTicks(0)};
+        Drying drying{Drying::GREEN};
+        LumberSurfacing surfacing{LumberSurfacing::S4S};
+        Dollar worth{0};
+        std::string location{""};
+        std::string notes{""};
+        QByteArray imageBuffer{};  // image data buffer
 
         inline static Lumber uninitialized() {
-            return Lumber{
-                .id = Id{ -1 },
-                .species = Species{""},
-                .length = Length::fromTicks(0),
-                .width = Length::fromTicks(0),
-                .thickness = Length::fromTicks(0),
-                .drying = Drying::GREEN,
-                .surfacing = LumberSurfacing::RGH,
-                .worth = Dollar{0},
-                .location = "",
-                .notes = "",
-                .imageBuffer = QByteArray(),
-            };
+            Lumber lumber;
+            lumber.id = Id{-1};
+            lumber.species = Species{""};
+            lumber.length = Length::fromTicks(0);
+            lumber.width = Length::fromTicks(0);
+            lumber.thickness = Length::fromTicks(0);
+            lumber.drying = Drying::GREEN;
+            lumber.surfacing = LumberSurfacing::S4S;
+            lumber.worth = Dollar{0};
+            lumber.location = "";
+            lumber.notes = "";
+            lumber.imageBuffer = QByteArray();
+            return lumber;
         }
 
         // HTML

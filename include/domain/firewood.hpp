@@ -15,18 +15,18 @@ using namespace woodworks::domain::imperial;
 namespace woodworks::domain {
     struct Firewood {
         // Unique id per bundle
-        Id id;
+        Id id{-1};
         // Species of the original log
-        Species species;
+        Species species{""};
         // Cubic feet of the firewood
-        double cubicFeet;
+        double cubicFeet{0.0};
         // Drying
-        Drying drying;
+        Drying drying{Drying::GREEN};
         // Cost in cents
-        Dollar cost;
-        std::string location;
-        std::string notes;
-        QByteArray imageBuffer;  // image data buffer
+        Dollar cost{0};
+        std::string location{""};
+        std::string notes{""};
+        QByteArray imageBuffer{};  // image data buffer
 
         // Chords - a unit of measure for firewood, equal to 128 cubic feet
         // 1 chord = 128 cubic feet
@@ -35,18 +35,17 @@ namespace woodworks::domain {
             return cubicFeet / 128.0;
         }
 
-        static Firewood uninitialized() noexcept
-        {
-            return Firewood{
-                .id = Id{-1},
-                .species = Species{""},
-                .cubicFeet = 0.0,
-                .drying = Drying::GREEN,
-                .cost = Dollar{0},
-                .location = "",
-                .notes = "",
-                .imageBuffer = QByteArray(),
-            };
+        static Firewood uninitialized() {
+            Firewood fw;
+            fw.id = Id{-1};
+            fw.species = Species{""};
+            fw.cubicFeet = 0.0;
+            fw.drying = Drying::GREEN;
+            fw.cost = Dollar{0};
+            fw.location = "";
+            fw.notes = "";
+            fw.imageBuffer = QByteArray();
+            return fw;
         }
 
         // HTML

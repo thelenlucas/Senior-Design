@@ -25,18 +25,18 @@ int main(int argc, char* argv[]) {
     UnitOfWork uow(db);
     QtSqlRepository<Log> logs(db);
 
-    woodworks::domain::Log log {
-        .id = {-1},
-        .species = {"Oak"},
-        .length = woodworks::domain::imperial::Length::fromFeet(10),
-        .diameter = woodworks::domain::imperial::Length::fromInches(12),
-        .quality = {5},
-        .drying = woodworks::domain::types::Drying::KILN_DRIED,
-        .cost = {500},
-        .location = "Storage",
-        .notes = "Test log"
-    };
-    logs.add(log);
+    auto log1 = std::make_shared<Log>();
+    log1->id = Id{-1};
+    log1->species = Species{"Oak"};
+    log1->length = woodworks::domain::imperial::Length::fromFeet(10);
+    log1->diameter = woodworks::domain::imperial::Length::fromInches(12);
+    log1->quality = Quality{5};
+    log1->drying = woodworks::domain::types::Drying::KILN_DRIED;
+    log1->cost = Dollar{500};
+    log1->location = "Storage";
+    log1->notes = "Test log";
+
+    logs.add(*log1);
     uow.commit();
     auto log2 = logs.get(1);
     assert(log2.has_value());
@@ -44,104 +44,104 @@ int main(int argc, char* argv[]) {
     UnitOfWork uow2(db);
     // Cookie insertion test
     QtSqlRepository<Cookie> cookies(db);
-    woodworks::domain::Cookie cookie {
-        .id = {-1},
-        .species = {"Maple"},
-        .length = woodworks::domain::imperial::Length::fromFeet(5),
-        .diameter = woodworks::domain::imperial::Length::fromInches(6),
-        .drying = woodworks::domain::types::Drying::AIR_DRIED,
-        .worth = {100},
-        .location = "Warehouse",
-        .notes = "Test cookie"
-    };
-    cookies.add(cookie);
+    auto cookie2 = std::make_shared<Cookie>();
+    cookie2->id = Id{-1};
+    cookie2->species = Species{"Maple"};
+    cookie2->length = woodworks::domain::imperial::Length::fromFeet(5);
+    cookie2->diameter = woodworks::domain::imperial::Length::fromInches(6);
+    cookie2->drying = woodworks::domain::types::Drying::AIR_DRIED;
+    cookie2->worth = Dollar{100};
+    cookie2->location = "Warehouse";
+    cookie2->notes = "Test cookie";
+
+    cookies.add(*cookie2);
     uow2.commit();
-    auto cookie2 = cookies.get(1);
-    assert(cookie2.has_value());
-    assert(cookie2->species.name == "Maple");
+    auto cookie3 = cookies.get(1);
+    assert(cookie3.has_value());
+    assert(cookie3->species.name == "Maple");
 
     // LiveEdgeSlab insertion test
     UnitOfWork uow3(db);
     QtSqlRepository<LiveEdgeSlab> slabs(db);
-    woodworks::domain::LiveEdgeSlab slab {
-        .id = {-1},
-        .species = {"Walnut"},
-        .length = woodworks::domain::imperial::Length::fromFeet(8),
-        .width = woodworks::domain::imperial::Length::fromInches(10),
-        .thickness = woodworks::domain::imperial::Length::fromInches(2),
-        .drying = woodworks::domain::types::Drying::KILN_DRIED,
-        .surfacing = SlabSurfacing::RGH,
-        .worth = {300},
-        .location = "Shop",
-        .notes = "Test slab"
-    };
-    slabs.add(slab);
+    auto slab2 = std::make_shared<LiveEdgeSlab>();
+    slab2->id = Id{-1};
+    slab2->species = Species{"Walnut"};
+    slab2->length = woodworks::domain::imperial::Length::fromFeet(8);
+    slab2->width = woodworks::domain::imperial::Length::fromInches(10);
+    slab2->thickness = woodworks::domain::imperial::Length::fromInches(2);
+    slab2->drying = woodworks::domain::types::Drying::KILN_DRIED;
+    slab2->surfacing = SlabSurfacing::RGH;
+    slab2->worth = Dollar{300};
+    slab2->location = "Shop";
+    slab2->notes = "Test slab";
+
+    slabs.add(*slab2);
     uow3.commit();
-    auto slab2 = slabs.get(1);
-    assert(slab2.has_value());
-    assert(slab2->species.name == "Walnut");
-    assert(slab2->length.toInches() == 8 * 12);
+    auto slab3 = slabs.get(1);
+    assert(slab3.has_value());
+    assert(slab3->species.name == "Walnut");
+    assert(slab3->length.toInches() == 8 * 12);
 
     // Lumber insertion test
     UnitOfWork uow4(db);
     QtSqlRepository<Lumber> lumbers(db);
-    woodworks::domain::Lumber lumber {
-        .id = {-1},
-        .species = {"Pine"},
-        .length = woodworks::domain::imperial::Length::fromFeet(12),
-        .width = woodworks::domain::imperial::Length::fromInches(4),
-        .thickness = woodworks::domain::imperial::Length::fromInches(1),
-        .drying = woodworks::domain::types::Drying::AIR_DRIED,
-        .surfacing = LumberSurfacing::S4S,
-        .worth = {200},
-        .location = "Storage",
-        .notes = "Test lumber"
-    };
-    lumbers.add(lumber);
+    auto lumber2 = std::make_shared<Lumber>();
+    lumber2->id = Id{-1};
+    lumber2->species = Species{"Pine"};
+    lumber2->length = woodworks::domain::imperial::Length::fromFeet(12);
+    lumber2->width = woodworks::domain::imperial::Length::fromInches(4);
+    lumber2->thickness = woodworks::domain::imperial::Length::fromInches(1);
+    lumber2->drying = woodworks::domain::types::Drying::AIR_DRIED;
+    lumber2->surfacing = LumberSurfacing::S4S;
+    lumber2->worth = Dollar{200};
+    lumber2->location = "Storage";
+    lumber2->notes = "Test lumber";
+
+    lumbers.add(*lumber2);
     uow4.commit();
-    auto lumber2 = lumbers.get(1);
-    assert(lumber2.has_value());
-    assert(lumber2->species.name == "Pine");
-    assert(lumber2->length.toInches() == 12 * 12);
-    assert(lumber2->width.toInches() == 4);
+    auto lumber3 = lumbers.get(1);
+    assert(lumber3.has_value());
+    assert(lumber3->species.name == "Pine");
+    assert(lumber3->length.toInches() == 12 * 12);
+    assert(lumber3->width.toInches() == 4);
 
     // Firewood insertion test
     UnitOfWork uow5(db);
     QtSqlRepository<Firewood> firewoods(db);
-    woodworks::domain::Firewood firewood {
-        .id = {-1},
-        .species = {"Birch"},
-        .cubicFeet = 10.0,
-        .drying = woodworks::domain::types::Drying::KILN_DRIED,
-        .cost = {150},
-        .location = "Storage",
-        .notes = "Test firewood"
-    };
-    firewoods.add(firewood);
+    auto firewood2 = std::make_shared<Firewood>();
+    firewood2->id = Id{-1};
+    firewood2->species = Species{"Birch"};
+    firewood2->cubicFeet = 10.0;
+    firewood2->drying = woodworks::domain::types::Drying::KILN_DRIED;
+    firewood2->cost = Dollar{150};
+    firewood2->location = "Storage";
+    firewood2->notes = "Test firewood";
+
+    firewoods.add(*firewood2);
     uow5.commit();
-    auto firewood2 = firewoods.get(1);
-    assert(firewood2.has_value());
-    assert(firewood2->species.name == "Birch");
-    assert(firewood2->cubicFeet == 10.0);
-    assert(firewood2->toChords() == 10.0 / 128.0);
+    auto firewood3 = firewoods.get(1);
+    assert(firewood3.has_value());
+    assert(firewood3->species.name == "Birch");
+    assert(firewood3->cubicFeet == 10.0);
+    assert(firewood3->toChords() == 10.0 / 128.0);
 
     // Create a log and cut a cookie
     UnitOfWork uow6(db);
-    woodworks::domain::Log log3 {
-        .id = {-1},
-        .species = {"Oak"},
-        .length = woodworks::domain::imperial::Length::fromFeet(10),
-        .diameter = woodworks::domain::imperial::Length::fromInches(12),
-        .quality = {5},
-        .drying = woodworks::domain::types::Drying::KILN_DRIED,
-        .cost = {5000},
-        .location = "Storage",
-        .notes = "Cookie cutting log"
-    };
-    int id = logs.add(log3);
+    auto log3 = std::make_shared<Log>();
+    log3->id = Id{-1};
+    log3->species = Species{"Oak"};
+    log3->length = woodworks::domain::imperial::Length::fromFeet(10);
+    log3->diameter = woodworks::domain::imperial::Length::fromInches(12);
+    log3->quality = Quality{5};
+    log3->drying = woodworks::domain::types::Drying::KILN_DRIED;
+    log3->cost = Dollar{5000};
+    log3->location = "Storage";
+    log3->notes = "Cookie cutting log";
+
+    int id = logs.add(*log3);
     uow6.commit();
     auto log3_2 = logs.get(id).value();
-    auto cookie3 = log3_2.cutCookie(woodworks::domain::imperial::Length::fromInches(6));
+    auto cookie4 = log3_2.cutCookie(woodworks::domain::imperial::Length::fromInches(6));
 }
 
 #endif

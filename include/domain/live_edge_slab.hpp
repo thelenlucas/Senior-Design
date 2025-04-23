@@ -14,42 +14,41 @@ using namespace woodworks::domain::imperial;
 namespace woodworks::domain {
     struct LiveEdgeSlab {
         // Unique id per slab
-        Id id;
+        Id id{-1};
         // Species of the slab
-        Species species;
+        Species species{""};
         // Length of the slab
-        Length length;
+        Length length{Length::fromTicks(0)};
         // Width of the slab
-        Length width;
+        Length width{Length::fromTicks(0)};
         // Thickness of the slab
-        Length thickness;
+        Length thickness{Length::fromTicks(0)};
         // Drying
-        Drying drying;
+        Drying drying{Drying::GREEN};
         // Surfacing
-        SlabSurfacing surfacing;
+        SlabSurfacing surfacing{SlabSurfacing::RGH};
         // Dollar worth
-        Dollar worth;
+        Dollar worth{0};
         // Location
-        std::string location;
+        std::string location{""};
         // Notes
-        std::string notes;
-        QByteArray imageBuffer;  // image data buffer
+        std::string notes{""};
+        QByteArray imageBuffer{};  // image data buffer
 
-        static LiveEdgeSlab uninitialized() noexcept
-        {
-            return LiveEdgeSlab{
-                .id = Id{-1},
-                .species = Species{""},
-                .length = Length::fromTicks(0),
-                .width = Length::fromTicks(0),
-                .thickness = Length::fromTicks(0),
-                .drying = Drying::GREEN,
-                .surfacing = SlabSurfacing::RGH,
-                .worth = Dollar{0},
-                .location = "",
-                .notes = "",
-                .imageBuffer = QByteArray(),
-            };
+        static LiveEdgeSlab uninitialized() {
+            LiveEdgeSlab slab;
+            slab.id = Id{-1};
+            slab.species = Species{""};
+            slab.length = Length::fromTicks(0);
+            slab.width = Length::fromTicks(0);
+            slab.thickness = Length::fromTicks(0);
+            slab.drying = Drying::GREEN;
+            slab.surfacing = SlabSurfacing::RGH;
+            slab.worth = Dollar{0};
+            slab.location = "";
+            slab.notes = "";
+            slab.imageBuffer = QByteArray();
+            return slab;
         }
 
         // HTML

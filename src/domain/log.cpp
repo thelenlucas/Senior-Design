@@ -61,16 +61,15 @@ namespace woodworks::domain {
 
         
         // Create the cookie
-        Cookie cookie {
-            .id = {-1},
-            .species = species,
-            .length = length,
-            .diameter = diameter,
-            .drying = drying,
-            .worth = cookieWorth,
-            .location = "",
-            .notes = ""
-        };
+        Cookie cookie;
+        cookie.id = Id{-1};
+        cookie.species = species;
+        cookie.length = length;
+        cookie.diameter = diameter;
+        cookie.drying = drying;
+        cookie.worth = cookieWorth;
+        cookie.location = "";
+        cookie.notes = "";
 
         // Insert the cookie into the database
         auto& deebee = woodworks::infra::DbConnection::instance();

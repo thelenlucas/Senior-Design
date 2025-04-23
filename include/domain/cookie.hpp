@@ -14,36 +14,35 @@ using namespace woodworks::domain::imperial;
 namespace woodworks::domain {
     struct Cookie {
         // Unique id per cookie
-        Id id;
+        Id id{-1};
         // Species of the cookie
-        Species species;
+        Species species{""};
         // Length of the cookie (along it's cylindrical axis)
-        Length length;
+        Length length{Length::fromTicks(0)};
         // Diameter of the cookie
-        Length diameter;
+        Length diameter{Length::fromTicks(0)};
         // Drying
-        Drying drying;
+        Drying drying{Drying::GREEN};
         // Worth 
-        Dollar worth;
+        Dollar worth{0};
         // Location
-        std::string location;
+        std::string location{""};
         // Notes
-        std::string notes;
-        QByteArray imageBuffer;  // image data buffer
+        std::string notes{""};
+        QByteArray imageBuffer{};  // image data buffer
 
-        static Cookie uninitialized() noexcept
-        {
-            return Cookie{
-                .id = Id{-1},
-                .species = Species{""},
-                .length = Length::fromTicks(0),
-                .diameter = Length::fromTicks(0),
-                .drying = Drying::GREEN,
-                .worth = Dollar{0},
-                .location = "",
-                .notes = "",
-                .imageBuffer = QByteArray(),
-            };
+        static Cookie uninitialized() {
+            Cookie cookie;
+            cookie.id = Id{-1};
+            cookie.species = Species{""};
+            cookie.length = Length::fromTicks(0);
+            cookie.diameter = Length::fromTicks(0);
+            cookie.drying = Drying::GREEN;
+            cookie.worth = Dollar{0};
+            cookie.location = "";
+            cookie.notes = "";
+            cookie.imageBuffer = QByteArray();
+            return cookie;
         }
 
         // HTML

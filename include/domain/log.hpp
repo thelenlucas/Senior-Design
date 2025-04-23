@@ -15,22 +15,22 @@ using namespace woodworks::domain::imperial;
 namespace woodworks::domain {
     struct Log {
         // Unique id per log
-        Id id;
+        Id id{-1};
         // Species of the log
-        Species species;
+        Species species{""};
         // Length of the log
-        Length length;
+        Length length{Length::fromTicks(0)};
         // Diameter of the log
-        Length diameter;
+        Length diameter{Length::fromTicks(0)};
         // Quality (1-5)
-        Quality quality;
+        Quality quality{Quality{-1}};
         // Drying
-        Drying drying;
+        Drying drying{Drying::GREEN};
         // Cost in cents
-        Dollar cost;
-        std::string location;
-        std::string notes;
-        QByteArray imageBuffer;  // image data buffer
+        Dollar cost{0};
+        std::string location{""};
+        std::string notes{""};
+        QByteArray imageBuffer{};  // image data buffer
 
         // Validity check
         bool isValid() const noexcept
@@ -45,20 +45,19 @@ namespace woodworks::domain {
         // Cuts a length of firewood from the log, inserts it into the database, and updates the log.
         Firewood cutFirewood(Length cutLength);
 
-        static Log uninitialized() noexcept
-        {
-            return Log{
-                .id = Id{-1},
-                .species = Species{""},
-                .length = Length::fromTicks(0),
-                .diameter = Length::fromTicks(0),
-                .quality = Quality{-1},
-                .drying = Drying::GREEN,
-                .cost = Dollar{0},
-                .location = "",
-                .notes = "",
-                .imageBuffer = QByteArray(),
-            };
+        static Log uninitialized() {
+            Log log;
+            log.id = Id{-1};
+            log.species = Species{""};
+            log.length = Length::fromTicks(0);
+            log.diameter = Length::fromTicks(0);
+            log.quality = Quality{-1};
+            log.drying = Drying::GREEN;
+            log.cost = Dollar{0};
+            log.location = "";
+            log.notes = "";
+            log.imageBuffer = QByteArray();
+            return log;
         }
 
         // ---- Mapping -----
