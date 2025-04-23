@@ -21,7 +21,6 @@
 #include "cutlist.hpp"
 #include "standard_cut_dialog.hpp"
 #include "ui_cutlist.h"
-#include "validate_log_length_dialog.hpp"
 #include "domain/cutlist.hpp"
 #include "infra/repository.hpp"
 
@@ -161,6 +160,32 @@ void CutlistPage::deleteProject()
 
 void CutlistPage::cutLog()
 {
+    auto log = QtSqlRepository<Log>::spawn().get(ui->spinBox->value());
+    if (log)
+    {
+        // Popup to confirm the cut length in inches, with qtdialog
+        QDialog dialog(this);
+        QFormLayout form(&dialog);
+        form.setSpacing(10);
+        form.setContentsMargins(10, 10, 10, 10);
+        auto *lengthEdit = new QDoubleSpinBox(&dialog);
+        lengthEdit->setRange(0, log.value().length.toInches());
+        lengthEdit->setSuffix(" in");
+        form.addRow("Length:", lengthEdit);
+        QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
+        form.addRow(&buttonBox);
+        QObject::connect(&buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+        QObject::connect(&buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+        if (dialog.exec() != QDialog::Accepted)
+            return;
+        // Get the length used
+        double lengthUsed = lengthEdit->text().toDouble();
+        // Update the log
+        log.value().cut(Length::fromInches(lengthUsed));
+        QtSqlRepository<Log>::spawn().update(log.value());
+
+        refreshModels();
+    }
 }
 
 void CutlistPage::partCompleteRough()

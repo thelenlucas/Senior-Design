@@ -1,5 +1,3 @@
-#pragma once
-
 #include <QSqlError>
 #include <QSqlQuery>
 #include <mutex>
