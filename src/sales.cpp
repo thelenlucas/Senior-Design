@@ -138,6 +138,15 @@ void SalesPage::onSaveHtmlButtonClicked()
     QTextStream out(&file);
     out << QString::fromStdString(html);
     file.close();
+
+    // Show success message
+    QMessageBox msgBox(this);
+    msgBox.setText("File Saved");
+    msgBox.setInformativeText("Sales exported successfully to " + filename);
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void SalesPage::addProduct(Product product)

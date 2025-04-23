@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
+#include <cmath>
 #include <QByteArray>
 #include <QListWidgetItem>
 
@@ -56,16 +57,19 @@ namespace woodworks::sales
         {
             std::string html = "<article class=\"product_card\">\n";
             if (!imageBase64.isEmpty()) {
-                html += "<img src=\"data:image/png;base64," + imageBase64.toStdString() + "\" alt=\"Product Image\" class=\"product_image\"/>\n";
+                html += "<img src=\"data:image/png;base64," + imageBase64.toStdString() + "\" alt=\"Product Image\" class=\"product_image\" style=\"max-width:300px; max-height:300px;\"/>\n";
             }
             html += "<div class=\"product_details\">\n";
-            html += "<h3>" + toString(type) + " " + std::to_string(number) + " - " + species + "</h3>\n";
+            std::ostringstream num_ss;
+            num_ss << std::setw(3) << std::setfill('0') << number;
+            std::string num_str = num_ss.str();
+            html += "<h3>" + toString(type) + " #" + num_str + " - " + species + "</h3>\n";
             if (!detailsLines.empty()) {
                 for (const auto &detail : detailsLines) {
                     html += "<p>" + detail + "</p>\n";
                 }
             }
-            html += "<p class=\"price\">Price: $" + std::to_string(price) + " / " + pricingUnits + "</p>\n";
+            html += "<p class=\"price\">Price: $" + std::to_string(static_cast<int>(std::round(price))) + " / " + pricingUnits + "</p>\n";
             html += "</article>";
 
             return html;
@@ -80,7 +84,7 @@ namespace woodworks::sales
                 parts.push_back(detail);
             }
             std::ostringstream oss;
-            oss << std::fixed << std::setprecision(2) << price;
+            oss << static_cast<int>(std::round(price));
             parts.push_back("$" + oss.str() + " / " + pricingUnits);
             std::string res;
             for (size_t i = 0; i < parts.size(); ++i) {

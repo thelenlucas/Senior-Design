@@ -45,6 +45,7 @@ namespace woodworks::sales
                                     const std::string &id,
                                     const std::vector<Product> &items)
             {
+                if (items.empty()) return;
                 html += "<section id=\"" + id + "\">\n";
                 html += "  <h2>" + title + "</h2>\n";
                 html += "  <div class=\"product-grid\">\n";

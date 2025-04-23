@@ -25,6 +25,8 @@ namespace woodworks::domain
         product.price = worth.toCents() / 100.0;
         product.pricingUnits = "Cookie";
 
+        product.imageBase64 = imageBuffer.toBase64();
+
         return product;
     }
 
@@ -33,12 +35,14 @@ namespace woodworks::domain
         Product product;
         product.type = SLAB;
         product.species = species.name;
-        product.addDetails("Width: " + width.toInchesString());
-        product.addDetails("Thickness: " + thickness.toInchesString());
+        product.addDetails("Width: " + std::to_string(static_cast<int>(width.toInches())));
+        product.addDetails("Thickness: " + std::to_string(static_cast<int>(thickness.toInches())));
         product.addDetails("Surfacing: " + toString(surfacing));
         product.addDetails("Seasoning: " + toString(drying));
         product.price = worth.toCents() / 100.0;
         product.pricingUnits = "Foot";
+
+        product.imageBase64 = imageBuffer.toBase64();
 
         return product;
     }
@@ -54,18 +58,20 @@ namespace woodworks::domain
         // otherwise, it should be in eighths of an inch as "E"/8
         if (std::fmod(thickness.toInches(), 0.25) == 0)
         {
-            product.addDetails("Thickness: " + std::to_string(thickness.toQuarters()) + "Q");
+            product.addDetails("Thickness: " + std::to_string(thickness.toQuarters()) + "/4");
         }
         else
         {
-            product.addDetails("Thickness: " + std::to_string(thickness.toTicks() / 2) + "E");
+            product.addDetails("Thickness: " + std::to_string(thickness.toTicks() / 2) + "/8");
         }
 
-        product.addDetails("Length: " + length.toInchesString());
+        product.addDetails("Width: " + std::to_string(static_cast<int>(width.toInches())) + " inches");
         product.addDetails("Surfacing: " + toString(surfacing));
         product.addDetails("Seasoning: " + toString(drying));
         product.price = worth.toCents() / 100.0;
         product.pricingUnits = "Foot";
+
+        product.imageBase64 = imageBuffer.toBase64();
 
         return product;
     }
@@ -75,10 +81,11 @@ namespace woodworks::domain
         Product product;
         product.type = FIREWOOD;
         product.species = species.name;
-        product.addDetails("Cubic Feet: " + std::to_string(cubicFeet));
         product.addDetails("Seasoning: " + toString(drying));
         product.price = 0.0;
         product.pricingUnits = "Bundle";
+
+        product.imageBase64 = imageBuffer.toBase64();
 
         return product;
     }
