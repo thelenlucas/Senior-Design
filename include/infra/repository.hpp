@@ -98,14 +98,13 @@ signals:
 
             void update(const T& item) {
                 QSqlQuery q(db_);
-                q.prepare(T::updateSQL());
-                std::cout << "Updating item with id: " << item.id.id << std::endl;
-                if (!q.exec()) {
-                    throw std::runtime_error("Failed to prepare update statement" + q.lastError().text().toStdString());
+                if (!q.prepare(T::updateSQL())) {
+                    throw std::runtime_error("Failed to prepare update statement: " + q.lastError().text().toStdString());
                 }
+                std::cout << "Updating item with id: " << item.id.id << std::endl;
                 T::bindForUpdate(q, item);
                 if (!q.exec()) {
-                    throw std::runtime_error("Failed to update item");
+                    throw std::runtime_error("Failed to update item: " + q.lastError().text().toStdString());
                 }
                 RepositoryNotifier::instance().repositoryChanged();
             }
