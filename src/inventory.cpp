@@ -116,7 +116,7 @@ InventoryPage::InventoryPage(QWidget *parent)
     connect(ui->logsTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickLogTable);
     connect(ui->cookiesTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickCookieTable);
     connect(ui->slabsTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickSlabTable);
-    connect(ui->lumberTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickSlabTable);
+    connect(ui->lumberTableView, &QTableView::doubleClicked, this, &InventoryPage::onDoubleClickLumberTable);
 
     // Context menu policy
     ui->logsTableView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -459,7 +459,7 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
         auto bundleDel = FirewoodBundle::fromExample(example);
         double maxDel = bundleDel.totalVolume();
         bool okVol;
-        double volume = QInputDialog::getDouble(this, "Delete Firewood", "Enter volume (cubic feet to delete):", 0, 0, maxDel, 2, &okVol);
+        double volume = QInputDialog::getDouble(this, "Delete Firewood", "Enter volume (ft^3):", 0, 0, maxDel, 2, &okVol);
         if (!okVol || volume <= 0) return;
         auto bundle = FirewoodBundle::fromExample(example);
         bundle.deleteVolume(volume);
@@ -473,7 +473,7 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
         auto bundle = FirewoodBundle::fromExample(example);
         double maxVol = bundle.totalVolume();
         bool okVol = false;
-        double volume = QInputDialog::getDouble(this, "Dry Firewood", "Enter volume (cubic feet):", 0, 0, maxVol, 2, &okVol);
+        double volume = QInputDialog::getDouble(this, "Dry Firewood", "Enter volume (ft^3):", 0, 0, maxVol, 2, &okVol);
         if (!okVol || volume <= 0) return;
         using woodworks::domain::types::allowedTransitions;
         using woodworks::domain::types::toString;
@@ -496,6 +496,21 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
 
 void InventoryPage::buildFilterWidgets()
 {
+    // Get old values, if any
+    QString oldLogSpecies = ui->logSpeciesComboBox->currentText();
+    QString oldLogDrying = ui->logDryingComboBox->currentText();
+    QString oldCookieSpecies = ui->cookiesSpeciesCombo->currentText();
+    QString oldCookieDrying = ui->cookieDryingCombo->currentText();
+    QString oldSlabSpecies = ui->slabsSpeciesCombo->currentText();
+    QString oldSlabDrying = ui->slabDryingCombo->currentText();
+    QString oldSlabSurfacing = ui->slabSurfacingCombo->currentText();
+    QString oldLumberSpecies = ui->lumberSpeciesCombo->currentText();
+    QString oldLumberDrying = ui->lumberDryingCombo->currentText();
+    QString oldLumberSurfacing = ui->lumberSurfacingCombo->currentText();
+    QString oldFirewoodSpecies = ui->firewoodSpeciesCombo->currentText();
+    QString oldFirewoodDrying = ui->firewoodDryingCombo->currentText();
+    QString oldLumberThickness = ui->lumberThicknessCombo->currentText();
+
     // speciesComboBox has all the species in the database, pluas an "All" option that filters out nothing.
     QStringList species = getUniqueSpecies(); // Doesn't have an "All" option
     ui->logEntrySpeciesCombo->addItems(species);
@@ -506,12 +521,38 @@ void InventoryPage::buildFilterWidgets()
     ui->slabsSpeciesCombo->addItems(species);
     ui->lumberSpeciesCombo->addItems(species);
     ui->firewoodSpeciesCombo->addItems(species);
-    // Set to "All" by default
-    ui->logSpeciesComboBox->setCurrentIndex(0);
-    ui->cookiesSpeciesCombo->setCurrentIndex(0);
-    ui->slabsSpeciesCombo->setCurrentIndex(0);
-    ui->lumberSpeciesCombo->setCurrentIndex(0);
-    ui->firewoodSpeciesCombo->setCurrentIndex(0);
+    
+    // If our old value exists and is still in the list, set it as the current index
+    if (species.contains(oldLogSpecies))
+    {
+        ui->logSpeciesComboBox->setCurrentText(oldLogSpecies);
+    } else {
+        ui->logSpeciesComboBox->setCurrentIndex(0);
+    }
+    if (species.contains(oldCookieSpecies))
+    {
+        ui->cookiesSpeciesCombo->setCurrentText(oldCookieSpecies);
+    } else {
+        ui->cookiesSpeciesCombo->setCurrentIndex(0);
+    }
+    if (species.contains(oldSlabSpecies))
+    {
+        ui->slabsSpeciesCombo->setCurrentText(oldSlabSpecies);
+    } else {
+        ui->slabsSpeciesCombo->setCurrentIndex(0);
+    }
+    if (species.contains(oldLumberSpecies))
+    {
+        ui->lumberSpeciesCombo->setCurrentText(oldLumberSpecies);
+    } else {
+        ui->lumberSpeciesCombo->setCurrentIndex(0);
+    }
+    if (species.contains(oldFirewoodSpecies))
+    {
+        ui->firewoodSpeciesCombo->setCurrentText(oldFirewoodSpecies);
+    } else {
+        ui->firewoodSpeciesCombo->setCurrentIndex(0);
+    }
 
     QStringList dryings = getUniqueDryingOptions();
     dryings.prepend("All");
@@ -520,25 +561,70 @@ void InventoryPage::buildFilterWidgets()
     ui->slabDryingCombo->addItems(dryings);
     ui->lumberDryingCombo->addItems(dryings);
     ui->firewoodDryingCombo->addItems(dryings);
-    // Set to "All" by default
-    ui->logDryingComboBox->setCurrentIndex(0);
-    ui->cookieDryingCombo->setCurrentIndex(0);
-    ui->slabDryingCombo->setCurrentIndex(0);
-    ui->lumberDryingCombo->setCurrentIndex(0);
-    ui->firewoodDryingCombo->setCurrentIndex(0);
+    // Place back again if we can
+    if (dryings.contains(oldLogDrying))
+    {
+        ui->logDryingComboBox->setCurrentText(oldLogDrying);
+    } else {
+        ui->logDryingComboBox->setCurrentIndex(0);
+    }
+    if (dryings.contains(oldCookieDrying))
+    {
+        ui->cookieDryingCombo->setCurrentText(oldCookieDrying);
+    } else {
+        ui->cookieDryingCombo->setCurrentIndex(0);
+    }
+    if (dryings.contains(oldSlabDrying))
+    {
+        ui->slabDryingCombo->setCurrentText(oldSlabDrying);
+    } else {
+        ui->slabDryingCombo->setCurrentIndex(0);
+    }
+    if (dryings.contains(oldLumberDrying))
+    {
+        ui->lumberDryingCombo->setCurrentText(oldLumberDrying);
+    } else {
+        ui->lumberDryingCombo->setCurrentIndex(0);
+    }
+    if (dryings.contains(oldFirewoodDrying))
+    {
+        ui->firewoodDryingCombo->setCurrentText(oldFirewoodDrying);
+    } else {
+        ui->firewoodDryingCombo->setCurrentIndex(0);
+    }
 
     // Surfacing options for the slabs are different than the ones for the lumber
     ui->slabSurfacingCombo->addItem("All");
-    ui->slabSurfacingCombo->addItems(getUniqueValuesOfColumn("display_slabs", "Surfacing"));
-    ui->slabSurfacingCombo->setCurrentIndex(0);
+    auto surfacings = getUniqueValuesOfColumn("display_slabs", "Surfacing");
+    ui->slabSurfacingCombo->addItems(surfacings);
+    if (surfacings.contains(oldSlabSurfacing))
+    {
+        ui->slabSurfacingCombo->setCurrentText(oldSlabSurfacing);
+    } else {
+        ui->slabSurfacingCombo->setCurrentIndex(0);
+    }
+
+
     ui->lumberSurfacingCombo->addItem("All");
-    ui->lumberSurfacingCombo->addItems(getUniqueValuesOfColumn("display_lumber", "Surfacing"));
-    ui->lumberSurfacingCombo->setCurrentIndex(0);
+    auto lumberSurfacings = getUniqueValuesOfColumn("display_lumber", "Surfacing");
+    ui->lumberSurfacingCombo->addItems(lumberSurfacings);
+    if (lumberSurfacings.contains(oldLumberSurfacing))
+    {
+        ui->lumberSurfacingCombo->setCurrentText(oldLumberSurfacing);
+    } else {
+        ui->lumberSurfacingCombo->setCurrentIndex(0);
+    }
 
     // Since we're displaying lumber thickness in 'quarters'/4, we combo box it instead
     ui->lumberThicknessCombo->addItem("All");
-    ui->lumberThicknessCombo->addItems(getUniqueValuesOfColumn("display_lumber", "Thickness"));
-    ui->lumberThicknessCombo->setCurrentIndex(0);
+    auto thicknesses = getUniqueValuesOfColumn("display_lumber", "Thickness");
+    ui->lumberThicknessCombo->addItems(thicknesses);
+    if (thicknesses.contains(oldLumberThickness))
+    {
+        ui->lumberThicknessCombo->setCurrentText(oldLumberThickness);
+    } else {
+        ui->lumberThicknessCombo->setCurrentIndex(0);
+    }
 
     // Unique locations for log entry
     QStringList locations = getUniqueLocations();
@@ -691,14 +777,14 @@ void InventoryPage::refreshModels()
         ui->lumberTableView->setModel(makeFilteredModel("display_lumber_grouped", lumberFilters, this));
     }
     ui->firewoodTableView->setModel(makeFilteredModel("display_firewood_grouped", firewoodFilters, this));
-    // Hide column 0 of firewood to mask ID
-    ui->firewoodTableView->hideColumn(0);
 
     ui->logsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->cookiesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->slabsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->lumberTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->firewoodTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    buildFilterWidgets();
 }
 
 void InventoryPage::refreshTableViews()

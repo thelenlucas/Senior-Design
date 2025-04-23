@@ -97,7 +97,7 @@
                             <item>
                                 <widget class="QPushButton" name="openSalesButton">
                                     <property name="text">
-                                        <string>🛒 Open Sale Constructor</string>
+                                        <string>🛒 Open Sales Panel</string>
                                     </property>
                                     <property name="minimumHeight">
                                         <number>50</number>

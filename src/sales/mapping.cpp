@@ -52,8 +52,7 @@ namespace woodworks::domain
         Product product;
         product.type = LUMBER;
         product.species = species.name;
-        product.addDetails("Width: " + width.toInchesString());
-
+        
         // Thickness should be in quarters of an inch as "Q"/4, if it divides evenly
         // otherwise, it should be in eighths of an inch as "E"/8
         if (std::fmod(thickness.toInches(), 0.25) == 0)

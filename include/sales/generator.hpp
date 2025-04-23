@@ -99,8 +99,9 @@ namespace woodworks::sales
     .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
     .product-card { background: var(--card-bg); border-radius: .5rem; overflow: hidden; box-shadow: var(--card-shadow); display: flex; flex-direction: column; }
     .product-card img { width: 100%; height: 180px; object-fit: cover; }
+    .product-card .placeholder { width: 100%; height: 180px; background: var(--card-bg); }
     .product-card .content { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; }
-    .product-card h3 { margin: 0 0 .5rem 0; font-size: 1.125rem; }
+    .product-card h3 { margin: 0 0 1rem 0; font-size: 1.125rem; }
     .product-card p { margin: .25rem 0; font-size: .95rem; }
     .price { margin-top: auto; font-weight: 600; color: var(--accent); font-size: 1.1rem; }
     footer { background: var(--primary); color: #fff; text-align: center; padding: 1rem; font-size: .9rem; }
