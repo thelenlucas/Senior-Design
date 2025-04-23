@@ -173,6 +173,25 @@ void InventoryPage::slabsCustomContextMenu(const QPoint &pos) {
         }
     });
 
+    contextMenu.addAction("Change Location", [this, index]() {
+        int slabId = index.sibling(index.row(), 0).data().toInt();
+        auto repo = QtSqlRepository<LiveEdgeSlab>::spawn();
+        auto slabOpt = repo.get(slabId);
+    
+        if (slabOpt) {
+            LiveEdgeSlab slab = slabOpt.value();
+            bool ok;
+            QString currentLoc = QString::fromStdString(slab.location);
+            QString newLoc = QInputDialog::getText(this, "Relocate", "Enter new location:", QLineEdit::Normal, currentLoc, &ok);
+            
+            if (ok && !newLoc.isEmpty()) {
+                slab.location = newLoc.toStdString();
+                repo.update(slab);
+                refreshModels();    
+            }
+        }
+    });
+
     // add scrap board
     contextMenu.addAction("Scrap Board", [this, index]() {
         int id = index.sibling(index.row(), 0).data().toInt();
@@ -276,6 +295,25 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
             }
         });
 
+        contextMenu.addAction("Change Location", [this, index]() {
+            int logId = index.sibling(index.row(), 0).data().toInt();
+            auto repo = QtSqlRepository<Log>::spawn();
+            auto logOpt = repo.get(logId);
+        
+            if (logOpt) {
+                Log log = logOpt.value();
+                bool ok;
+                QString currentLoc = QString::fromStdString(log.location);
+                QString newLoc = QInputDialog::getText(this, "Relocate", "Enter new location:", QLineEdit::Normal, currentLoc, &ok);
+                
+                if (ok && !newLoc.isEmpty()) {
+                    log.location = newLoc.toStdString();
+                    repo.update(log);
+                    refreshModels();    
+                }
+            }
+        });
+
         contextMenu.exec(ui->logsTableView->viewport()->mapToGlobal(pos));
     }
 }
@@ -295,6 +333,26 @@ void InventoryPage::cookiesCustomContextMenu(const QPoint& pos) {
         auto cookie = QtSqlRepository<Cookie>::spawn().get(id);
         if (cookie) { scrapPopUp(*cookie, this); refreshModels(); }
     });
+
+    contextMenu.addAction("Change Location", [this, index]() {
+        int cookieId = index.sibling(index.row(), 0).data().toInt();
+        auto repo = QtSqlRepository<Cookie>::spawn();
+        auto cookieOpt = repo.get(cookieId);
+    
+        if (cookieOpt) {
+            Cookie cookie = cookieOpt.value();
+            bool ok;
+            QString currentLoc = QString::fromStdString(cookie.location);
+            QString newLoc = QInputDialog::getText(this, "Relocate", "Enter new location:", QLineEdit::Normal, currentLoc, &ok);
+            
+            if (ok && !newLoc.isEmpty()) {
+                cookie.location = newLoc.toStdString();
+                repo.update(cookie);
+                refreshModels();    
+            }
+        }
+    });
+
     contextMenu.exec(ui->cookiesTableView->viewport()->mapToGlobal(pos));
 }
 
@@ -346,6 +404,25 @@ void InventoryPage::lumberCustomContextMenu(const QPoint& pos) {
         }
     });
 
+    contextMenu.addAction("Change Location", [this, index]() {
+        int lumbId = index.sibling(index.row(), 0).data().toInt();
+        auto repo = QtSqlRepository<Lumber>::spawn();
+        auto lumbOpt = repo.get(lumbId);
+    
+        if (lumbOpt) {
+            Lumber lumber = lumbOpt.value();
+            bool ok;
+            QString currentLoc = QString::fromStdString(lumber.location);
+            QString newLoc = QInputDialog::getText(this, "Relocate", "Enter new location:", QLineEdit::Normal, currentLoc, &ok);
+            
+            if (ok && !newLoc.isEmpty()) {
+                lumber.location = newLoc.toStdString();
+                repo.update(lumber);
+                refreshModels();    
+            }
+        }
+    });
+
     contextMenu.exec(ui->lumberTableView->viewport()->mapToGlobal(pos));
 }
 
@@ -364,6 +441,26 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
         auto fw = QtSqlRepository<Firewood>::spawn().get(id);
         if (fw) { scrapPopUp(*fw, this); refreshModels(); }
     });
+
+    contextMenu.addAction("Change Location", [this, index]() {
+        int firewoodId = index.sibling(index.row(), 0).data().toInt();
+        auto repo = QtSqlRepository<Firewood>::spawn();
+        auto firewoodOpt = repo.get(firewoodId);
+    
+        if (firewoodOpt) {
+            Firewood firewood = firewoodOpt.value();
+            bool ok;
+            QString currentLoc = QString::fromStdString(firewood.location);
+            QString newLoc = QInputDialog::getText(this, "Relocate", "Enter new location:", QLineEdit::Normal, currentLoc, &ok);
+            
+            if (ok && !newLoc.isEmpty()) {
+                firewood.location = newLoc.toStdString();
+                repo.update(firewood);
+                refreshModels();    
+            }
+        }
+    });
+
     contextMenu.exec(ui->firewoodTableView->viewport()->mapToGlobal(pos));
 }
 
@@ -757,19 +854,39 @@ void InventoryPage::onSpreadsheetImportClicked()
     bool ok = false;
     QString userChoice = QInputDialog::getItem(this, QObject::tr("Sheet Picker"), QObject::tr("Please select which sheet you're importing:"), options, 0, false, &ok);
 
-    if(!ok){
-        std::cout << "User canceled input." << std::endl;
-        return;
-    }
+    if(!ok){return;}
     QMessageBox::information(this, "Import Selected", "File selected: " + filename + "\nSheet Type: " + userChoice);
     std::string filePath = filename.toStdString();
     Importer import;
-
-    if(userChoice == "Logs"){import.importLogs(filePath);}
-    else if(userChoice == "Firewood"){import.importFirewood(filePath);}
-    else if(userChoice == "Slabs"){import.importSlabs(filePath);}
-    else if(userChoice == "Cookies"){import.importCookies(filePath);}
-    else if(userChoice == "Lumber"){import.importLumber(filePath);}
+    try{
+        if(userChoice == "Logs"){
+            QMessageBox::information(this, "Advisory", 
+                "Please ensure your file includes the following headers:\nSpecies, Length (Ft'in\"), Diameter (in), Cost ($), Quality (1-5), Drying (AIR/KILN/BOTH/GREEN), Location, Notes");
+            import.importLogs(filePath);
+        }
+        if(userChoice == "Firewood"){
+            QMessageBox::information(this, "Advisory",
+                "Please ensure your file includes the following headers:\nSpecies, Chords (ft^3), Cost, Drying (AIR/KILN/BOTH/GREEN), Location, Notes");
+            import.importFirewood(filePath);
+        }
+        if(userChoice == "Slabs"){
+            QMessageBox::information(this, "Advisory",
+                "Please ensure your file includes the following headers:\nSpecies, Length (Quarters), Width (in), Thickness (in), Drying (AIR/KILN/BOTH/GREEN), Surfacing (RGH/S1S/S2S), Cost ($), Location, Notes");
+            import.importSlabs(filePath);
+        }
+        if(userChoice == "Cookies"){
+            QMessageBox::information(this, "Advisory",
+                "Please ensure your file includes the following headers:\nSpecies, Thickness (in), Diameter (in), Drying (AIR/KILN/BOTH/GREEN), Cost ($), Location, Notes");
+            import.importCookies(filePath);
+        }
+        if(userChoice == "Lumber"){
+            QMessageBox::information(this, "Advisory",
+                "Please ensure your file includes the following headers:\nSpecies, Length (Quarters), Width (in), Thickness (in), Surfacing (RGH/S1S/S2S/S3S/S4S), Drying (AIR/KILN/BOTH/GREEN), Cost ($), Location, Notes");
+            import.importLumber(filePath);
+       }
+    } catch(...) {
+        QMessageBox::critical(this, "Error", "Ran into an issue Importing.");
+    }
 
     refreshModels();
 }
