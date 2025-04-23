@@ -55,11 +55,13 @@ namespace woodworks::sales
         // Creates the html article for the product
         inline std::string toHtml(int number) const
         {
-            std::string html = "<article class=\"product_card\">\n";
+            std::string html = "<article class=\"product-card\">\n";
             if (!imageBase64.isEmpty()) {
-                html += "<img src=\"data:image/png;base64," + imageBase64.toStdString() + "\" alt=\"Product Image\" class=\"product_image\" style=\"max-width:300px; max-height:300px;\"/>\n";
+                html += "<img src=\"data:image/png;base64," + imageBase64.toStdString() + "\" alt=\"Product Image\" class=\"product-image\"/>\n";
+            } else {
+                html += "<div class=\"placeholder\"></div>\n";
             }
-            html += "<div class=\"product_details\">\n";
+            html += "<div class=\"content\">\n";
             std::ostringstream num_ss;
             num_ss << std::setw(3) << std::setfill('0') << number;
             std::string num_str = num_ss.str();
