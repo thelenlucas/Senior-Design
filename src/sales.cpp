@@ -38,12 +38,16 @@ using namespace woodworks::sales;
 
 SalesPage::SalesPage(QWidget *parent) : QWidget(parent), ui(new Ui::SalesPage)
 {
+    ui->setupUi(this); //! AHHHHHHHHHH - Lucas
+
     // Add product type to dropdown
     ui->typeCombo->addItem("Cookie", COOKIE);
     ui->typeCombo->addItem("Slab", SLAB);
     ui->typeCombo->addItem("Lumber", LUMBER);
     ui->typeCombo->addItem("Firewood", FIREWOOD);
-    ui->typeCombo->setCurrentIndex(0);
+
+    // Connect the add item button to the slot
+    connect(ui->addItem, &QPushButton::clicked, this, &SalesPage::onAddItemButtonClicked);
 }
 
 SalesPage::~SalesPage() { delete ui; }
