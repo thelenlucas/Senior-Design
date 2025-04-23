@@ -496,6 +496,23 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
 
 void InventoryPage::buildFilterWidgets()
 {
+    // Prevent signal loops when clearing and repopulating filter widgets
+    QSignalBlocker bLogSpecies(ui->logSpeciesComboBox);
+    QSignalBlocker bLogDrying(ui->logDryingComboBox);
+    QSignalBlocker bCookiesSpecies(ui->cookiesSpeciesCombo);
+    QSignalBlocker bCookieDrying(ui->cookieDryingCombo);
+    QSignalBlocker bSlabsSpecies(ui->slabsSpeciesCombo);
+    QSignalBlocker bSlabDrying(ui->slabDryingCombo);
+    QSignalBlocker bSlabSurfacing(ui->slabSurfacingCombo);
+    QSignalBlocker bLumberSpecies(ui->lumberSpeciesCombo);
+    QSignalBlocker bLumberDrying(ui->lumberDryingCombo);
+    QSignalBlocker bLumberSurfacing(ui->lumberSurfacingCombo);
+    QSignalBlocker bFirewoodSpecies(ui->firewoodSpeciesCombo);
+    QSignalBlocker bFirewoodDrying(ui->firewoodDryingCombo);
+    QSignalBlocker bLumberThickness(ui->lumberThicknessCombo);
+    QSignalBlocker bLogEntrySpecies(ui->logEntrySpeciesCombo);
+    QSignalBlocker bLogEntryLocation(ui->logEntryLocationCombo);
+
     // Get old values, if any
     QString oldLogSpecies = ui->logSpeciesComboBox->currentText();
     QString oldLogDrying = ui->logDryingComboBox->currentText();
@@ -511,11 +528,26 @@ void InventoryPage::buildFilterWidgets()
     QString oldFirewoodDrying = ui->firewoodDryingCombo->currentText();
     QString oldLumberThickness = ui->lumberThicknessCombo->currentText();
 
+    // Remove the old values from the combo boxes
+    ui->logSpeciesComboBox->clear();
+    ui->logDryingComboBox->clear();
+    ui->cookiesSpeciesCombo->clear();
+    ui->cookieDryingCombo->clear();
+    ui->slabsSpeciesCombo->clear();
+    ui->slabDryingCombo->clear();
+    ui->slabSurfacingCombo->clear();
+    ui->lumberSpeciesCombo->clear();
+    ui->lumberSurfacingCombo->clear();
+    ui->lumberDryingCombo->clear();
+    ui->firewoodSpeciesCombo->clear();
+    ui->firewoodDryingCombo->clear();
+    ui->lumberThicknessCombo->clear();
+
     // speciesComboBox has all the species in the database, pluas an "All" option that filters out nothing.
     QStringList species = getUniqueSpecies(); // Doesn't have an "All" option
+    species.prepend("All");
     ui->logEntrySpeciesCombo->addItems(species);
     ui->logEntrySpeciesCombo->setCurrentIndex(0);
-    species.prepend("All");
     ui->logSpeciesComboBox->addItems(species);
     ui->cookiesSpeciesCombo->addItems(species);
     ui->slabsSpeciesCombo->addItems(species);
