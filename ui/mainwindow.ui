@@ -31,7 +31,7 @@
                 <item>
                     <widget class="QLabel" name="subtitleLabel">
                         <property name="text">
-                            <string>🌳 Your complete sawmill inventory and sales solution! 🍃</string>
+                            <string>🌳 The complete small sawmill inventory and sales solution! 🍃</string>
                         </property>
                         <property name="alignment">
                             <set>Qt::AlignCenter</set>

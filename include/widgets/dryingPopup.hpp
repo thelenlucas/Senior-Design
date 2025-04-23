@@ -55,7 +55,7 @@ namespace woodworks::domain
         QMessageBox::StandardButton reply = QMessageBox::question(
             parent,
             "Confirm",
-            "Are you sure you want to scrap this?",
+            "Are you sure you want to delete this item?",
             QMessageBox::Yes | QMessageBox::No
         );
         if (reply == QMessageBox::Yes) {

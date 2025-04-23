@@ -661,6 +661,8 @@ void InventoryPage::refreshModels()
         ui->lumberTableView->setModel(makeFilteredModel("display_lumber_grouped", lumberFilters, this));
     }
     ui->firewoodTableView->setModel(makeFilteredModel("display_firewood_grouped", firewoodFilters, this));
+    // Hide column 0 of firewood to mask ID
+    ui->firewoodTableView->hideColumn(0);
 
     ui->logsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->cookiesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
