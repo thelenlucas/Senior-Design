@@ -20,6 +20,7 @@
 #include "domain/cookie.hpp"
 #include "domain/live_edge_slab.hpp"
 #include "domain/lumber.hpp"
+#include "domain/cutlist.hpp"
 
 #include "infra/connection.hpp"
 #include "infra/repository.hpp"
@@ -70,6 +71,7 @@ int main(int argc, char* argv[])
     woodworks::infra::QtSqlRepository<woodworks::domain::LiveEdgeSlab> liveEdgeSlabRepo(debee);
     woodworks::infra::QtSqlRepository<woodworks::domain::Lumber> lumberRepo(debee);
     woodworks::infra::QtSqlRepository<woodworks::domain::Firewood> firewoodRepo(debee);
+    woodworks::infra::QtSqlRepository<woodworks::domain::CustomCut> customCutRepo(debee);
 
     QApplication app(argc, argv);
 

@@ -20,6 +20,7 @@
 #include "infra/mappers/live_edge_slab_mapper.hpp"
 #include "infra/mappers/lumber_mapper.hpp"
 #include "infra/mappers/firewood_mapper.hpp"
+#include "infra/mappers/cutlist_mapper.hpp"
 
 namespace woodworks::infra {
 
@@ -112,7 +113,7 @@ signals:
             void remove(int id) {
                 QSqlQuery q(db_);
                 q.prepare(T::deleteSQL());
-                q.bindValue(":id", id);
+                q.bindValue(0, id);
                 if (!q.exec()) {
                     throw std::runtime_error(std::string("Failed to delete item: ") + q.lastError().text().toStdString());
                 }

@@ -1,5 +1,4 @@
-#ifndef CUTLIST_HPP
-#define CUTLIST_HPP
+#pragma once
 
 #include <QComboBox>
 #include <QItemSelection>
@@ -25,55 +24,16 @@ class CutlistPage : public QWidget
   public:
     explicit CutlistPage(QWidget* parent = nullptr);
     ~CutlistPage();
-
-  protected:
-    void showEvent(QShowEvent* event) override;
-
+    
   private slots:
-    // Standard cut actions
-    void OnCutCookie();
-    void OnCutSlab();
-    void OnCutLumber();
-
-    // Project-based actions
-    void OnDeleteProject();
-    void OnProjectSelectionChanged(int index);
-    void OnCompletePartCut();
-    void OnUndoLastCut();
-    void OnAdjustCutLength();
-    void OnPartSelectionChanged(const QModelIndex &index);
-
-  private:
-    void UpdateMatchingLogsForSelectedPart(const QModelIndex &index);
-    void RefreshModels();
-    void RefreshProjectSelector();
-    void ResizeSubWindowsProportionally(unsigned int count);
-    void ResizeToDisplayPercentage(double widthRatio, double heightRatio);
-
-    void InitializeStandardCutButtons();
-    void InitializeProjectSelector();
-    void RefreshProjectList();
-    void RefreshPartsTable();
-    void RefreshMatchingLogsTable();
-    void PopulateMatchingLogsForSelectedPart();
-
+    void newPart();
+    void deleteProject();
+    void cutLog();
+    void partCompleteRough();
+    void partCompleteFinished();
+    void refreshModels();
+    
+    private:
     Ui::CutlistPage* ui;
-
-    int selectedPartId;
-
-    QSqlQueryModel* orderEntryModel;
-    QSqlQueryModel* orderMarkerModel;
-    QSqlQueryModel* partsModel;
-    QSqlQueryModel* logsModel;
-
-    QString selectedProjectName;
-    QModelIndex lastCutPartIndex;
-    QVariantMap lastCutPartData;
-
-    QStack<QMap<QString, QVariant>> undoHistory;
-    QStack<int> undoRowHistory;
-
-    QList<QMap<QString, QVariant>> undoStack;
+    void updateProjects();
 };
-
-#endif // CUTLIST_HPP
