@@ -240,7 +240,7 @@ void CutlistPage::refreshModels()
     ui->orderMarkerTable->setModel(model);
 
     ui->orderMarkerTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->orderMarkerTable->hideColumn(0); // Hid ID column, it's entirely for internal use
+    ui->orderMarkerTable->hideColumn(0); // Hide ID column, it's entirely for internal use
 }
 
 void CutlistPage::updateProjects()
