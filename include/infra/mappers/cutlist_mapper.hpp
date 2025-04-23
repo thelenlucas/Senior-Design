@@ -118,6 +118,7 @@ namespace woodworks::domain
     {
         return QStringList{
             "SELECT ",
+            "  id as ID,",
             "  part || ' (' || code || ')'           AS \"Part (Code)\", ",
             "  quantity                              AS \"Qty.\", ",
 

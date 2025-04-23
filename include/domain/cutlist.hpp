@@ -46,6 +46,18 @@ namespace woodworks::domain {
             };
         }
 
+        inline void incrementRough() {
+            if (progress_rough < quantity) {
+                progress_rough++;
+            }
+        }
+
+        inline void incrementFinished() {
+            if (progress_finished < progress_rough) {
+                progress_finished++;
+            }
+        }
+
         // ---- Mapping -----
         static QString createDbSQL();
         static QString cutlistViewSQLQuery(const QString& project);

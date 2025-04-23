@@ -30,7 +30,8 @@ using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
 using namespace woodworks::infra;
 
-CutlistPage::CutlistPage(QWidget* parent) : QWidget(parent), ui(new Ui::CutlistPage) {
+CutlistPage::CutlistPage(QWidget *parent) : QWidget(parent), ui(new Ui::CutlistPage)
+{
     ui->setupUi(this);
 
     // Link slots
@@ -45,58 +46,78 @@ CutlistPage::CutlistPage(QWidget* parent) : QWidget(parent), ui(new Ui::CutlistP
     refreshModels();
 }
 
-void CutlistPage::newPart() {
+void CutlistPage::newPart()
+{
     QString currentProject = ui->projectSelectorCombo->currentText();
     QDialog dialog(this);
     QFormLayout form(&dialog);
-    
-    QComboBox* projectCombo = new QComboBox;
+
+    QComboBox *projectCombo = new QComboBox;
     projectCombo->setEditable(true);
-    for (const auto& proj : CustomCut::allProjects())
+    for (const auto &proj : CustomCut::allProjects())
         projectCombo->addItem(QString::fromStdString(proj));
     projectCombo->setCurrentText(currentProject);
     form.addRow("Project:", projectCombo);
 
-    QLineEdit* partEdit = new QLineEdit; form.addRow("Part:", partEdit);
-    QLineEdit* codeEdit = new QLineEdit; form.addRow("Code:", codeEdit);
-    QSpinBox* qtySpin = new QSpinBox; qtySpin->setMinimum(0); form.addRow("Quantity:", qtySpin);
+    QLineEdit *partEdit = new QLineEdit;
+    form.addRow("Part:", partEdit);
+    QLineEdit *codeEdit = new QLineEdit;
+    form.addRow("Code:", codeEdit);
+    QSpinBox *qtySpin = new QSpinBox;
+    qtySpin->setMinimum(0);
+    form.addRow("Quantity:", qtySpin);
 
     // Thickness input
-    QWidget* tWidget = new QWidget;
-    auto* tLayout = new QHBoxLayout(tWidget);
-    QSpinBox* tInSpin = new QSpinBox; tInSpin->setMinimum(0); tInSpin->setSuffix(" in");
-    QSpinBox* tFracSpin = new QSpinBox; tFracSpin->setRange(0,15); tFracSpin->setSuffix(" 16ths");
+    QWidget *tWidget = new QWidget;
+    auto *tLayout = new QHBoxLayout(tWidget);
+    QSpinBox *tInSpin = new QSpinBox;
+    tInSpin->setMinimum(0);
+    tInSpin->setSuffix(" in");
+    QSpinBox *tFracSpin = new QSpinBox;
+    tFracSpin->setRange(0, 15);
+    tFracSpin->setSuffix(" 16ths");
     tLayout->addWidget(tInSpin);
     tLayout->addWidget(tFracSpin);
     form.addRow("Thickness:", tWidget);
 
     // Width input
-    QWidget* wWidget = new QWidget;
-    auto* wLayout = new QHBoxLayout(wWidget);
-    QSpinBox* wInSpin = new QSpinBox; wInSpin->setMinimum(0); wInSpin->setSuffix(" in");
-    QSpinBox* wFracSpin = new QSpinBox; wFracSpin->setRange(0,15); wFracSpin->setSuffix(" 16ths");
+    QWidget *wWidget = new QWidget;
+    auto *wLayout = new QHBoxLayout(wWidget);
+    QSpinBox *wInSpin = new QSpinBox;
+    wInSpin->setMinimum(0);
+    wInSpin->setSuffix(" in");
+    QSpinBox *wFracSpin = new QSpinBox;
+    wFracSpin->setRange(0, 15);
+    wFracSpin->setSuffix(" 16ths");
     wLayout->addWidget(wInSpin);
     wLayout->addWidget(wFracSpin);
     form.addRow("Width:", wWidget);
 
     // Length input
-    QWidget* lWidget = new QWidget;
-    auto* lLayout = new QHBoxLayout(lWidget);
-    QSpinBox* lInSpin = new QSpinBox; lInSpin->setMinimum(0); lInSpin->setSuffix(" in");
-    QSpinBox* lFracSpin = new QSpinBox; lFracSpin->setRange(0,15); lFracSpin->setSuffix(" 16ths");
+    QWidget *lWidget = new QWidget;
+    auto *lLayout = new QHBoxLayout(lWidget);
+    QSpinBox *lInSpin = new QSpinBox;
+    lInSpin->setMinimum(0);
+    lInSpin->setSuffix(" in");
+    QSpinBox *lFracSpin = new QSpinBox;
+    lFracSpin->setRange(0, 15);
+    lFracSpin->setSuffix(" 16ths");
     lLayout->addWidget(lInSpin);
     lLayout->addWidget(lFracSpin);
     form.addRow("Length:", lWidget);
 
-    QLineEdit* speciesEdit = new QLineEdit; form.addRow("Species:", speciesEdit);
-    QLineEdit* notesEdit = new QLineEdit; form.addRow("Notes:", notesEdit);
+    QLineEdit *speciesEdit = new QLineEdit;
+    form.addRow("Species:", speciesEdit);
+    QLineEdit *notesEdit = new QLineEdit;
+    form.addRow("Notes:", notesEdit);
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
     form.addRow(&buttonBox);
     QObject::connect(&buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
     QObject::connect(&buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
 
-    if (dialog.exec() != QDialog::Accepted) return;
+    if (dialog.exec() != QDialog::Accepted)
+        return;
 
     CustomCut cut = CustomCut::uninitialized();
     cut.project = projectCombo->currentText().toStdString();
@@ -115,17 +136,22 @@ void CutlistPage::newPart() {
     refreshModels();
 }
 
-void CutlistPage::deleteProject() {
+void CutlistPage::deleteProject()
+{
     QString currentProject = ui->projectSelectorCombo->currentText();
-    if (currentProject.isEmpty()) return;
+    if (currentProject.isEmpty())
+        return;
     auto reply = QMessageBox::question(this, "Delete Project",
-        QString("Are you sure you want to delete project: '%1'?").arg(currentProject),
-        QMessageBox::Yes | QMessageBox::No);
-    if (reply != QMessageBox::Yes) return;
+                                       QString("Are you sure you want to delete project: '%1'?").arg(currentProject),
+                                       QMessageBox::Yes | QMessageBox::No);
+    if (reply != QMessageBox::Yes)
+        return;
     auto repo = QtSqlRepository<CustomCut>::spawn();
     auto cuts = repo.list();
-    for (const auto& cut : cuts) {
-        if (QString::fromStdString(cut.project) == currentProject) {
+    for (const auto &cut : cuts)
+    {
+        if (QString::fromStdString(cut.project) == currentProject)
+        {
             repo.remove(cut.id.id);
         }
     }
@@ -133,20 +159,51 @@ void CutlistPage::deleteProject() {
     refreshModels();
 }
 
-void CutlistPage::cutLog() {
-
+void CutlistPage::cutLog()
+{
 }
 
-void CutlistPage::partCompleteRough() {
+void CutlistPage::partCompleteRough()
+{
+    // Save the current row so we can come back to it on refresh
+    auto currentRow = ui->orderMarkerTable->currentIndex().row();
 
+    // Complete one part rough for a custom cut (index 0 of current row)
+    auto id = ui->orderMarkerTable->currentIndex().sibling(ui->orderMarkerTable->currentIndex().row(), 0).data().toInt();
+    auto cut = QtSqlRepository<CustomCut>::spawn().get(id);
+    if (cut)
+    {
+        cut.value().incrementRough();
+        QtSqlRepository<CustomCut>::spawn().update(cut.value());
+        refreshModels();
+
+        // Go back to the row we were on
+        auto index = ui->orderMarkerTable->model()->index(currentRow, 0);
+        ui->orderMarkerTable->setCurrentIndex(index);
+        ui->orderMarkerTable->scrollTo(index);
+    }
 }
 
-void CutlistPage::partCompleteFinished() {
+void CutlistPage::partCompleteFinished()
+{
+    auto currentRow = ui->orderMarkerTable->currentIndex().row();
+    // Complete one part finished
+    auto id = ui->orderMarkerTable->currentIndex().sibling(ui->orderMarkerTable->currentIndex().row(), 0).data().toInt();
+    auto cut = QtSqlRepository<CustomCut>::spawn().get(id);
+    if (cut)
+    {
+        cut.value().incrementFinished();
+        QtSqlRepository<CustomCut>::spawn().update(cut.value());
+        refreshModels();
 
+        auto index = ui->orderMarkerTable->model()->index(currentRow, 0);
+        ui->orderMarkerTable->setCurrentIndex(index);
+        ui->orderMarkerTable->scrollTo(index);
+    }
 }
 
-
-void CutlistPage::refreshModels() {
+void CutlistPage::refreshModels()
+{
     // Get the current project
     QString currentProject = ui->projectSelectorCombo->currentText();
 
@@ -158,9 +215,11 @@ void CutlistPage::refreshModels() {
     ui->orderMarkerTable->setModel(model);
 
     ui->orderMarkerTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->orderMarkerTable->hideColumn(0); // Hid ID column, it's entirely for internal use
 }
 
-void CutlistPage::updateProjects() {
+void CutlistPage::updateProjects()
+{
     // If we had a project selected, save that
     QString currentProject = ui->projectSelectorCombo->currentText();
     // Clear the project selector
@@ -169,17 +228,22 @@ void CutlistPage::updateProjects() {
     // Get all projects from the database
     auto projects = CustomCut::allProjects();
     // Add the projects to the project selector
-    for (const auto& project : projects) {
+    for (const auto &project : projects)
+    {
         ui->projectSelectorCombo->addItem(QString::fromStdString(project));
     }
 
     // If we can find our old project, select it
     int index = ui->projectSelectorCombo->findText(currentProject);
-    if (index != -1) {
+    if (index != -1)
+    {
         ui->projectSelectorCombo->setCurrentIndex(index);
-    } else {
+    }
+    else
+    {
         // Otherwise, select the first project
-        if (ui->projectSelectorCombo->count() > 0) {
+        if (ui->projectSelectorCombo->count() > 0)
+        {
             ui->projectSelectorCombo->setCurrentIndex(0);
         }
     }
@@ -187,6 +251,7 @@ void CutlistPage::updateProjects() {
     refreshModels();
 }
 
-CutlistPage::~CutlistPage() {
+CutlistPage::~CutlistPage()
+{
     delete ui;
 }
