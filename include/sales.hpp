@@ -1,5 +1,6 @@
-#ifndef SALES_HPP
-#define SALES_HPP
+#pragma once
+
+#include "sales/product.hpp"
 
 #include <QWidget>
 #include <QSqlQueryModel>
@@ -17,24 +18,15 @@ public:
     explicit SalesPage(QWidget* parent = nullptr);
     ~SalesPage();
 
+    QVector<woodworks::sales::Product> products() const;
+
+private slots:
+    void onAddItemButtonClicked();
+    void onProductItemDoubleClicked(QListWidgetItem *item);
+    void onPreviewHtmlButtonClicked();
+    void onSaveHtmlButtonClicked();
+
 private:
     Ui::SalesPage* ui;
-    QSqlQueryModel* inventoryModel;
-
-    QVector<QWidget*> itemWidgets;
-    QWidget* lastClickedWidget = nullptr;
-
-    
-    int selectedIndex;
-    double runningTotal;
-
-    void RefreshInventoryModel();
-    void ResizeToDisplayPercentage(double width_ratio, double height_ratio);
-    void AddSelectedInventoryRow(QString const& id, QString const& species, QString const& value);
-    void ReapplyStripedBackgrounds();
-    void UpdateTotal(double delta);
-    void UpdateRowTotal(QWidget* rowWidget, int newQty, double newVal);
-    bool eventFilter(QObject* obj, QEvent* event) override;
+    void addProduct(woodworks::sales::Product product);
 };
-
-#endif // SALES_HPP

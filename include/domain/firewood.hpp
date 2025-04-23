@@ -7,6 +7,8 @@
 #include <QSqlQuery>
 #include <QByteArray>
 
+#include "sales/product.hpp"
+
 using namespace woodworks::domain::types;
 using namespace woodworks::domain::imperial;
 
@@ -46,6 +48,9 @@ namespace woodworks::domain {
                 .imageBuffer = QByteArray(),
             };
         }
+
+        // HTML
+        sales::Product toProduct();
 
         // --- Mapping -----
         static QString createDbSQL();

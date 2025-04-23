@@ -33,11 +33,11 @@ jobs:
         uses: actions/checkout@v4
 
       # 2 — Toolchain for docs
-      # 2 — Toolchain for docs
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4.1.1
-        with:
-          cache: true            # speeds up subsequent runs
+      - name: Install Qt + Webengine
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qt5-qmake qtbase5-dev libqt5webkit5-dev qtwebengine5-dev
+
       - name: Install Doxygen + Graphviz
         run: |
           sudo apt-get update
