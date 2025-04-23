@@ -106,19 +106,17 @@ namespace woodworks::domain {
 
     inline Log Log::fromRecord(const QSqlRecord& record)
     {
-        Log log {
-            .id = {record.value("id").toInt()},
-            .species = {record.value("species").toString().toStdString()},
-            .length = Length::fromTicks(record.value("length").toDouble()),
-            .diameter = Length::fromTicks(record.value("diameter").toDouble()),
-            .quality = Quality(record.value("quality").toInt()),
-            .drying = static_cast<Drying>(record.value("drying").toInt()),
-            .cost = {Dollar(record.value("cost").toInt())},
-            .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString(),
-            .imageBuffer = record.value("image").toByteArray(),
-        };
-        
+        Log log;
+        log.id = Id{record.value("id").toInt()};
+        log.species = Species{record.value("species").toString().toStdString()};
+        log.length = Length::fromTicks(record.value("length").toDouble());
+        log.diameter = Length::fromTicks(record.value("diameter").toDouble());
+        log.quality = Quality(record.value("quality").toInt());
+        log.drying = static_cast<Drying>(record.value("drying").toInt());
+        log.cost = Dollar{record.value("cost").toInt()};
+        log.location = record.value("location").toString().toStdString();
+        log.notes = record.value("notes").toString().toStdString();
+        log.imageBuffer = record.value("image").toByteArray();
         return log;
     }
 }

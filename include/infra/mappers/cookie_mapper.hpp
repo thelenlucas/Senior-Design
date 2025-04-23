@@ -102,16 +102,16 @@ namespace woodworks::domain {
 
     inline Cookie Cookie::fromRecord(const QSqlRecord& record)
     {
-        return {
-            .id = {record.value("id").toInt()},
-            .species = {record.value("species").toString().toStdString()},
-            .length = Length::fromTicks(record.value("length").toDouble()),
-            .diameter = Length::fromTicks(record.value("diameter").toDouble()),
-            .drying = static_cast<Drying>(record.value("drying").toInt()),
-            .worth = Dollar{record.value("worth").toInt()},
-            .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString(),
-            .imageBuffer = record.value("image").toByteArray()
-        };
+        Cookie cookie;
+        cookie.id = Id{record.value("id").toInt()};
+        cookie.species = Species{record.value("species").toString().toStdString()};
+        cookie.length = Length::fromTicks(record.value("length").toDouble());
+        cookie.diameter = Length::fromTicks(record.value("diameter").toDouble());
+        cookie.drying = static_cast<Drying>(record.value("drying").toInt());
+        cookie.worth = Dollar{record.value("worth").toInt()};
+        cookie.location = record.value("location").toString().toStdString();
+        cookie.notes = record.value("notes").toString().toStdString();
+        cookie.imageBuffer = record.value("image").toByteArray();
+        return cookie;
     }
 }

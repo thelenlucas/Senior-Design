@@ -106,18 +106,18 @@ namespace woodworks::domain {
     }
 
     inline Lumber Lumber::fromRecord(const QSqlRecord& record) {
-        return {
-            .id = { record.value("id").toInt() },
-            .species = { record.value("species").toString().toStdString() },
-            .length = Length::fromTicks(record.value("length").toDouble()),
-            .width = Length::fromTicks(record.value("width").toDouble()),
-            .thickness = Length::fromTicks(record.value("thickness").toDouble()),
-            .drying = static_cast<Drying>(record.value("drying").toInt()),
-            .surfacing = static_cast<LumberSurfacing>(record.value("surfacing").toInt()),
-            .worth = { record.value("worth").toInt() },
-            .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString(),
-            .imageBuffer = record.value("image").toByteArray()
-        };
+        Lumber lumber;
+        lumber.id = Id{record.value("id").toInt()};
+        lumber.species = Species{record.value("species").toString().toStdString()};
+        lumber.length = Length::fromTicks(record.value("length").toDouble());
+        lumber.width = Length::fromTicks(record.value("width").toDouble());
+        lumber.thickness = Length::fromTicks(record.value("thickness").toDouble());
+        lumber.drying = static_cast<Drying>(record.value("drying").toInt());
+        lumber.surfacing = static_cast<LumberSurfacing>(record.value("surfacing").toInt());
+        lumber.worth = Dollar{record.value("worth").toInt()};
+        lumber.location = record.value("location").toString().toStdString();
+        lumber.notes = record.value("notes").toString().toStdString();
+        lumber.imageBuffer = record.value("image").toByteArray();
+        return lumber;
     }
 }

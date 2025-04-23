@@ -79,18 +79,18 @@ namespace woodworks::domain {
 
     inline LiveEdgeSlab LiveEdgeSlab::fromRecord(const QSqlRecord& record)
     {
-        return {
-            .id = {record.value("id").toInt()},
-            .species = {record.value("species").toString().toStdString()},
-            .length = Length::fromTicks(record.value("length").toDouble()),
-            .width = Length::fromTicks(record.value("width").toDouble()),
-            .thickness = Length::fromTicks(record.value("thickness").toDouble()),
-            .drying = static_cast<Drying>(record.value("drying").toInt()),
-            .surfacing = static_cast<SlabSurfacing>(record.value("surfacing").toInt()),
-            .worth = { record.value("worth").toInt() },
-            .location = record.value("location").toString().toStdString(),
-            .notes = record.value("notes").toString().toStdString(),
-            .imageBuffer = record.value("image").toByteArray()
-        };
+        LiveEdgeSlab slab;
+        slab.id = Id{record.value("id").toInt()};
+        slab.species = Species{record.value("species").toString().toStdString()};
+        slab.length = Length::fromTicks(record.value("length").toDouble());
+        slab.width = Length::fromTicks(record.value("width").toDouble());
+        slab.thickness = Length::fromTicks(record.value("thickness").toDouble());
+        slab.drying = static_cast<Drying>(record.value("drying").toInt());
+        slab.surfacing = static_cast<SlabSurfacing>(record.value("surfacing").toInt());
+        slab.worth = Dollar{record.value("worth").toInt()};
+        slab.location = record.value("location").toString().toStdString();
+        slab.notes = record.value("notes").toString().toStdString();
+        slab.imageBuffer = record.value("image").toByteArray();
+        return slab;
     }
 }
