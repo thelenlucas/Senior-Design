@@ -50,6 +50,9 @@ public:
 
 int main(int argc, char* argv[]) 
 {
+
+    QApplication app(argc, argv);
+    
     // Mock open the types so that we ensure their tables + views are created
     auto &debee = woodworks::infra::DbConnection::instance();
 
@@ -72,8 +75,6 @@ int main(int argc, char* argv[])
     woodworks::infra::QtSqlRepository<woodworks::domain::Lumber> lumberRepo(debee);
     woodworks::infra::QtSqlRepository<woodworks::domain::Firewood> firewoodRepo(debee);
     woodworks::infra::QtSqlRepository<woodworks::domain::CustomCut> customCutRepo(debee);
-
-    QApplication app(argc, argv);
 
     MainWindow window;
     window.show();
