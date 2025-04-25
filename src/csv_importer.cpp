@@ -32,9 +32,6 @@ woodworks::domain::types::Drying Importer::returnDryingType(std::string dryStr){
     return Drying::GREEN;
 }
 
-//	   SLAB_SURFACNG: 
-//	   woodworks::domain::types::SlabSurfacing
-//	   RGH (rough), S1S, S2S
 woodworks::domain::types::SlabSurfacing Importer::returnSurfacingSlabs(std::string surfStr){
     std::transform(surfStr.begin(), surfStr.end(), surfStr.begin(), ::toupper);
     surfStr.erase(std::remove_if(surfStr.begin(), surfStr.end(),
@@ -45,9 +42,6 @@ woodworks::domain::types::SlabSurfacing Importer::returnSurfacingSlabs(std::stri
     else return SlabSurfacing::RGH;
 }
 
-//	   LUMBER_SURFACNG:
-//     woodworks::domain::types::LumberSurfacing
-//     RGH, S1S, S2S, S3S, S4S
 woodworks::domain::types::LumberSurfacing Importer::returnSurfacingLumber(std::string surfStr){
     std::transform(surfStr.begin(), surfStr.end(), surfStr.begin(), ::toupper);
     surfStr.erase(std::remove_if(surfStr.begin(), surfStr.end(),
