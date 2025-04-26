@@ -1,18 +1,31 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
 #include <algorithm>
 #include <unordered_map>
 
 #include "csv_importer.hpp"
 #include "domain/log.hpp"
 
-std::vector<std::string> Importer::digestLine(const std::string& line){
+std::vector<std::string> Importer::digestLine(const std::string& line) {
     std::vector<std::string> parts;
-    std::stringstream ss(line);
     std::string part;
-    while(std::getline(ss, part, ',')){parts.push_back(part);}
+    bool inQuotes = false;
+    for (size_t i = 0; i < line.size(); ++i) {
+        char c = line[i];
+        if (c == '"') {
+            if (inQuotes && i+1 < line.size() && line[i+1] == '"') {
+                part += '"';
+                ++i;
+            } else {inQuotes = !inQuotes;}
+        }
+        else if (c == ',' && !inQuotes) {
+            parts.push_back(part);
+            part.clear();
+        }
+        else {part += c;}
+    }
+    parts.push_back(part);
     return parts;
 }
 
