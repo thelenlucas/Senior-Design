@@ -31,8 +31,7 @@
 #define GROUPED_LOGS_QUERY "SELECT * from logs_view_grouped"
 #define LOGS_QUERY "SELECT * FROM logs_view"
 
-
-MainWindow::MainWindow(QWidget* parent)
+MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow),
       cutlistPage(new CutlistPage()), salesPage(new SalesPage()),
       inventoryPage(nullptr)
@@ -48,10 +47,10 @@ MainWindow::MainWindow(QWidget* parent)
     //               QMainWindow::AllowTabbedDocks);
 
     // Add the menu and actions for switching between pages
-    QMenu* menu = menuBar()->addMenu("WoodWorks");
-    QAction* inventoryAction = new QAction("Inventory", this);
-    QAction* cutlistAction = new QAction("Cutlist", this);
-    QAction* salesAction = new QAction("Sales", this);
+    QMenu *menu = menuBar()->addMenu("WoodWorks");
+    QAction *inventoryAction = new QAction("Inventory", this);
+    QAction *cutlistAction = new QAction("Cutlist", this);
+    QAction *salesAction = new QAction("Sales", this);
 
     menu->addAction(inventoryAction);
     menu->addAction(cutlistAction);
@@ -71,12 +70,12 @@ MainWindow::MainWindow(QWidget* parent)
             &MainWindow::showSalesPage);
 
     // Setup a simple welcome message landing page
-    QLabel* welcomeLabel = new QLabel("Welcome to WoodWorks Sawmill Manager");
+    QLabel *welcomeLabel = new QLabel("Welcome to WoodWorks Sawmill Manager");
     welcomeLabel->setAlignment(Qt::AlignCenter);
     welcomeLabel->setStyleSheet(
         "font-size: 24px; font-weight: bold; padding: 40px;");
 
-    QVBoxLayout* layout = new QVBoxLayout(ui->centralwidget);
+    QVBoxLayout *layout = new QVBoxLayout(ui->centralwidget);
     layout->addWidget(welcomeLabel);
 
     // Database connection setup

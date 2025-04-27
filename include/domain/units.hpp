@@ -1,10 +1,23 @@
+/**
+ * @file units.hpp
+ * @brief Defines the Length class for representing lengths in imperial units.
+ */
+
 #pragma once
 #include <cmath>
 #include <string>
 
-namespace woodworks::domain::imperial {
+/**
+ * @namespace woodworks::domain::imperial
+ * @brief Contains classes and functions for working with imperial units.
+ */
+namespace woodworks::domain::imperial
+{
 
-    // A length in imperial units - stored as 1/16th inches internally. 
+    /**
+     * @class Length
+     * @brief Represents a length in imperial units, stored internally as 1/16th inches.
+     */
     class Length
     {
     private:
@@ -18,33 +31,48 @@ namespace woodworks::domain::imperial {
         {
             return Length(sixteenths);
         }
-        
+
     public:
-        // Construct from an exact number of sixteenths
+        /**
+         * @brief Constructs a Length object from a number of ticks (1/16th inches).
+         * @param ticks The number of ticks.
+         * @return A Length object.
+         */
         static constexpr Length fromTicks(unsigned int ticks) noexcept
         {
             return fromSixteenths(ticks);
         }
 
-        // Construct from a rounded number of quarters
+        /**
+         * @brief Constructs a Length object from a number of quarters (1/4th inches).
+         * @param quarters The number of quarters.
+         * @return A Length object.
+         */
         static constexpr Length fromQuarters(double quarters) noexcept
         {
             return fromSixteenths(static_cast<unsigned int>(std::round(quarters * 4)));
         }
 
-        // Construct by rounding to the nearest 1/16 from a double
+        /**
+         * @brief Constructs a Length object from a number of inches.
+         * @param inches The number of inches.
+         * @return A Length object.
+         */
         static constexpr Length fromInches(double inches) noexcept
         {
             return fromSixteenths(static_cast<unsigned int>(std::round(inches * 16)));
         }
 
-        // Construct by rounding to the nearest 1/16 from a double foot
+        /**
+         * @brief Constructs a Length object from a number of feet.
+         * @param feet The number of feet.
+         * @return A Length object.
+         */
         static constexpr Length fromFeet(double feet) noexcept
         {
             return fromInches(feet * 12);
         }
 
-        
         // Number of ticks
         [[nodiscard]] constexpr unsigned int toTicks() const noexcept
         {
@@ -80,7 +108,7 @@ namespace woodworks::domain::imperial {
         {
             return fromSixteenths(sixteenths_ - other.sixteenths_);
         }
-        
+
         // Scale by a floating point scalar (rounded off to the nearest tick)
         [[nodiscard]] constexpr Length operator*(double scalar) const noexcept
         {

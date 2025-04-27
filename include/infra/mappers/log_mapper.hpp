@@ -4,8 +4,10 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 
-namespace woodworks::domain {
-    inline QString Log::createDbSQL() {
+namespace woodworks::domain
+{
+    inline QString Log::createDbSQL()
+    {
         return u8R"(
             CREATE TABLE IF NOT EXISTS logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,43 +24,40 @@ namespace woodworks::domain {
         )";
     }
 
-    inline QString Log::individualViewSQL() {
+    inline QString Log::individualViewSQL()
+    {
         return woodworks::infra::makeIndividualViewSQL(
             "display_logs", "logs",
             QStringList{
-                "id AS 'ID'", 
-                "species AS 'Species'", 
-                "ROUND(length/192.0,2) AS 'Length (ft)'", 
-                "ROUND(diameter/16.0,2) AS 'Diameter (in)'", 
-                "quality AS 'Quality'", 
-                "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'", 
-                "printf('%.2f',cost/100.0) AS 'Cost ($)'", 
-                "location AS 'Location'", 
-                "notes AS 'Notes'"
-            }
-        );
+                "id AS 'ID'",
+                "species AS 'Species'",
+                "ROUND(length/192.0,2) AS 'Length (ft)'",
+                "ROUND(diameter/16.0,2) AS 'Diameter (in)'",
+                "quality AS 'Quality'",
+                "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
+                "printf('%.2f',cost/100.0) AS 'Cost ($)'",
+                "location AS 'Location'",
+                "notes AS 'Notes'"});
     }
 
-    inline QString Log::groupedViewSQL() {
+    inline QString Log::groupedViewSQL()
+    {
         return woodworks::infra::makeGroupedViewSQL(
             "display_logs_grouped", "logs",
             QStringList{
-                "COUNT(*) AS 'Count'", 
-                "species AS 'Species'", 
-                "ROUND(length/192.0,2) AS 'Length (ft)'", 
-                "ROUND(diameter/16.0,2) AS 'Diameter (in)'", 
-                "quality AS 'Quality'", 
-                "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'", 
-                "ROUND(AVG(cost)/100.0,2) AS 'Avg Cost ($)'"
-            },
+                "COUNT(*) AS 'Count'",
+                "species AS 'Species'",
+                "ROUND(length/192.0,2) AS 'Length (ft)'",
+                "ROUND(diameter/16.0,2) AS 'Diameter (in)'",
+                "quality AS 'Quality'",
+                "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
+                "ROUND(AVG(cost)/100.0,2) AS 'Avg Cost ($)'"},
             QStringList{
-                "species", 
-                "ROUND(length/192.0,2)", 
-                "ROUND(diameter/16.0,2)", 
-                "quality", 
-                "drying"
-            }
-        );
+                "species",
+                "ROUND(length/192.0,2)",
+                "ROUND(diameter/16.0,2)",
+                "quality",
+                "drying"});
     }
 
     inline QString Log::insertSQL()
@@ -77,7 +76,7 @@ namespace woodworks::domain {
 
     inline QString Log::deleteSQL() { return u8R"(DELETE FROM logs WHERE id=:id)"; }
 
-    inline void Log::bindForInsert(QSqlQuery& q, const Log& log)
+    inline void Log::bindForInsert(QSqlQuery &q, const Log &log)
     {
         q.bindValue(":species", QString::fromStdString(log.species.name));
         q.bindValue(":length", log.length.toTicks());
@@ -90,7 +89,7 @@ namespace woodworks::domain {
         q.bindValue(":image", log.imageBuffer);
     }
 
-    inline void Log::bindForUpdate(QSqlQuery& q, const Log& log)
+    inline void Log::bindForUpdate(QSqlQuery &q, const Log &log)
     {
         q.bindValue(":species", QString::fromStdString(log.species.name));
         q.bindValue(":length", log.length.toTicks());
@@ -104,7 +103,7 @@ namespace woodworks::domain {
         q.bindValue(":id", log.id.id);
     }
 
-    inline Log Log::fromRecord(const QSqlRecord& record)
+    inline Log Log::fromRecord(const QSqlRecord &record)
     {
         Log log;
         log.id = Id{record.value("id").toInt()};

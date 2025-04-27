@@ -264,13 +264,15 @@ namespace woodworks::domain
     }
 
     // Very simple query on the woodworks.db, select all project from cutlist
-    inline std::vector<std::string> CustomCut::allProjects() {
+    inline std::vector<std::string> CustomCut::allProjects()
+    {
         QSqlQuery query;
         query.prepare("SELECT DISTINCT project FROM cutlist");
         query.exec();
 
         std::vector<std::string> projects;
-        while (query.next()) {
+        while (query.next())
+        {
             projects.push_back(query.value(0).toString().toStdString());
         }
         return projects;

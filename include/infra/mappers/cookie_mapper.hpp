@@ -6,8 +6,10 @@
 #include <QSqlRecord>
 #include <QByteArray>
 
-namespace woodworks::domain {
-    inline QString Cookie::createDbSQL() {
+namespace woodworks::domain
+{
+    inline QString Cookie::createDbSQL()
+    {
         return u8R"(
             CREATE TABLE IF NOT EXISTS cookies (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,7 +25,8 @@ namespace woodworks::domain {
         )";
     }
 
-    inline QString Cookie::individualViewSQL() {
+    inline QString Cookie::individualViewSQL()
+    {
         return woodworks::infra::makeIndividualViewSQL(
             "display_cookies", "cookies",
             QStringList{
@@ -34,12 +37,11 @@ namespace woodworks::domain {
                 "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
                 "printf('%.2f',worth/100.0) AS 'Worth ($)'",
                 "location AS 'Location'",
-                "notes AS 'Notes'"
-            }
-        );
+                "notes AS 'Notes'"});
     }
 
-    inline QString Cookie::groupedViewSQL() {
+    inline QString Cookie::groupedViewSQL()
+    {
         return woodworks::infra::makeGroupedViewSQL(
             "display_cookies_grouped", "cookies",
             QStringList{
@@ -48,15 +50,12 @@ namespace woodworks::domain {
                 "ROUND(length/16.0,2) AS 'Thickness (in)'",
                 "ROUND(diameter/16.0,2) AS 'Diameter (in)'",
                 "CASE drying WHEN 0 THEN 'Green' WHEN 1 THEN 'Kiln Dried' WHEN 2 THEN 'Air Dried' WHEN 3 THEN 'Kiln & Air Dried' END AS 'Drying'",
-                "ROUND(AVG(worth)/100.0,2) AS 'Avg Worth ($)'"
-            },
+                "ROUND(AVG(worth)/100.0,2) AS 'Avg Worth ($)'"},
             QStringList{
                 "species",
                 "ROUND(length/16.0,2)",
                 "ROUND(diameter/16.0,2)",
-                "drying"
-            }
-        );
+                "drying"});
     }
 
     inline QString Cookie::insertSQL()
@@ -75,7 +74,7 @@ namespace woodworks::domain {
     // Add delete SQL
     inline QString Cookie::deleteSQL() { return u8R"(DELETE FROM cookies WHERE id=:id)"; }
 
-    inline void Cookie::bindForInsert(QSqlQuery& q, const Cookie& cookie)
+    inline void Cookie::bindForInsert(QSqlQuery &q, const Cookie &cookie)
     {
         q.bindValue(":species", QString::fromStdString(cookie.species.name));
         q.bindValue(":length", cookie.length.toTicks());
@@ -87,7 +86,7 @@ namespace woodworks::domain {
         q.bindValue(":image", cookie.imageBuffer);
     }
 
-    inline void Cookie::bindForUpdate(QSqlQuery& q, const Cookie& cookie)
+    inline void Cookie::bindForUpdate(QSqlQuery &q, const Cookie &cookie)
     {
         q.bindValue(":species", QString::fromStdString(cookie.species.name));
         q.bindValue(":length", cookie.length.toTicks());
@@ -100,7 +99,7 @@ namespace woodworks::domain {
         q.bindValue(":id", cookie.id.id);
     }
 
-    inline Cookie Cookie::fromRecord(const QSqlRecord& record)
+    inline Cookie Cookie::fromRecord(const QSqlRecord &record)
     {
         Cookie cookie;
         cookie.id = Id{record.value("id").toInt()};

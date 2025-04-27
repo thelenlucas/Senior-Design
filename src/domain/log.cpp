@@ -7,17 +7,18 @@
 
 #include <cmath>
 
-
-
-namespace woodworks::domain {
-    Dollar Log::cut(Length cutLength) {
-        if (cutLength > length) {
+namespace woodworks::domain
+{
+    Dollar Log::cut(Length cutLength)
+    {
+        if (cutLength > length)
+        {
             throw std::invalid_argument("Cut length is greater than log length");
         }
-        
+
         // Update the worth
         // Calculate the ratio of the cut length to the original length
-        Length newLength =  length - cutLength;
+        Length newLength = length - cutLength;
         std::cout << "Cut length: " << cutLength.toInches() << " inches" << std::endl;
         std::cout << "Old length: " << length.toInches() << " inches" << std::endl;
         std::cout << "New length: " << newLength.toInches() << " inches" << std::endl;
@@ -33,9 +34,10 @@ namespace woodworks::domain {
         std::cout << "Saved Length: " << length.toInches() << " inches" << std::endl;
 
         // Check if the log shoudl be deleted
-        auto& deebee = woodworks::infra::DbConnection::instance();
+        auto &deebee = woodworks::infra::DbConnection::instance();
         auto repo = woodworks::infra::QtSqlRepository<Log>(deebee);
-        if (length.toTicks() <= 0) {
+        if (length.toTicks() <= 0)
+        {
             // Log is empty, delete it
             repo.remove(id.id);
             std::cout << "Log is empty, deleting it" << std::endl;
@@ -51,15 +53,16 @@ namespace woodworks::domain {
     };
 
     // Cuts a cookie
-    Cookie Log::cutCookie(Length length) {
+    Cookie Log::cutCookie(Length length)
+    {
         // Check if the length is valid
-        if (length > this->length) {
+        if (length > this->length)
+        {
             throw std::invalid_argument("Cut length is greater than log length");
         }
 
         auto cookieWorth = this->cut(length);
 
-        
         // Create the cookie
         Cookie cookie;
         cookie.id = Id{-1};
@@ -72,7 +75,7 @@ namespace woodworks::domain {
         cookie.notes = "";
 
         // Insert the cookie into the database
-        auto& deebee = woodworks::infra::DbConnection::instance();
+        auto &deebee = woodworks::infra::DbConnection::instance();
         auto repo = woodworks::infra::QtSqlRepository<Cookie>(deebee);
         repo.add(cookie);
         // Return the cookie
@@ -80,9 +83,11 @@ namespace woodworks::domain {
     }
 
     // Cuts firewood
-    Firewood Log::cutFirewood(Length cutLength) {
+    Firewood Log::cutFirewood(Length cutLength)
+    {
         // Check if the length is valid
-        if (length > this->length) {
+        if (length > this->length)
+        {
             throw std::invalid_argument("Cut length is greater than log length");
         }
         auto firewoodWorth = this->cut(cutLength);

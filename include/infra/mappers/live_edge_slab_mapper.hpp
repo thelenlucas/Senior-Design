@@ -3,8 +3,10 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 
-namespace woodworks::domain {
-    inline QString LiveEdgeSlab::createDbSQL() {
+namespace woodworks::domain
+{
+    inline QString LiveEdgeSlab::createDbSQL()
+    {
         return u8R"(
             CREATE TABLE IF NOT EXISTS live_edge_slabs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,7 +50,7 @@ namespace woodworks::domain {
     // Add delete SQL
     inline QString LiveEdgeSlab::deleteSQL() { return u8R"(DELETE FROM live_edge_slabs WHERE id=:id)"; }
 
-    inline void LiveEdgeSlab::bindForInsert(QSqlQuery& q, const LiveEdgeSlab& slab)
+    inline void LiveEdgeSlab::bindForInsert(QSqlQuery &q, const LiveEdgeSlab &slab)
     {
         q.bindValue(":species", QString::fromStdString(slab.species.name));
         q.bindValue(":length", slab.length.toTicks());
@@ -62,7 +64,7 @@ namespace woodworks::domain {
         q.bindValue(":image", slab.imageBuffer);
     }
 
-    inline void LiveEdgeSlab::bindForUpdate(QSqlQuery& q, const LiveEdgeSlab& slab)
+    inline void LiveEdgeSlab::bindForUpdate(QSqlQuery &q, const LiveEdgeSlab &slab)
     {
         q.bindValue(":species", QString::fromStdString(slab.species.name));
         q.bindValue(":length", slab.length.toTicks());
@@ -77,7 +79,7 @@ namespace woodworks::domain {
         q.bindValue(":id", slab.id.id);
     }
 
-    inline LiveEdgeSlab LiveEdgeSlab::fromRecord(const QSqlRecord& record)
+    inline LiveEdgeSlab LiveEdgeSlab::fromRecord(const QSqlRecord &record)
     {
         LiveEdgeSlab slab;
         slab.id = Id{record.value("id").toInt()};

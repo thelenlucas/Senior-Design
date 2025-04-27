@@ -49,16 +49,16 @@ namespace woodworks::domain
         }
     }
 
-    template<typename T>
+    template <typename T>
     inline void scrapPopUp(const T &entity, QWidget *parent)
     {
         QMessageBox::StandardButton reply = QMessageBox::question(
             parent,
             "Confirm",
             "Are you sure you want to delete this item?",
-            QMessageBox::Yes | QMessageBox::No
-        );
-        if (reply == QMessageBox::Yes) {
+            QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes)
+        {
             QtSqlRepository<T>::spawn().remove(entity.id.id);
         }
     }

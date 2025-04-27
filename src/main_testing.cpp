@@ -20,8 +20,9 @@ using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
 using namespace woodworks::infra;
 
-int main(int argc, char* argv[]) {
-    auto& db = DbConnection::instance();
+int main(int argc, char *argv[])
+{
+    auto &db = DbConnection::instance();
     UnitOfWork uow(db);
     QtSqlRepository<Log> logs(db);
 

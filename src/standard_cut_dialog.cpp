@@ -1,6 +1,6 @@
 #include "standard_cut_dialog.hpp"
 
-StandardCutDialog::StandardCutDialog(CutType type, QWidget* parent)
+StandardCutDialog::StandardCutDialog(CutType type, QWidget *parent)
     : QDialog(parent), ui(new Ui::StandardCutDialog), cut_type(type)
 {
     ui->setupUi(this);

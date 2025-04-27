@@ -13,7 +13,6 @@
 #include <QDir>
 #include <QSqlQuery>
 
-#include "types.hpp"
 #include "mainwindow.hpp"
 
 #include "domain/log.hpp"
@@ -30,17 +29,19 @@
 
 using qsd = QSqlDatabase;
 
-class Container : public QThread 
+class Container : public QThread
 {
 private:
     QApplication *app;
+
 public:
-    Container(QApplication *app) 
+    Container(QApplication *app)
     {
         this->app = app;
     }
+
 public:
-    void run() 
+    void run()
     {
         MainWindow window;
         window.show();
@@ -48,11 +49,11 @@ public:
     }
 };
 
-int main(int argc, char* argv[]) 
+int main(int argc, char *argv[])
 {
 
     QApplication app(argc, argv);
-    
+
     // Mock open the types so that we ensure their tables + views are created
     auto &debee = woodworks::infra::DbConnection::instance();
 
@@ -60,10 +61,12 @@ int main(int argc, char* argv[])
     {
         QSqlQuery query(debee);
         query.exec("SELECT name FROM sqlite_master WHERE type='view'");
-        while(query.next()) {
+        while (query.next())
+        {
             QString viewName = query.value(0).toString();
             QSqlQuery dropQuery(debee);
-            if(!dropQuery.exec(QString("DROP VIEW IF EXISTS %1").arg(viewName))) {
+            if (!dropQuery.exec(QString("DROP VIEW IF EXISTS %1").arg(viewName)))
+            {
                 qWarning() << "Failed to drop view" << viewName << ":" << dropQuery.lastError().text();
             }
         }

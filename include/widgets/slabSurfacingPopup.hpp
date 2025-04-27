@@ -10,8 +10,10 @@
 using namespace woodworks::infra;
 
 // From a slab, allows modifying it's surfacing to a allowed slab surfacing, given its current, saves on confirm
-namespace woodworks::domain {
-    inline void slabSurfacingPopUp(LiveEdgeSlab toSurface) {
+namespace woodworks::domain
+{
+    inline void slabSurfacingPopUp(LiveEdgeSlab toSurface)
+    {
         // Allowed surfacing types
         std::vector<SlabSurfacing> allowedSurfacing = allowedTransitions(toSurface.surfacing);
         // Create a dialog to select the surfacing type
@@ -23,7 +25,8 @@ namespace woodworks::domain {
         dialog.setLayout(new QVBoxLayout());
         // Dropdown for surfacing types
         QComboBox *comboBox = new QComboBox();
-        for (const auto &surfacing : allowedSurfacing) {
+        for (const auto &surfacing : allowedSurfacing)
+        {
             comboBox->addItem(QString::fromStdString(toString(surfacing)));
         }
         dialog.layout()->addWidget(comboBox);
@@ -34,25 +37,28 @@ namespace woodworks::domain {
         QPushButton *cancelButton = new QPushButton("Cancel");
         dialog.layout()->addWidget(cancelButton);
         // Connect the confirm button to the dialog accept
-        QObject::connect(confirmButton, &QPushButton::clicked, [&dialog, &toSurface, comboBox]() {
+        QObject::connect(confirmButton, &QPushButton::clicked, [&dialog, &toSurface, comboBox]()
+                         {
             // Get the selected surfacing type
             SlabSurfacing selectedSurfacing = static_cast<SlabSurfacing>(comboBox->currentIndex());
             // Update the surfacing type
             toSurface.surfacing = selectedSurfacing;
             // Accept the dialog
-            dialog.accept();
-        });
+            dialog.accept(); });
         // Connect the cancel button to the dialog reject
-        QObject::connect(cancelButton, &QPushButton::clicked, [&dialog]() {
+        QObject::connect(cancelButton, &QPushButton::clicked, [&dialog]()
+                         {
             // Reject the dialog
-            dialog.reject();
-        });
+            dialog.reject(); });
 
         // Show the dialog
-        if (dialog.exec() == QDialog::Accepted) {
+        if (dialog.exec() == QDialog::Accepted)
+        {
             // Update the surfacing type in the database
             QtSqlRepository<LiveEdgeSlab>::spawn().update(toSurface);
-        } else {
+        }
+        else
+        {
             // User cancelled, do nothing
         }
     }

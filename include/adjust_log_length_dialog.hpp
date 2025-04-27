@@ -5,21 +5,21 @@
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
-class AdjustLogLengthDialog;
+  class AdjustLogLengthDialog;
 }
 QT_END_NAMESPACE
 
 class AdjustLogLengthDialog : public QDialog
 {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit AdjustLogLengthDialog(QWidget* parent = nullptr);
-    ~AdjustLogLengthDialog();
+public:
+  explicit AdjustLogLengthDialog(QWidget *parent = nullptr);
+  ~AdjustLogLengthDialog();
 
-    void SetLogInfoText(QString const &text);
-    double GetLengthToSubtract() const;
+  void SetLogInfoText(QString const &text);
+  double GetLengthToSubtract() const;
 
-  private:
-    Ui::AdjustLogLengthDialog* ui;
+private:
+  Ui::AdjustLogLengthDialog *ui;
 };

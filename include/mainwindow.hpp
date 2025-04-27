@@ -6,7 +6,7 @@
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
-class MainWindow;
+  class MainWindow;
 }
 QT_END_NAMESPACE
 
@@ -16,23 +16,23 @@ class SalesPage;
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit MainWindow(QWidget* parent = nullptr);
-    ~MainWindow();
+public:
+  explicit MainWindow(QWidget *parent = nullptr);
+  ~MainWindow();
 
-  private slots:
-    void showInventoryPage();
-    void showCutlistPage();
-    void showSalesPage();
+private slots:
+  void showInventoryPage();
+  void showCutlistPage();
+  void showSalesPage();
 
-  private:
-    Ui::MainWindow* ui;
+private:
+  Ui::MainWindow *ui;
 
-    InventoryPage* inventoryPage;
-    CutlistPage* cutlistPage;
-    SalesPage* salesPage;
+  InventoryPage *inventoryPage;
+  CutlistPage *cutlistPage;
+  SalesPage *salesPage;
 };
 
 #endif // MAINWINDOW_HPP
