@@ -1,18 +1,31 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
 #include <algorithm>
 #include <unordered_map>
 
 #include "csv_importer.hpp"
 #include "domain/log.hpp"
 
-std::vector<std::string> Importer::digestLine(const std::string& line){
+std::vector<std::string> Importer::digestLine(const std::string& line) {
     std::vector<std::string> parts;
-    std::stringstream ss(line);
     std::string part;
-    while(std::getline(ss, part, ',')){parts.push_back(part);}
+    bool inQuotes = false;
+    for (size_t i = 0; i < line.size(); ++i) {
+        char c = line[i];
+        if (c == '"') {
+            if (inQuotes && i+1 < line.size() && line[i+1] == '"') {
+                part += '"';
+                ++i;
+            } else {inQuotes = !inQuotes;}
+        }
+        else if (c == ',' && !inQuotes) {
+            parts.push_back(part);
+            part.clear();
+        }
+        else {part += c;}
+    }
+    parts.push_back(part);
     return parts;
 }
 
@@ -32,9 +45,6 @@ woodworks::domain::types::Drying Importer::returnDryingType(std::string dryStr){
     return Drying::GREEN;
 }
 
-//	   SLAB_SURFACNG: 
-//	   woodworks::domain::types::SlabSurfacing
-//	   RGH (rough), S1S, S2S
 woodworks::domain::types::SlabSurfacing Importer::returnSurfacingSlabs(std::string surfStr){
     std::transform(surfStr.begin(), surfStr.end(), surfStr.begin(), ::toupper);
     surfStr.erase(std::remove_if(surfStr.begin(), surfStr.end(),
@@ -45,9 +55,6 @@ woodworks::domain::types::SlabSurfacing Importer::returnSurfacingSlabs(std::stri
     else return SlabSurfacing::RGH;
 }
 
-//	   LUMBER_SURFACNG:
-//     woodworks::domain::types::LumberSurfacing
-//     RGH, S1S, S2S, S3S, S4S
 woodworks::domain::types::LumberSurfacing Importer::returnSurfacingLumber(std::string surfStr){
     std::transform(surfStr.begin(), surfStr.end(), surfStr.begin(), ::toupper);
     surfStr.erase(std::remove_if(surfStr.begin(), surfStr.end(),
