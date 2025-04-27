@@ -142,39 +142,43 @@ InventoryPage::~InventoryPage()
     delete ui;
 }
 
-void InventoryPage::slabsCustomContextMenu(const QPoint &pos) {
+void InventoryPage::slabsCustomContextMenu(const QPoint &pos)
+{
     // Surfacing
     QModelIndex index = ui->slabsTableView->indexAt(pos);
-    if (!index.isValid()) {
+    if (!index.isValid())
+    {
         std::cout << "Invalid index" << std::endl;
         return;
     }
-    if (!ui->detailedViewCheckBox->isChecked()) {
+    if (!ui->detailedViewCheckBox->isChecked())
+    {
         return;
     }
 
     QMenu contextMenu;
-    contextMenu.addAction("Surface Board", [this, index]() {
+    contextMenu.addAction("Surface Board", [this, index]()
+                          {
         auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(index.sibling(index.row(), 0).data().toInt());
-        slabSurfacingPopUp(slab.value());
-    });
+        slabSurfacingPopUp(slab.value()); });
 
     // Dry board
-    contextMenu.addAction("Dry Board", [this, index]() {
+    contextMenu.addAction("Dry Board", [this, index]()
+                          {
         auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(index.sibling(index.row(), 0).data().toInt());
-        dryingPopUp(slab.value());
-    });
+        dryingPopUp(slab.value()); });
 
-    contextMenu.addAction("Cut Lumber", [this, index]() {
+    contextMenu.addAction("Cut Lumber", [this, index]()
+                          {
         auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(index.sibling(index.row(), 0).data().toInt());
         if (slab) {
             LumberCuttingWindow* win = new LumberCuttingWindow(slab.value(), this);
             win->setAttribute(Qt::WA_DeleteOnClose);
             win->show();
-        }
-    });
+        } });
 
-    contextMenu.addAction("Change Location", [this, index]() {
+    contextMenu.addAction("Change Location", [this, index]()
+                          {
         int slabId = index.sibling(index.row(), 0).data().toInt();
         auto repo = QtSqlRepository<LiveEdgeSlab>::spawn();
         auto slabOpt = repo.get(slabId);
@@ -190,15 +194,14 @@ void InventoryPage::slabsCustomContextMenu(const QPoint &pos) {
                 repo.update(slab);
                 refreshModels();    
             }
-        }
-    });
+        } });
 
     // add scrap board
-    contextMenu.addAction("Scrap Board", [this, index]() {
+    contextMenu.addAction("Scrap Board", [this, index]()
+                          {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto slab = QtSqlRepository<LiveEdgeSlab>::spawn().get(id);
-        if (slab) { scrapPopUp(*slab, this); refreshModels(); }
-    });
+        if (slab) { scrapPopUp(*slab, this); refreshModels(); } });
 
     contextMenu.exec(ui->slabsTableView->viewport()->mapToGlobal(pos));
 }
@@ -206,7 +209,8 @@ void InventoryPage::slabsCustomContextMenu(const QPoint &pos) {
 void InventoryPage::logsCustomContextMenu(const QPoint &pos)
 {
     QModelIndex index = ui->logsTableView->indexAt(pos);
-    if (!index.isValid()) {
+    if (!index.isValid())
+    {
         std::cout << "Invalid index" << std::endl;
         return;
     }
@@ -214,25 +218,28 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
     if (!ui->detailedViewCheckBox->isChecked())
     {
         QMenu contextMenu;
-        contextMenu.addAction("Filter similar logs", [this, index]() {
+        contextMenu.addAction("Filter similar logs", [this, index]()
+                              {
             // Hijack the double click event
-            onDoubleClickLogTable(index);
-        });
+            onDoubleClickLogTable(index); });
         contextMenu.exec(ui->logsTableView->viewport()->mapToGlobal(pos));
-    } else {
+    }
+    else
+    {
         QMenu contextMenu;
-        contextMenu.addAction("View Image", [this, index]() {
+        contextMenu.addAction("View Image", [this, index]()
+                              {
             // Get id from the first column of the row selected
             int logId = index.sibling(index.row(), 0).data().toInt();
             auto log = QtSqlRepository<Log>::spawn().get(logId);
             if (log) {
                 // Show the image
                 viewImagePopup(*log, this);
-            }
-        });
+            } });
 
         // Dry log
-        contextMenu.addAction("Dry Log", [this, index]() {
+        contextMenu.addAction("Dry Log", [this, index]()
+                              {
             // Get the log ID from the model
             int logId = index.sibling(index.row(), 0).data().toInt();
             // Get the log from the database
@@ -241,19 +248,19 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
                 // Show a dialog to select the drying state
                 dryingPopUp(*log);
                 refreshModels();
-            }
-        });
+            } });
 
-        contextMenu.addAction("Scrap Log", [this, index]() {
+        contextMenu.addAction("Scrap Log", [this, index]()
+                              {
             int logId = index.sibling(index.row(), 0).data().toInt();
             auto log = QtSqlRepository<Log>::spawn().get(logId);
             if (log) {
                 scrapPopUp(*log, this);
                 refreshModels();
-            }
-        });
+            } });
 
-        contextMenu.addAction("Cut Cookie", [this, index]() {
+        contextMenu.addAction("Cut Cookie", [this, index]()
+                              {
             // Get the log ID from the model
             int logId = index.sibling(index.row(), 0).data().toInt();
             std::cout << "Log ID: " << logId << std::endl;
@@ -267,19 +274,19 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
                     log->cutCookie(Length::fromInches(length));
                     refreshModels();
                 }
-            }
-        });
+            } });
 
-        contextMenu.addAction("Cut Slabs", [this, index]() {
+        contextMenu.addAction("Cut Slabs", [this, index]()
+                              {
             auto log = QtSqlRepository<Log>::spawn().get(index.sibling(index.row(), 0).data().toInt());
             if (log) {
                 SlabCuttingWindow *slabCuttingWindow = new SlabCuttingWindow(*log, this);
                 slabCuttingWindow->setAttribute(Qt::WA_DeleteOnClose);
                 slabCuttingWindow->show();
-            }
-        });
+            } });
 
-        contextMenu.addAction("Break into Firewood", [this, index]() {
+        contextMenu.addAction("Break into Firewood", [this, index]()
+                              {
             // Get the log ID from the model
             int logId = index.sibling(index.row(), 0).data().toInt();
             std::cout << "Log ID: " << logId << std::endl;
@@ -293,10 +300,10 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
                     log->cutFirewood(Length::fromFeet(length));
                     refreshModels();
                 }
-            }
-        });
+            } });
 
-        contextMenu.addAction("Change Location", [this, index]() {
+        contextMenu.addAction("Change Location", [this, index]()
+                              {
             int logId = index.sibling(index.row(), 0).data().toInt();
             auto repo = QtSqlRepository<Log>::spawn();
             auto logOpt = repo.get(logId);
@@ -312,30 +319,32 @@ void InventoryPage::logsCustomContextMenu(const QPoint &pos)
                     repo.update(log);
                     refreshModels();    
                 }
-            }
-        });
+            } });
 
         contextMenu.exec(ui->logsTableView->viewport()->mapToGlobal(pos));
     }
 }
 
-void InventoryPage::cookiesCustomContextMenu(const QPoint& pos) {
+void InventoryPage::cookiesCustomContextMenu(const QPoint &pos)
+{
     QModelIndex index = ui->cookiesTableView->indexAt(pos);
-    if (!index.isValid() || !ui->detailedViewCheckBox->isChecked()) return;
+    if (!index.isValid() || !ui->detailedViewCheckBox->isChecked())
+        return;
     QMenu contextMenu;
-    contextMenu.addAction("Dry Cookie", [this, index]() {
+    contextMenu.addAction("Dry Cookie", [this, index]()
+                          {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto cookie = QtSqlRepository<Cookie>::spawn().get(id);
-        if (cookie) { dryingPopUp(*cookie); refreshModels(); }
-    });
-    
-    contextMenu.addAction("Scrap Cookie", [this, index]() {
-        int id = index.sibling(index.row(), 0).data().toInt();
-        auto cookie = QtSqlRepository<Cookie>::spawn().get(id);
-        if (cookie) { scrapPopUp(*cookie, this); refreshModels(); }
-    });
+        if (cookie) { dryingPopUp(*cookie); refreshModels(); } });
 
-    contextMenu.addAction("Change Location", [this, index]() {
+    contextMenu.addAction("Scrap Cookie", [this, index]()
+                          {
+        int id = index.sibling(index.row(), 0).data().toInt();
+        auto cookie = QtSqlRepository<Cookie>::spawn().get(id);
+        if (cookie) { scrapPopUp(*cookie, this); refreshModels(); } });
+
+    contextMenu.addAction("Change Location", [this, index]()
+                          {
         int cookieId = index.sibling(index.row(), 0).data().toInt();
         auto repo = QtSqlRepository<Cookie>::spawn();
         auto cookieOpt = repo.get(cookieId);
@@ -351,30 +360,32 @@ void InventoryPage::cookiesCustomContextMenu(const QPoint& pos) {
                 repo.update(cookie);
                 refreshModels();    
             }
-        }
-    });
+        } });
 
     contextMenu.exec(ui->cookiesTableView->viewport()->mapToGlobal(pos));
 }
 
-void InventoryPage::lumberCustomContextMenu(const QPoint& pos) {
+void InventoryPage::lumberCustomContextMenu(const QPoint &pos)
+{
     QModelIndex index = ui->lumberTableView->indexAt(pos);
-    if (!index.isValid() || !ui->detailedViewCheckBox->isChecked()) return;
+    if (!index.isValid() || !ui->detailedViewCheckBox->isChecked())
+        return;
     QMenu contextMenu;
-    contextMenu.addAction("Dry Lumber", [this, index]() {
+    contextMenu.addAction("Dry Lumber", [this, index]()
+                          {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto lumber = QtSqlRepository<Lumber>::spawn().get(id);
-        if (lumber) { dryingPopUp(*lumber); refreshModels(); }
-    });
-    
-    contextMenu.addAction("Scrap Lumber", [this, index]() {
+        if (lumber) { dryingPopUp(*lumber); refreshModels(); } });
+
+    contextMenu.addAction("Scrap Lumber", [this, index]()
+                          {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto lumber = QtSqlRepository<Lumber>::spawn().get(id);
-        if (lumber) { scrapPopUp(*lumber, this); refreshModels(); }
-    });
+        if (lumber) { scrapPopUp(*lumber, this); refreshModels(); } });
 
     // Surface lumber
-    contextMenu.addAction("Surface Lumber", [this, index]() {
+    contextMenu.addAction("Surface Lumber", [this, index]()
+                          {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto lumber = QtSqlRepository<Lumber>::spawn().get(id);
         if (lumber) {
@@ -402,10 +413,10 @@ void InventoryPage::lumberCustomContextMenu(const QPoint& pos) {
                 QtSqlRepository<Lumber>::spawn().update(toSurface);
                 refreshModels();
             }
-        }
-    });
+        } });
 
-    contextMenu.addAction("Change Location", [this, index]() {
+    contextMenu.addAction("Change Location", [this, index]()
+                          {
         int lumbId = index.sibling(index.row(), 0).data().toInt();
         auto repo = QtSqlRepository<Lumber>::spawn();
         auto lumbOpt = repo.get(lumbId);
@@ -421,19 +432,21 @@ void InventoryPage::lumberCustomContextMenu(const QPoint& pos) {
                 repo.update(lumber);
                 refreshModels();    
             }
-        }
-    });
+        } });
 
     contextMenu.exec(ui->lumberTableView->viewport()->mapToGlobal(pos));
 }
 
-void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
+void InventoryPage::firewoodCustomContextMenu(const QPoint &pos)
+{
     QModelIndex index = ui->firewoodTableView->indexAt(pos);
-    if (!index.isValid()) return;
+    if (!index.isValid())
+        return;
     QMenu contextMenu;
 
     // Add move and delete volume actions for firewood bundles
-    contextMenu.addAction("Move Firewood Volume...", [this, index]() {
+    contextMenu.addAction("Move Firewood Volume...", [this, index]()
+                          {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto fwOpt = QtSqlRepository<Firewood>::spawn().get(id);
         if (!fwOpt) return;
@@ -448,9 +461,9 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
         QString newLoc = QInputDialog::getText(this, "New Location", "Enter new location:", QLineEdit::Normal, QString::fromStdString(example.location), &okLoc);
         if (!okLoc || newLoc.isEmpty()) return;
         bundle.moveVolume(volume, newLoc.toStdString());
-        refreshModels();
-    });
-    contextMenu.addAction("Delete Firewood Volume...", [this, index]() {
+        refreshModels(); });
+    contextMenu.addAction("Delete Firewood Volume...", [this, index]()
+                          {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto fwOpt = QtSqlRepository<Firewood>::spawn().get(id);
         if (!fwOpt) return;
@@ -463,9 +476,9 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
         if (!okVol || volume <= 0) return;
         auto bundle = FirewoodBundle::fromExample(example);
         bundle.deleteVolume(volume);
-        refreshModels();
-    });
-    contextMenu.addAction("Dry Firewood Volume...", [this, index]() {
+        refreshModels(); });
+    contextMenu.addAction("Dry Firewood Volume...", [this, index]()
+                          {
         int id = index.sibling(index.row(), 0).data().toInt();
         auto fwOpt = QtSqlRepository<Firewood>::spawn().get(id);
         if (!fwOpt) return;
@@ -488,8 +501,7 @@ void InventoryPage::firewoodCustomContextMenu(const QPoint& pos) {
         int selectedIndex = dryingOptions.indexOf(sel);
         types::Drying newDry = allowed[selectedIndex];
         bundle.dryVolume(volume, newDry);
-        refreshModels();
-    });
+        refreshModels(); });
 
     contextMenu.exec(ui->firewoodTableView->viewport()->mapToGlobal(pos));
 }
@@ -553,36 +565,46 @@ void InventoryPage::buildFilterWidgets()
     ui->slabsSpeciesCombo->addItems(species);
     ui->lumberSpeciesCombo->addItems(species);
     ui->firewoodSpeciesCombo->addItems(species);
-    
+
     // If our old value exists and is still in the list, set it as the current index
     if (species.contains(oldLogSpecies))
     {
         ui->logSpeciesComboBox->setCurrentText(oldLogSpecies);
-    } else {
+    }
+    else
+    {
         ui->logSpeciesComboBox->setCurrentIndex(0);
     }
     if (species.contains(oldCookieSpecies))
     {
         ui->cookiesSpeciesCombo->setCurrentText(oldCookieSpecies);
-    } else {
+    }
+    else
+    {
         ui->cookiesSpeciesCombo->setCurrentIndex(0);
     }
     if (species.contains(oldSlabSpecies))
     {
         ui->slabsSpeciesCombo->setCurrentText(oldSlabSpecies);
-    } else {
+    }
+    else
+    {
         ui->slabsSpeciesCombo->setCurrentIndex(0);
     }
     if (species.contains(oldLumberSpecies))
     {
         ui->lumberSpeciesCombo->setCurrentText(oldLumberSpecies);
-    } else {
+    }
+    else
+    {
         ui->lumberSpeciesCombo->setCurrentIndex(0);
     }
     if (species.contains(oldFirewoodSpecies))
     {
         ui->firewoodSpeciesCombo->setCurrentText(oldFirewoodSpecies);
-    } else {
+    }
+    else
+    {
         ui->firewoodSpeciesCombo->setCurrentIndex(0);
     }
 
@@ -597,31 +619,41 @@ void InventoryPage::buildFilterWidgets()
     if (dryings.contains(oldLogDrying))
     {
         ui->logDryingComboBox->setCurrentText(oldLogDrying);
-    } else {
+    }
+    else
+    {
         ui->logDryingComboBox->setCurrentIndex(0);
     }
     if (dryings.contains(oldCookieDrying))
     {
         ui->cookieDryingCombo->setCurrentText(oldCookieDrying);
-    } else {
+    }
+    else
+    {
         ui->cookieDryingCombo->setCurrentIndex(0);
     }
     if (dryings.contains(oldSlabDrying))
     {
         ui->slabDryingCombo->setCurrentText(oldSlabDrying);
-    } else {
+    }
+    else
+    {
         ui->slabDryingCombo->setCurrentIndex(0);
     }
     if (dryings.contains(oldLumberDrying))
     {
         ui->lumberDryingCombo->setCurrentText(oldLumberDrying);
-    } else {
+    }
+    else
+    {
         ui->lumberDryingCombo->setCurrentIndex(0);
     }
     if (dryings.contains(oldFirewoodDrying))
     {
         ui->firewoodDryingCombo->setCurrentText(oldFirewoodDrying);
-    } else {
+    }
+    else
+    {
         ui->firewoodDryingCombo->setCurrentIndex(0);
     }
 
@@ -632,10 +664,11 @@ void InventoryPage::buildFilterWidgets()
     if (surfacings.contains(oldSlabSurfacing))
     {
         ui->slabSurfacingCombo->setCurrentText(oldSlabSurfacing);
-    } else {
+    }
+    else
+    {
         ui->slabSurfacingCombo->setCurrentIndex(0);
     }
-
 
     ui->lumberSurfacingCombo->addItem("All");
     auto lumberSurfacings = getUniqueValuesOfColumn("display_lumber", "Surfacing");
@@ -643,7 +676,9 @@ void InventoryPage::buildFilterWidgets()
     if (lumberSurfacings.contains(oldLumberSurfacing))
     {
         ui->lumberSurfacingCombo->setCurrentText(oldLumberSurfacing);
-    } else {
+    }
+    else
+    {
         ui->lumberSurfacingCombo->setCurrentIndex(0);
     }
 
@@ -654,7 +689,9 @@ void InventoryPage::buildFilterWidgets()
     if (thicknesses.contains(oldLumberThickness))
     {
         ui->lumberThicknessCombo->setCurrentText(oldLumberThickness);
-    } else {
+    }
+    else
+    {
         ui->lumberThicknessCombo->setCurrentIndex(0);
     }
 
@@ -885,7 +922,7 @@ void InventoryPage::onDoubleClickLogTable(const QModelIndex &index)
         ui->logSpeciesComboBox->setCurrentText(species);
         ui->logDryingComboBox->setCurrentText(drying);
         ui->detailedViewCheckBox->setChecked(true);
-        
+
         refreshModels();
     }
     else
@@ -997,44 +1034,58 @@ void InventoryPage::onSpreadsheetImportClicked()
 {
     QString filename = QFileDialog::getOpenFileName(this, "Import Spreadsheet", QString(), "Spreadsheets (*.csv)");
 
-    if (filename.isEmpty()){return;}
+    if (filename.isEmpty())
+    {
+        return;
+    }
 
     QStringList options;
     options << "Logs" << "Firewood" << "Slabs" << "Cookies" << "Lumber";
     bool ok = false;
     QString userChoice = QInputDialog::getItem(this, QObject::tr("Sheet Picker"), QObject::tr("Please select which sheet you're importing:"), options, 0, false, &ok);
 
-    if(!ok){return;}
+    if (!ok)
+    {
+        return;
+    }
     QMessageBox::information(this, "Import Selected", "File selected: " + filename + "\nSheet Type: " + userChoice);
     std::string filePath = filename.toStdString();
     Importer import;
-    try{
-        if(userChoice == "Logs"){
-            QMessageBox::information(this, "Advisory", 
-                "Please ensure your file includes the following headers:\nSpecies, Length (Ft'in\"), Diameter (in), Cost ($), Quality (1-5), Drying (AIR/KILN/BOTH/GREEN), Location, Notes");
+    try
+    {
+        if (userChoice == "Logs")
+        {
+            QMessageBox::information(this, "Advisory",
+                                     "Please ensure your file includes the following headers:\nSpecies, Length (Ft'in\"), Diameter (in), Cost ($), Quality (1-5), Drying (AIR/KILN/BOTH/GREEN), Location, Notes");
             import.importLogs(filePath);
         }
-        if(userChoice == "Firewood"){
+        if (userChoice == "Firewood")
+        {
             QMessageBox::information(this, "Advisory",
-                "Please ensure your file includes the following headers:\nSpecies, Chords (ft^3), Cost, Drying (AIR/KILN/BOTH/GREEN), Location, Notes");
+                                     "Please ensure your file includes the following headers:\nSpecies, Chords (ft^3), Cost, Drying (AIR/KILN/BOTH/GREEN), Location, Notes");
             import.importFirewood(filePath);
         }
-        if(userChoice == "Slabs"){
+        if (userChoice == "Slabs")
+        {
             QMessageBox::information(this, "Advisory",
-                "Please ensure your file includes the following headers:\nSpecies, Length (Quarters), Width (in), Thickness (in), Drying (AIR/KILN/BOTH/GREEN), Surfacing (RGH/S1S/S2S), Cost ($), Location, Notes");
+                                     "Please ensure your file includes the following headers:\nSpecies, Length (Quarters), Width (in), Thickness (in), Drying (AIR/KILN/BOTH/GREEN), Surfacing (RGH/S1S/S2S), Cost ($), Location, Notes");
             import.importSlabs(filePath);
         }
-        if(userChoice == "Cookies"){
+        if (userChoice == "Cookies")
+        {
             QMessageBox::information(this, "Advisory",
-                "Please ensure your file includes the following headers:\nSpecies, Thickness (in), Diameter (in), Drying (AIR/KILN/BOTH/GREEN), Cost ($), Location, Notes");
+                                     "Please ensure your file includes the following headers:\nSpecies, Thickness (in), Diameter (in), Drying (AIR/KILN/BOTH/GREEN), Cost ($), Location, Notes");
             import.importCookies(filePath);
         }
-        if(userChoice == "Lumber"){
+        if (userChoice == "Lumber")
+        {
             QMessageBox::information(this, "Advisory",
-                "Please ensure your file includes the following headers:\nSpecies, Length (Quarters), Width (in), Thickness (in), Surfacing (RGH/S1S/S2S/S3S/S4S), Drying (AIR/KILN/BOTH/GREEN), Cost ($), Location, Notes");
+                                     "Please ensure your file includes the following headers:\nSpecies, Length (Quarters), Width (in), Thickness (in), Surfacing (RGH/S1S/S2S/S3S/S4S), Drying (AIR/KILN/BOTH/GREEN), Cost ($), Location, Notes");
             import.importLumber(filePath);
-       }
-    } catch(...) {
+        }
+    }
+    catch (...)
+    {
         QMessageBox::critical(this, "Error", "Ran into an issue Importing.");
     }
 

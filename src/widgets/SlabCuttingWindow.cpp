@@ -30,35 +30,40 @@ SlabCuttingWindow::~SlabCuttingWindow()
     delete ui;
 }
 
-void SlabCuttingWindow::onSquareOffButtonClicked() {
+void SlabCuttingWindow::onSquareOffButtonClicked()
+{
     Length squareOffLength = Length::fromQuarters(ui->squareOffLengthQuartersSpin->value());
-    if (squareOffLength > cutter.getRemainingDiameter()) {
+    if (squareOffLength > cutter.getRemainingDiameter())
+    {
         // Notify
         QMessageBox::warning(this, "Invalid Cut", "Square off length exceeds remaining diameter.");
         return;
     }
-    
+
     // Perform the square off
     cutter.waste(squareOffLength);
     // Update the UI
     updateUi();
 }
 
-void SlabCuttingWindow::onAddCutButtonClicked() {
+void SlabCuttingWindow::onAddCutButtonClicked()
+{
     Length slabThickness = Length::fromQuarters(ui->nextSlabThicknessSpin->value());
-    if (slabThickness > cutter.getRemainingDiameter()) {
+    if (slabThickness > cutter.getRemainingDiameter())
+    {
         // Notify
         QMessageBox::warning(this, "Invalid Cut", "Slab thickness exceeds remaining diameter.");
         return;
     }
-    
+
     // Perform the cut
     cutter.addSlab(slabThickness);
     // Update the UI
     updateUi();
 }
 
-void SlabCuttingWindow::onSlabThicknessChanged() {
+void SlabCuttingWindow::onSlabThicknessChanged()
+{
     updateUi();
 }
 
@@ -73,7 +78,8 @@ void SlabCuttingWindow::updateUi()
     ui->nextSlabThicknessSpin->setMaximum(cutter.getRemainingDiameter().toQuarters());
 }
 
-void SlabCuttingWindow::onFinishCutButtonClicked() {
+void SlabCuttingWindow::onFinishCutButtonClicked()
+{
     // Get length to cut slabs to, from popup
     bool ok;
     double cutLength = QInputDialog::getDouble(this, "Cut Length", "Enter the length to cut slabs to (in):", 0, 0, log.length.toInches(), 1, &ok);
@@ -82,7 +88,8 @@ void SlabCuttingWindow::onFinishCutButtonClicked() {
     QString location = ui->locationLineEdit->text();
     QString notes = ui->notesLineEdit->text();
 
-    if (ok) {
+    if (ok)
+    {
         // Perform the cuts
         auto slabs = cutter.completeCuts(Length::fromInches(cutLength), location.toStdString(), notes.toStdString());
     }

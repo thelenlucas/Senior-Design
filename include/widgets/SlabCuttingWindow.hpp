@@ -8,10 +8,14 @@ using namespace woodworks::domain;
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class slabCuttingWindow; }
+namespace Ui
+{
+    class slabCuttingWindow;
+}
 QT_END_NAMESPACE
 
-namespace woodworks::widgets {
+namespace woodworks::widgets
+{
     class SlabCuttingWindow : public QMainWindow
     {
         Q_OBJECT
@@ -28,7 +32,7 @@ namespace woodworks::widgets {
 
     private:
         Ui::slabCuttingWindow *ui;
-        Log log; // The log being cut
+        Log log;                  // The log being cut
         slabs::SlabCutter cutter; // The cutter object for the log
 
         // Ui update

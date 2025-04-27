@@ -79,7 +79,8 @@ namespace woodworks::infra
      * @struct Exact
      * @brief Represents an exact match filter rule.
      */
-    struct Exact {
+    struct Exact
+    {
         QVariant value; ///< The value to match exactly.
     }; // `col = value`
 
@@ -87,7 +88,8 @@ namespace woodworks::infra
      * @struct Numeric
      * @brief Represents a numeric filter rule with a minimum value.
      */
-    struct Numeric {
+    struct Numeric
+    {
         double minValue; ///< The minimum value for the filter.
     }; // `col >= minValue`
 
@@ -95,7 +97,8 @@ namespace woodworks::infra
      * @struct EnumInc
      * @brief Represents an enumerated inclusion filter rule.
      */
-    struct EnumInc {
+    struct EnumInc
+    {
         std::optional<int> chosen; ///< The chosen value, or none for any value.
     }; // none = ANY, some = `col = chosen`
 
@@ -103,7 +106,8 @@ namespace woodworks::infra
      * @struct Max
      * @brief Represents a numeric filter rule with a maximum value.
      */
-    struct Max {
+    struct Max
+    {
         double maxValue; ///< The maximum value for the filter.
     }; // `col <= maxValue`
 
@@ -111,7 +115,8 @@ namespace woodworks::infra
      * @struct Between
      * @brief Represents a numeric filter rule with a range.
      */
-    struct Between {
+    struct Between
+    {
         double minValue; ///< The minimum value for the range.
         double maxValue; ///< The maximum value for the range.
     }; // `col BETWEEN minValue AND maxValue`
@@ -126,8 +131,9 @@ namespace woodworks::infra
      * @struct FieldFilter
      * @brief Represents a filter applied to a database field.
      */
-    struct FieldFilter {
-        QString column; ///< The database column or view alias.
+    struct FieldFilter
+    {
+        QString column;  ///< The database column or view alias.
         FilterRule rule; ///< The filter rule to apply.
 
         /**

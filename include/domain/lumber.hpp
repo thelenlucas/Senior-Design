@@ -11,11 +11,13 @@
 using namespace woodworks::domain::types;
 using namespace woodworks::domain::imperial;
 
-namespace woodworks::domain {
+namespace woodworks::domain
+{
     /**
      * Represents a piece of lumber with various attributes such as species, dimensions, drying state, and surfacing.
      */
-    struct Lumber {
+    struct Lumber
+    {
         /** Unique identifier for the lumber */
         Id id{-1};
         /** Species of the lumber */
@@ -43,7 +45,8 @@ namespace woodworks::domain {
          * Creates an uninitialized Lumber object with default values.
          * @return An uninitialized Lumber object.
          */
-        inline static Lumber uninitialized() {
+        inline static Lumber uninitialized()
+        {
             Lumber lumber;
             lumber.id = Id{-1};
             lumber.species = Species{""};
@@ -120,21 +123,21 @@ namespace woodworks::domain {
          * @param query The SQL query object.
          * @param lumber The lumber to bind.
          */
-        static void bindForInsert(QSqlQuery& query, const Lumber& lumber);
+        static void bindForInsert(QSqlQuery &query, const Lumber &lumber);
 
         /**
          * Binds the lumber attributes to a SQL update query.
          * @param query The SQL query object.
          * @param lumber The lumber to bind.
          */
-        static void bindForUpdate(QSqlQuery& query, const Lumber& lumber);
+        static void bindForUpdate(QSqlQuery &query, const Lumber &lumber);
 
         /**
          * Creates a Lumber object from a database record.
          * @param record The database record.
          * @return The resulting Lumber object.
          */
-        static Lumber fromRecord(const QSqlRecord& record);
+        static Lumber fromRecord(const QSqlRecord &record);
 
         /**
          * Checks if a lumber entry matches an example lumber based on specific attributes.
@@ -142,7 +145,8 @@ namespace woodworks::domain {
          * @param example The example lumber to match against.
          * @return True if the lumber entries match, false otherwise.
          */
-        static bool matches(const Lumber& item, const Lumber& example) noexcept {
+        static bool matches(const Lumber &item, const Lumber &example) noexcept
+        {
             return item.species.name == example.species.name &&
                    item.thickness.toTicks() == example.thickness.toTicks() &&
                    item.width.toTicks() == example.width.toTicks() &&

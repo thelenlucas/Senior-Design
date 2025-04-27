@@ -1,7 +1,7 @@
 /**
  * @file images.hpp
  * @brief Provides templated functions for handling images in the application.
- * 
+ *
  * This file includes functions to load, save, and display images with additional
  * functionality for adding notes and replacing images. It uses Qt framework components.
  */
@@ -28,7 +28,7 @@ namespace woodworks::infra
 {
     /**
      * @brief Loads a QPixmap from a domain item.
-     * 
+     *
      * @tparam T The type of the domain item.
      * @param item The domain item containing the image buffer.
      * @return QPixmap The loaded QPixmap.
@@ -43,7 +43,7 @@ namespace woodworks::infra
 
     /**
      * @brief Saves a QPixmap to a domain item.
-     * 
+     *
      * @tparam T The type of the domain item.
      * @param item The domain item to save the image buffer to.
      * @param pixmap The QPixmap to save.
@@ -60,7 +60,7 @@ namespace woodworks::infra
 
     /**
      * @brief Displays an image popup with options to replace or save the image.
-     * 
+     *
      * @tparam T The type of the domain item.
      * @param item The domain item containing the image and notes.
      * @param parent The parent widget for the popup dialog (optional).
@@ -89,9 +89,12 @@ namespace woodworks::infra
         QVBoxLayout *layout = new QVBoxLayout(&dlg);
 
         QLabel *imgLabel = new QLabel(&dlg);
-        if (pix.isNull()) {
+        if (pix.isNull())
+        {
             imgLabel->setText(QCoreApplication::translate("ImageViewer", "No Image"));
-        } else {
+        }
+        else
+        {
             imgLabel->setPixmap(displayPix);
         }
         imgLabel->setAlignment(Qt::AlignCenter);
@@ -137,12 +140,13 @@ namespace woodworks::infra
                 }
             } });
 
-        QObject::connect(closeBtn, &QPushButton::clicked, [&dlg]() { dlg.accept(); });
+        QObject::connect(closeBtn, &QPushButton::clicked, [&dlg]()
+                         { dlg.accept(); });
 
-        QObject::connect(&dlg, &QDialog::finished, [&item, notesEdit](int) {
+        QObject::connect(&dlg, &QDialog::finished, [&item, notesEdit](int)
+                         {
             item.notes = notesEdit->toPlainText().toStdString();
-            QtSqlRepository<T>::spawn().update(item);
-        });
+            QtSqlRepository<T>::spawn().update(item); });
 
         dlg.exec();
     }

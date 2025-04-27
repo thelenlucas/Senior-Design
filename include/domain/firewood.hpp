@@ -17,12 +17,14 @@
 using namespace woodworks::domain::types;
 using namespace woodworks::domain::imperial;
 
-namespace woodworks::domain {
+namespace woodworks::domain
+{
     /**
      * @struct Firewood
      * @brief Represents a piece of firewood with attributes such as species, volume, drying state, cost, location, notes, and image data.
      */
-    struct Firewood {
+    struct Firewood
+    {
         /**
          * @brief Unique identifier for the firewood bundle.
          */
@@ -61,7 +63,7 @@ namespace woodworks::domain {
         /**
          * @brief Image data buffer for the firewood.
          */
-        QByteArray imageBuffer{};  
+        QByteArray imageBuffer{};
 
         /**
          * @brief Converts the volume in cubic feet to chords (1 chord = 128 cubic feet).
@@ -76,7 +78,8 @@ namespace woodworks::domain {
          * @brief Creates an uninitialized Firewood object with default values.
          * @return An uninitialized Firewood object.
          */
-        static Firewood uninitialized() {
+        static Firewood uninitialized()
+        {
             Firewood fw;
             fw.id = Id{-1};
             fw.species = Species{""};
@@ -150,21 +153,21 @@ namespace woodworks::domain {
          * @param query The QSqlQuery to bind to.
          * @param fw The Firewood instance containing data.
          */
-        static void bindForInsert(QSqlQuery&, const Firewood&);
+        static void bindForInsert(QSqlQuery &, const Firewood &);
 
         /**
          * @brief Binds firewood data to a QSqlQuery for updating.
          * @param query The QSqlQuery to bind to.
          * @param fw The Firewood instance containing data.
          */
-        static void bindForUpdate(QSqlQuery&, const Firewood&);
+        static void bindForUpdate(QSqlQuery &, const Firewood &);
 
         /**
          * @brief Constructs a Firewood object from a QSqlRecord.
          * @param record The record containing firewood data.
          * @return Populated Firewood object.
          */
-        static Firewood fromRecord(const QSqlRecord&);
+        static Firewood fromRecord(const QSqlRecord &);
 
         /**
          * @brief Checks if two Firewood objects match on key fields.
@@ -172,7 +175,8 @@ namespace woodworks::domain {
          * @param example The example Firewood to match against.
          * @return True if matching, otherwise false.
          */
-        static bool matches(const Firewood& item, const Firewood& example) noexcept {
+        static bool matches(const Firewood &item, const Firewood &example) noexcept
+        {
             return item.species.name == example.species.name &&
                    item.location == example.location &&
                    item.drying == example.drying &&

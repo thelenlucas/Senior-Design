@@ -15,7 +15,8 @@
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::types;
 
-namespace woodworks::domain {
+namespace woodworks::domain
+{
     /**
      * @struct CustomCut
      * @brief Represents a custom cut with attributes such as project, part, dimensions, species, progress, and notes.
@@ -113,8 +114,10 @@ namespace woodworks::domain {
         /**
          * @brief Increments the rough progress of the custom cut.
          */
-        inline void incrementRough() {
-            if (progress_rough < quantity) {
+        inline void incrementRough()
+        {
+            if (progress_rough < quantity)
+            {
                 progress_rough++;
             }
         }
@@ -122,8 +125,10 @@ namespace woodworks::domain {
         /**
          * @brief Increments the finished progress of the custom cut.
          */
-        inline void incrementFinished() {
-            if (progress_finished < progress_rough) {
+        inline void incrementFinished()
+        {
+            if (progress_finished < progress_rough)
+            {
                 progress_finished++;
             }
         }
@@ -141,7 +146,7 @@ namespace woodworks::domain {
          * @param project The name of the project.
          * @return A QString containing the SQL query.
          */
-        static QString cutlistViewSQLQuery(const QString& project);
+        static QString cutlistViewSQLQuery(const QString &project);
 
         /**
          * @brief Generates the SQL statement for viewing individual custom cuts.
@@ -190,21 +195,21 @@ namespace woodworks::domain {
          * @param query The QSqlQuery object to bind data to.
          * @param customCut The CustomCut object containing the data.
          */
-        static void bindForInsert(QSqlQuery& query, const CustomCut& customCut);
+        static void bindForInsert(QSqlQuery &query, const CustomCut &customCut);
 
         /**
          * @brief Binds the custom cut data to a QSqlQuery for updating.
          * @param query The QSqlQuery object to bind data to.
          * @param customCut The CustomCut object containing the data.
          */
-        static void bindForUpdate(QSqlQuery& query, const CustomCut& customCut);
+        static void bindForUpdate(QSqlQuery &query, const CustomCut &customCut);
 
         /**
          * @brief Creates a CustomCut object from a QSqlRecord.
          * @param record The QSqlRecord containing the custom cut data.
          * @return A CustomCut object populated with the data from the record.
          */
-        static CustomCut fromRecord(const QSqlRecord& record);
+        static CustomCut fromRecord(const QSqlRecord &record);
 
         /**
          * @brief Retrieves all existing projects.

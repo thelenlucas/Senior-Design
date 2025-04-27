@@ -16,12 +16,14 @@
 using namespace woodworks::domain::types;
 using namespace woodworks::domain::imperial;
 
-namespace woodworks::domain {
+namespace woodworks::domain
+{
     /**
      * @struct Cookie
      * @brief Represents a cookie with various attributes such as species, dimensions, drying state, worth, location, and notes.
      */
-    struct Cookie {
+    struct Cookie
+    {
         /**
          * @brief Unique id per cookie.
          */
@@ -71,7 +73,8 @@ namespace woodworks::domain {
          * @brief Creates an uninitialized cookie object.
          * @return An uninitialized Cookie object.
          */
-        static Cookie uninitialized() {
+        static Cookie uninitialized()
+        {
             Cookie cookie;
             cookie.id = Id{-1};
             cookie.species = Species{""};
@@ -146,21 +149,21 @@ namespace woodworks::domain {
          * @param query The QSqlQuery object to bind data to.
          * @param cookie The Cookie object containing the data.
          */
-        static void bindForInsert(QSqlQuery& query, const Cookie& cookie);
+        static void bindForInsert(QSqlQuery &query, const Cookie &cookie);
 
         /**
          * @brief Binds the cookie data to a QSqlQuery for updating.
          * @param query The QSqlQuery object to bind data to.
          * @param cookie The Cookie object containing the data.
          */
-        static void bindForUpdate(QSqlQuery& query, const Cookie& cookie);
+        static void bindForUpdate(QSqlQuery &query, const Cookie &cookie);
 
         /**
          * @brief Creates a Cookie object from a QSqlRecord.
          * @param record The QSqlRecord containing the cookie data.
          * @return A Cookie object populated with the data from the record.
          */
-        static Cookie fromRecord(const QSqlRecord& record);
+        static Cookie fromRecord(const QSqlRecord &record);
 
         /**
          * @brief Checks if a cookie matches an example cookie.
@@ -168,7 +171,8 @@ namespace woodworks::domain {
          * @param example The example cookie to match against.
          * @return True if the cookies match, false otherwise.
          */
-        static bool matches(const Cookie& item, const Cookie& example) noexcept {
+        static bool matches(const Cookie &item, const Cookie &example) noexcept
+        {
             return item.species.name == example.species.name &&
                    item.length.toTicks() == example.length.toTicks() &&
                    item.diameter.toTicks() == example.diameter.toTicks() &&

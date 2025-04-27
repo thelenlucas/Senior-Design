@@ -12,11 +12,13 @@
 using namespace woodworks::domain::types;
 using namespace woodworks::domain::imperial;
 
-namespace woodworks::domain {
+namespace woodworks::domain
+{
     /**
      * Represents a log with various attributes such as species, dimensions, quality, and cost.
      */
-    struct Log {
+    struct Log
+    {
         /** Unique identifier for the log */
         Id id{-1};
         /** Species of the log */
@@ -71,7 +73,8 @@ namespace woodworks::domain {
          * Creates an uninitialized log with default values.
          * @return An uninitialized Log object.
          */
-        static Log uninitialized() {
+        static Log uninitialized()
+        {
             Log log;
             log.id = Id{-1};
             log.species = Species{""};
@@ -141,21 +144,21 @@ namespace woodworks::domain {
          * @param query The SQL query object.
          * @param log The log to bind.
          */
-        static void bindForInsert(QSqlQuery& query, const Log& log);
+        static void bindForInsert(QSqlQuery &query, const Log &log);
 
         /**
          * Binds the log attributes to a SQL update query.
          * @param query The SQL query object.
          * @param log The log to bind.
          */
-        static void bindForUpdate(QSqlQuery& query, const Log& log);
+        static void bindForUpdate(QSqlQuery &query, const Log &log);
 
         /**
          * Creates a Log object from a database record.
          * @param record The database record.
          * @return The resulting Log object.
          */
-        static Log fromRecord(const QSqlRecord& record);
+        static Log fromRecord(const QSqlRecord &record);
 
         /**
          * Checks if a log matches an example log based on specific attributes.
@@ -163,7 +166,8 @@ namespace woodworks::domain {
          * @param example The example log to match against.
          * @return True if the logs match, false otherwise.
          */
-        static bool matches(const Log& item, const Log& example) noexcept {
+        static bool matches(const Log &item, const Log &example) noexcept
+        {
             return item.species.name == example.species.name &&
                    item.length.toTicks() == example.length.toTicks() &&
                    item.diameter.toTicks() == example.diameter.toTicks() &&

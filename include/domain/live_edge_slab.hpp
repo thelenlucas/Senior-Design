@@ -16,12 +16,14 @@
 using namespace woodworks::domain::types;
 using namespace woodworks::domain::imperial;
 
-namespace woodworks::domain {
+namespace woodworks::domain
+{
     /**
      * @struct LiveEdgeSlab
      * @brief Represents a live edge slab with attributes such as species, dimensions, drying state, surfacing, worth, location, notes, and image data.
      */
-    struct LiveEdgeSlab {
+    struct LiveEdgeSlab
+    {
         /** @brief Unique identifier for the slab. */
         Id id{-1};
         /** @brief Species of the slab. */
@@ -49,7 +51,8 @@ namespace woodworks::domain {
          * @brief Creates an uninitialized LiveEdgeSlab object with default values.
          * @return An uninitialized LiveEdgeSlab.
          */
-        static LiveEdgeSlab uninitialized() {
+        static LiveEdgeSlab uninitialized()
+        {
             LiveEdgeSlab slab;
             slab.id = Id{-1};
             slab.species = Species{""};
@@ -94,19 +97,19 @@ namespace woodworks::domain {
          * @param query The QSqlQuery to bind to.
          * @param slab The LiveEdgeSlab instance.
          */
-        static void bindForInsert(QSqlQuery&, const LiveEdgeSlab&);
+        static void bindForInsert(QSqlQuery &, const LiveEdgeSlab &);
         /**
          * @brief Binds slab data to a QSqlQuery for updating.
          * @param query The QSqlQuery to bind to.
          * @param slab The LiveEdgeSlab instance.
          */
-        static void bindForUpdate(QSqlQuery&, const LiveEdgeSlab&);
+        static void bindForUpdate(QSqlQuery &, const LiveEdgeSlab &);
         /**
          * @brief Constructs a LiveEdgeSlab from a QSqlRecord.
          * @param record The record containing slab data.
          * @return Populated LiveEdgeSlab.
          */
-        static LiveEdgeSlab fromRecord(const QSqlRecord&);
+        static LiveEdgeSlab fromRecord(const QSqlRecord &);
 
         /**
          * @brief Checks if two slabs match on key fields.
@@ -114,7 +117,8 @@ namespace woodworks::domain {
          * @param example The example slab to match against.
          * @return True if matching, false otherwise.
          */
-        static bool matches(const LiveEdgeSlab& item, const LiveEdgeSlab& example) noexcept {
+        static bool matches(const LiveEdgeSlab &item, const LiveEdgeSlab &example) noexcept
+        {
             return item.species.name == example.species.name &&
                    item.thickness.toTicks() == example.thickness.toTicks() &&
                    item.width.toTicks() == example.width.toTicks() &&

@@ -12,25 +12,28 @@
  * @namespace woodworks::infra
  * @brief Contains infrastructure-related classes and utilities.
  */
-namespace woodworks::infra {
+namespace woodworks::infra
+{
 
     /**
      * @class DbConnection
      * @brief Manages a singleton database connection.
      */
-    class DbConnection {
+    class DbConnection
+    {
     public:
         /**
          * @brief Retrieves the singleton instance of the database connection.
          * @return A reference to the QSqlDatabase instance.
          */
-        static QSqlDatabase& instance();
+        static QSqlDatabase &instance();
 
         /**
          * @brief Provides access to the database connection.
          * @return A reference to the QSqlDatabase instance.
          */
-        QSqlDatabase& db() {
+        QSqlDatabase &db()
+        {
             return db_;
         }
 

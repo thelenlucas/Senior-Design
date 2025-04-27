@@ -7,96 +7,97 @@
 namespace woodworks::sales
 {
 
+  /**
+   * @struct SalesPageGenerator
+   * @brief Generates an HTML sales page for various product categories.
+   */
+  struct SalesPageGenerator
+  {
     /**
-     * @struct SalesPageGenerator
-     * @brief Generates an HTML sales page for various product categories.
+     * @brief List of cookie products.
      */
-    struct SalesPageGenerator
+    std::vector<Product> cookies;
+
+    /**
+     * @brief List of lumber products.
+     */
+    std::vector<Product> lumber;
+
+    /**
+     * @brief List of live-edge slab products.
+     */
+    std::vector<Product> slabs;
+
+    /**
+     * @brief List of firewood products.
+     */
+    std::vector<Product> firewood;
+
+    /**
+     * @brief Adds a product to the appropriate section based on its type.
+     * @param p The product to add.
+     */
+    void addProduct(const Product &p)
     {
-        /**
-         * @brief List of cookie products.
-         */
-        std::vector<Product> cookies;
+      switch (p.type)
+      {
+      case COOKIE:
+        cookies.push_back(p);
+        break;
+      case LUMBER:
+        lumber.push_back(p);
+        break;
+      case SLAB:
+        slabs.push_back(p);
+        break;
+      case FIREWOOD:
+        firewood.push_back(p);
+        break;
+      default:
+        break;
+      }
+    }
 
-        /**
-         * @brief List of lumber products.
-         */
-        std::vector<Product> lumber;
+    /**
+     * @brief Generates the complete HTML page.
+     * @return A string containing the HTML content.
+     */
+    std::string generate() const
+    {
+      std::string html = head;
 
-        /**
-         * @brief List of live-edge slab products.
-         */
-        std::vector<Product> slabs;
-
-        /**
-         * @brief List of firewood products.
-         */
-        std::vector<Product> firewood;
-
-        /**
-         * @brief Adds a product to the appropriate section based on its type.
-         * @param p The product to add.
-         */
-        void addProduct(const Product &p)
+      auto buildSection = [&](const std::string &title,
+                              const std::string &id,
+                              const std::vector<Product> &items)
+      {
+        if (items.empty())
+          return;
+        html += "<section id=\"" + id + "\">\n";
+        html += "  <h2>" + title + "</h2>\n";
+        html += "  <div class=\"product-grid\">\n";
+        int idx = 1;
+        for (const auto &p : items)
         {
-            switch (p.type)
-            {
-            case COOKIE:
-                cookies.push_back(p);
-                break;
-            case LUMBER:
-                lumber.push_back(p);
-                break;
-            case SLAB:
-                slabs.push_back(p);
-                break;
-            case FIREWOOD:
-                firewood.push_back(p);
-                break;
-            default:
-                break;
-            }
+          html += p.toHtml(idx++) + "\n";
         }
+        html += "  </div>\n";
+        html += "</section>\n\n";
+      };
 
-        /**
-         * @brief Generates the complete HTML page.
-         * @return A string containing the HTML content.
-         */
-        std::string generate() const
-        {
-            std::string html = head;
+      buildSection("Cookies", "cookies", cookies);
+      buildSection("Lumber", "lumber", lumber);
+      buildSection("Live-Edge Slabs", "slabs", slabs);
+      buildSection("Firewood Bundles", "firewood", firewood);
 
-            auto buildSection = [&](const std::string &title,
-                                    const std::string &id,
-                                    const std::vector<Product> &items)
-            {
-                if (items.empty()) return;
-                html += "<section id=\"" + id + "\">\n";
-                html += "  <h2>" + title + "</h2>\n";
-                html += "  <div class=\"product-grid\">\n";
-                int idx = 1;
-                for (const auto &p : items)
-                {
-                    html += p.toHtml(idx++) + "\n";
-                }
-                html += "  </div>\n";
-                html += "</section>\n\n";
-            };
+      html += footer;
+      return html;
+    }
 
-            buildSection("Cookies", "cookies", cookies);
-            buildSection("Lumber", "lumber", lumber);
-            buildSection("Live-Edge Slabs", "slabs", slabs);
-            buildSection("Firewood Bundles", "firewood", firewood);
-
-            html += footer;
-            return html;
-        }
-
-    private:
-        /**
-         * @brief The HTML head section, including styles and metadata.
-         */
-        static inline const std::string head = R"(<!DOCTYPE html>
+  private:
+    /**
+     * @brief The HTML head section, including styles and metadata.
+     */
+    static inline const std::string head = R"(<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -145,10 +146,10 @@ namespace woodworks::sales
 <main>
 )";
 
-        /**
-         * @brief The HTML footer section.
-         */
-        static inline const std::string footer = R"(
+    /**
+     * @brief The HTML footer section.
+     */
+    static inline const std::string footer = R"(
 </main>
 <footer>
   &copy; 2025 Woodworks LLC &mdash; All rights reserved.
@@ -156,6 +157,6 @@ namespace woodworks::sales
 </body>
 </html>
 )";
-    };
+  };
 
 }

@@ -11,7 +11,8 @@
  * @namespace woodworks::domain::imperial
  * @brief Contains classes and functions for working with imperial units.
  */
-namespace woodworks::domain::imperial {
+namespace woodworks::domain::imperial
+{
 
     /**
      * @class Length
@@ -30,7 +31,7 @@ namespace woodworks::domain::imperial {
         {
             return Length(sixteenths);
         }
-        
+
     public:
         /**
          * @brief Constructs a Length object from a number of ticks (1/16th inches).
@@ -72,7 +73,6 @@ namespace woodworks::domain::imperial {
             return fromInches(feet * 12);
         }
 
-        
         // Number of ticks
         [[nodiscard]] constexpr unsigned int toTicks() const noexcept
         {
@@ -108,7 +108,7 @@ namespace woodworks::domain::imperial {
         {
             return fromSixteenths(sixteenths_ - other.sixteenths_);
         }
-        
+
         // Scale by a floating point scalar (rounded off to the nearest tick)
         [[nodiscard]] constexpr Length operator*(double scalar) const noexcept
         {

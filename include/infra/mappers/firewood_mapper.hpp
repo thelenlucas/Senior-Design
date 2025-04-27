@@ -53,9 +53,7 @@ namespace woodworks::domain
             QStringList{
                 "species",
                 "drying",
-                "location"
-            }
-        );
+                "location"});
     }
     inline QString Firewood::insertSQL()
     {

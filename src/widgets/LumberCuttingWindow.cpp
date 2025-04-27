@@ -8,32 +8,34 @@ using namespace woodworks::domain;
 using namespace woodworks::domain::imperial;
 using namespace woodworks::domain::lumber;
 
-LumberCuttingWindow::LumberCuttingWindow(const LiveEdgeSlab& slab, QWidget* parent)
-    : QMainWindow(parent), cutter(slab) {
+LumberCuttingWindow::LumberCuttingWindow(const LiveEdgeSlab &slab, QWidget *parent)
+    : QMainWindow(parent), cutter(slab)
+{
     setupUi();
     updateUi();
 }
 
 LumberCuttingWindow::~LumberCuttingWindow() {}
 
-void LumberCuttingWindow::setupUi() {
-    QWidget* central = new QWidget(this);
+void LumberCuttingWindow::setupUi()
+{
+    QWidget *central = new QWidget(this);
     setCentralWidget(central);
-    auto* mainLayout = new QVBoxLayout(central);
+    auto *mainLayout = new QVBoxLayout(central);
     mainLayout->setSpacing(2);
     mainLayout->setContentsMargins(10, 10, 10, 10);
 
     // Trim width
-    auto* trimLayout = new QHBoxLayout();
+    auto *trimLayout = new QHBoxLayout();
     trimLayout->addWidget(new QLabel("Trim each side (in):"));
     trimWidthSpin = new QDoubleSpinBox();
     trimWidthSpin->setSuffix("in");
-    trimWidthSpin->setRange(0, cutter.slab.width.toInches()/2);
+    trimWidthSpin->setRange(0, cutter.slab.width.toInches() / 2);
     trimLayout->addWidget(trimWidthSpin);
     mainLayout->addLayout(trimLayout);
 
     // Board count
-    auto* countLayout = new QHBoxLayout();
+    auto *countLayout = new QHBoxLayout();
     countLayout->addWidget(new QLabel("Board count:"));
     boardCountSpin = new QSpinBox();
     boardCountSpin->setRange(0, 100);
@@ -41,7 +43,7 @@ void LumberCuttingWindow::setupUi() {
     mainLayout->addLayout(countLayout);
 
     // Board width
-    auto* widthLayout = new QHBoxLayout();
+    auto *widthLayout = new QHBoxLayout();
     widthLayout->addWidget(new QLabel("Board width (in):"));
     boardWidthSpin = new QDoubleSpinBox();
     boardWidthSpin->setSuffix("in");
@@ -52,7 +54,7 @@ void LumberCuttingWindow::setupUi() {
     // Display cut summary
     cutsCountLabel = new QLabel(this);
     boardWidthLabel = new QLabel(this);
-    auto* summaryLayout = new QVBoxLayout();
+    auto *summaryLayout = new QVBoxLayout();
     summaryLayout->setSpacing(2);
     summaryLayout->setContentsMargins(0, 0, 0, 0);
     summaryLayout->addWidget(cutsCountLabel);
@@ -73,7 +75,8 @@ void LumberCuttingWindow::setupUi() {
     adjustSize();
 }
 
-void LumberCuttingWindow::updateUi() {
+void LumberCuttingWindow::updateUi()
+{
     // sync spins
     bool block1 = trimWidthSpin->blockSignals(true);
     trimWidthSpin->setValue(cutter.trimWidth.toInches());
@@ -92,22 +95,26 @@ void LumberCuttingWindow::updateUi() {
     boardWidthLabel->setText(QString("Board width: %1 in").arg(cutter.boardWidth.toInches()));
 }
 
-void LumberCuttingWindow::onTrimWidthChanged(double value) {
+void LumberCuttingWindow::onTrimWidthChanged(double value)
+{
     cutter.setTrimWidth(Length::fromInches(value));
     updateUi();
 }
 
-void LumberCuttingWindow::onBoardCountChanged(int count) {
+void LumberCuttingWindow::onBoardCountChanged(int count)
+{
     cutter.setBoardCount(count);
     updateUi();
 }
 
-void LumberCuttingWindow::onBoardWidthChanged(double value) {
+void LumberCuttingWindow::onBoardWidthChanged(double value)
+{
     cutter.setBoardWidth(Length::fromInches(value));
     updateUi();
 }
 
-void LumberCuttingWindow::onFinishCuts() {
+void LumberCuttingWindow::onFinishCuts()
+{
     // prepare boards then finalize
     cutter.planCuts();
     cutter.finalizeCuts();

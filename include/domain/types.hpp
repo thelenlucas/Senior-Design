@@ -20,14 +20,18 @@ namespace woodworks::domain::types
      */
 
     // Species
-    struct Species {std::string name; };
+    struct Species
+    {
+        std::string name;
+    };
 
     /**
      * @struct Id
      * @brief Represents a unique identifier for objects.
      */
 
-    struct Id {
+    struct Id
+    {
         int id;
 
         constexpr Id uninitialized() const noexcept { return Id{-1}; }
@@ -39,7 +43,8 @@ namespace woodworks::domain::types
      * @brief Represents a monetary value in cents.
      */
 
-    struct Dollar {
+    struct Dollar
+    {
         int cents;
 
         constexpr Dollar worthless() const noexcept { return Dollar{0}; }
@@ -52,7 +57,8 @@ namespace woodworks::domain::types
          * @throws std::invalid_argument if the value is negative.
          */
 
-        constexpr Dollar(int c) : cents(c) {
+        constexpr Dollar(int c) : cents(c)
+        {
             if (c < 0)
                 throw std::invalid_argument("Dollar value cannot be negative");
         }
@@ -66,7 +72,8 @@ namespace woodworks::domain::types
     };
 
     // Quality - 1-5 allowed
-    struct Quality {
+    struct Quality
+    {
         int value;
 
         /**
@@ -75,7 +82,8 @@ namespace woodworks::domain::types
          * @throws std::invalid_argument if the value is not between 1 and 5 or is not -1 (uninitialized).
          */
 
-        constexpr Quality(int v) : value(v) {
+        constexpr Quality(int v) : value(v)
+        {
             if ((v < 1 || v > 5) && v != -1) // Allowing -1 for uninitialized
                 throw std::invalid_argument("Quality must be between 1 and 5: attempted quality" + std::to_string(v));
         }
@@ -99,17 +107,18 @@ namespace woodworks::domain::types
      * @return A vector of allowed drying states.
      */
 
-    inline std::vector<Drying> allowedTransitions(Drying drying) {
+    inline std::vector<Drying> allowedTransitions(Drying drying)
+    {
         switch (drying)
         {
-            case Drying::GREEN:
-                return {Drying::KILN_DRIED, Drying::AIR_DRIED};
-            case Drying::KILN_DRIED:
-                return {Drying::GREEN, Drying::AIR_DRIED, Drying::KILN_AND_AIR_DRIED};
-            case Drying::AIR_DRIED:
-                return {Drying::GREEN, Drying::KILN_DRIED, Drying::KILN_AND_AIR_DRIED};
-            case Drying::KILN_AND_AIR_DRIED:
-                return {Drying::GREEN, Drying::KILN_DRIED, Drying::AIR_DRIED};
+        case Drying::GREEN:
+            return {Drying::KILN_DRIED, Drying::AIR_DRIED};
+        case Drying::KILN_DRIED:
+            return {Drying::GREEN, Drying::AIR_DRIED, Drying::KILN_AND_AIR_DRIED};
+        case Drying::AIR_DRIED:
+            return {Drying::GREEN, Drying::KILN_DRIED, Drying::KILN_AND_AIR_DRIED};
+        case Drying::KILN_AND_AIR_DRIED:
+            return {Drying::GREEN, Drying::KILN_DRIED, Drying::AIR_DRIED};
         }
         throw std::invalid_argument("Invalid drying state");
     }
@@ -128,15 +137,16 @@ namespace woodworks::domain::types
      * @return A vector of allowed slab surfacing states.
      */
 
-    inline std::vector<SlabSurfacing> allowedTransitions(SlabSurfacing surf) {
+    inline std::vector<SlabSurfacing> allowedTransitions(SlabSurfacing surf)
+    {
         switch (surf)
         {
-            case SlabSurfacing::RGH:
-                return {SlabSurfacing::S1S, SlabSurfacing::S2S};
-            case SlabSurfacing::S1S:
-                return {SlabSurfacing::S2S};
-            case SlabSurfacing::S2S:
-                return {SlabSurfacing::S2S};
+        case SlabSurfacing::RGH:
+            return {SlabSurfacing::S1S, SlabSurfacing::S2S};
+        case SlabSurfacing::S1S:
+            return {SlabSurfacing::S2S};
+        case SlabSurfacing::S2S:
+            return {SlabSurfacing::S2S};
         }
         throw std::invalid_argument("Invalid surfacing state");
     }
@@ -157,19 +167,20 @@ namespace woodworks::domain::types
      * @return A vector of allowed lumber surfacing states.
      */
 
-    inline std::vector<LumberSurfacing> allowedTransitions(LumberSurfacing surf) {
+    inline std::vector<LumberSurfacing> allowedTransitions(LumberSurfacing surf)
+    {
         switch (surf)
         {
-            case LumberSurfacing::RGH:
-                return {LumberSurfacing::S1S, LumberSurfacing::S2S, LumberSurfacing::S3S, LumberSurfacing::S4S};
-            case LumberSurfacing::S1S:
-                return {LumberSurfacing::S2S, LumberSurfacing::S3S, LumberSurfacing::S4S};
-            case LumberSurfacing::S2S:
-                return {LumberSurfacing::S3S, LumberSurfacing::S4S};
-            case LumberSurfacing::S3S:
-                return {LumberSurfacing::S4S};
-            case LumberSurfacing::S4S:
-                return {LumberSurfacing::S4S};
+        case LumberSurfacing::RGH:
+            return {LumberSurfacing::S1S, LumberSurfacing::S2S, LumberSurfacing::S3S, LumberSurfacing::S4S};
+        case LumberSurfacing::S1S:
+            return {LumberSurfacing::S2S, LumberSurfacing::S3S, LumberSurfacing::S4S};
+        case LumberSurfacing::S2S:
+            return {LumberSurfacing::S3S, LumberSurfacing::S4S};
+        case LumberSurfacing::S3S:
+            return {LumberSurfacing::S4S};
+        case LumberSurfacing::S4S:
+            return {LumberSurfacing::S4S};
         }
         throw std::invalid_argument("Invalid surfacing state");
     }
@@ -184,9 +195,12 @@ namespace woodworks::domain::types
     {
         switch (surf)
         {
-            case SlabSurfacing::RGH: return LumberSurfacing::RGH;
-            case SlabSurfacing::S1S: return LumberSurfacing::S1S;
-            case SlabSurfacing::S2S: return LumberSurfacing::S2S;
+        case SlabSurfacing::RGH:
+            return LumberSurfacing::RGH;
+        case SlabSurfacing::S1S:
+            return LumberSurfacing::S1S;
+        case SlabSurfacing::S2S:
+            return LumberSurfacing::S2S;
         }
         throw std::invalid_argument("Invalid surfacing state");
     }
@@ -201,10 +215,14 @@ namespace woodworks::domain::types
     {
         switch (drying)
         {
-            case Drying::GREEN: return "Green";
-            case Drying::KILN_DRIED: return "Kiln Dried";
-            case Drying::AIR_DRIED: return "Air Dried";
-            case Drying::KILN_AND_AIR_DRIED: return "Kiln and Air Dried";
+        case Drying::GREEN:
+            return "Green";
+        case Drying::KILN_DRIED:
+            return "Kiln Dried";
+        case Drying::AIR_DRIED:
+            return "Air Dried";
+        case Drying::KILN_AND_AIR_DRIED:
+            return "Kiln and Air Dried";
         }
         throw std::invalid_argument("Invalid drying state");
     }
@@ -219,9 +237,12 @@ namespace woodworks::domain::types
     {
         switch (surf)
         {
-            case SlabSurfacing::RGH: return "RGH";
-            case SlabSurfacing::S1S: return "S1S";
-            case SlabSurfacing::S2S: return "S2S";
+        case SlabSurfacing::RGH:
+            return "RGH";
+        case SlabSurfacing::S1S:
+            return "S1S";
+        case SlabSurfacing::S2S:
+            return "S2S";
         }
         throw std::invalid_argument("Invalid surfacing state");
     }
@@ -236,11 +257,16 @@ namespace woodworks::domain::types
     {
         switch (surf)
         {
-            case LumberSurfacing::RGH: return "RGH";
-            case LumberSurfacing::S1S: return "S1S";
-            case LumberSurfacing::S2S: return "S2S";
-            case LumberSurfacing::S3S: return "S3S";
-            case LumberSurfacing::S4S: return "S4S";
+        case LumberSurfacing::RGH:
+            return "RGH";
+        case LumberSurfacing::S1S:
+            return "S1S";
+        case LumberSurfacing::S2S:
+            return "S2S";
+        case LumberSurfacing::S3S:
+            return "S3S";
+        case LumberSurfacing::S4S:
+            return "S4S";
         }
         throw std::invalid_argument("Invalid surfacing state");
     }
