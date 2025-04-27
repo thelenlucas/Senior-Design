@@ -1,10 +1,24 @@
+/**
+ * @file helpers.hpp
+ * @brief Provides utility functions for querying unique values and column statistics from the database.
+ */
+
 #include <QSqlQuery>
 #include <QStringList>
+#include <QSqlError>
 
 #include "connection.hpp"
 
+/**
+ * @namespace woodworks::infra
+ * @brief Contains infrastructure-related classes and utilities.
+ */
 namespace woodworks::infra {
-    // Fetches unique species present in the database
+
+    /**
+     * @brief Fetches unique species present in the database.
+     * @return A QStringList of unique species.
+     */
     inline QStringList getUniqueSpecies() {
         auto &db = DbConnection::instance();
 
@@ -35,7 +49,10 @@ namespace woodworks::infra {
         return out;
     }
 
-    // Unique drying options
+    /**
+     * @brief Fetches unique drying options present in the database.
+     * @return A QStringList of unique drying options.
+     */
     inline QStringList getUniqueDryingOptions() {
         auto &db = DbConnection::instance();
         QStringList dryingList;
@@ -63,7 +80,10 @@ namespace woodworks::infra {
         return out;
     }
 
-    // Unique locations
+    /**
+     * @brief Fetches unique locations present in the database.
+     * @return A QStringList of unique locations.
+     */
     inline QStringList getUniqueLocations() {
         auto &db = DbConnection::instance();
         QStringList locationList;
@@ -91,7 +111,12 @@ namespace woodworks::infra {
         return out;
     }
 
-    // Gets the max of a column in a table
+    /**
+     * @brief Gets the maximum value of a column in a table.
+     * @param tableName The name of the table.
+     * @param columnName The name of the column.
+     * @return The maximum value of the column, or -1 if an error occurs.
+     */
     inline int getMaxOfColumn(const QString &tableName, const QString &columnName) {
         auto &db = DbConnection::instance();
         QSqlQuery query(db);
@@ -106,7 +131,12 @@ namespace woodworks::infra {
         return -1;
     }
 
-    // Gets the min of a column in a table
+    /**
+     * @brief Gets the minimum value of a column in a table.
+     * @param tableName The name of the table.
+     * @param columnName The name of the column.
+     * @return The minimum value of the column, or -1 if an error occurs.
+     */
     inline int getMinOfColumn(const QString &tableName, const QString &columnName) {
         auto &db = DbConnection::instance();
         QSqlQuery query(db);
@@ -121,7 +151,12 @@ namespace woodworks::infra {
         return -1;
     }
 
-    // Gets all unique values of a column in a table
+    /**
+     * @brief Gets all unique values of a column in a table.
+     * @param tableName The name of the table.
+     * @param columnName The name of the column.
+     * @return A QStringList of unique values in the column.
+     */
     inline QStringList getUniqueValuesOfColumn(const QString &tableName, const QString &columnName) {
         auto &db = DbConnection::instance();
         QSqlQuery query(db);

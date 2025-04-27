@@ -1,3 +1,11 @@
+/**
+ * @file images.hpp
+ * @brief Provides templated functions for handling images in the application.
+ * 
+ * This file includes functions to load, save, and display images with additional
+ * functionality for adding notes and replacing images. It uses Qt framework components.
+ */
+
 #include <QPixmap>
 #include <QBuffer>
 #include <QIODevice>
@@ -18,7 +26,13 @@
 
 namespace woodworks::infra
 {
-    // Templated function to load a qpixmap from a domain item
+    /**
+     * @brief Loads a QPixmap from a domain item.
+     * 
+     * @tparam T The type of the domain item.
+     * @param item The domain item containing the image buffer.
+     * @return QPixmap The loaded QPixmap.
+     */
     template <typename T>
     QPixmap loadImage(const T &item)
     {
@@ -27,7 +41,13 @@ namespace woodworks::infra
         return pixmap;
     }
 
-    // Templated function to save a qpixmap to a domain item
+    /**
+     * @brief Saves a QPixmap to a domain item.
+     * 
+     * @tparam T The type of the domain item.
+     * @param item The domain item to save the image buffer to.
+     * @param pixmap The QPixmap to save.
+     */
     template <typename T>
     void saveImage(T &item, const QPixmap &pixmap)
     {
@@ -38,7 +58,13 @@ namespace woodworks::infra
         item.imageBuffer = byteArray;
     }
 
-    // Templated function to show image popup with replace/save functionality
+    /**
+     * @brief Displays an image popup with options to replace or save the image.
+     * 
+     * @tparam T The type of the domain item.
+     * @param item The domain item containing the image and notes.
+     * @param parent The parent widget for the popup dialog (optional).
+     */
     template <typename T>
     void viewImagePopup(T &item, QWidget *parent = nullptr)
     {

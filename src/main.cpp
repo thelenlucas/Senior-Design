@@ -13,7 +13,6 @@
 #include <QDir>
 #include <QSqlQuery>
 
-#include "types.hpp"
 #include "mainwindow.hpp"
 
 #include "domain/log.hpp"

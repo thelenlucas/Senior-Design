@@ -1,3 +1,8 @@
+/**
+ * @file types.hpp
+ * @brief Defines various types and enumerations used in the woodworks domain.
+ */
+
 #pragma once
 #include <stdexcept>
 #include <stdint.h>
@@ -7,11 +12,21 @@
 
 #include <QMetaType>
 
-namespace woodworks::domain::types {
+namespace woodworks::domain::types
+{
+    /**
+     * @namespace woodworks::domain::types
+     * @brief Contains types and enumerations for species, IDs, dollar values, quality, and surfacing states.
+     */
+
     // Species
     struct Species {std::string name; };
 
-    // IDs
+    /**
+     * @struct Id
+     * @brief Represents a unique identifier for objects.
+     */
+
     struct Id {
         int id;
 
@@ -19,13 +34,23 @@ namespace woodworks::domain::types {
         constexpr bool isUninitialized() const noexcept { return id == -1; }
     };
 
-    // Dollar value in cents
+    /**
+     * @struct Dollar
+     * @brief Represents a monetary value in cents.
+     */
+
     struct Dollar {
         int cents;
 
         constexpr Dollar worthless() const noexcept { return Dollar{0}; }
 
         static constexpr Dollar fromCents(int c) noexcept { return Dollar{c}; }
+
+        /**
+         * @brief Constructs a Dollar object.
+         * @param c The monetary value in cents.
+         * @throws std::invalid_argument if the value is negative.
+         */
 
         constexpr Dollar(int c) : cents(c) {
             if (c < 0)
@@ -43,6 +68,12 @@ namespace woodworks::domain::types {
     // Quality - 1-5 allowed
     struct Quality {
         int value;
+
+        /**
+         * @brief Constructs a Quality object.
+         * @param v The quality value.
+         * @throws std::invalid_argument if the value is not between 1 and 5 or is not -1 (uninitialized).
+         */
 
         constexpr Quality(int v) : value(v) {
             if ((v < 1 || v > 5) && v != -1) // Allowing -1 for uninitialized
@@ -62,7 +93,12 @@ namespace woodworks::domain::types {
         KILN_AND_AIR_DRIED,
     };
 
-    // Allowed transiton between drying states, for a drying enum
+    /**
+     * @brief Returns the allowed transitions for a given drying state.
+     * @param drying The current drying state.
+     * @return A vector of allowed drying states.
+     */
+
     inline std::vector<Drying> allowedTransitions(Drying drying) {
         switch (drying)
         {
@@ -86,7 +122,12 @@ namespace woodworks::domain::types {
         S2S,
     };
 
-    // Allowed transition between slab surfacing -> slab surfacing states
+    /**
+     * @brief Returns the allowed transitions for a given slab surfacing state.
+     * @param surf The current slab surfacing state.
+     * @return A vector of allowed slab surfacing states.
+     */
+
     inline std::vector<SlabSurfacing> allowedTransitions(SlabSurfacing surf) {
         switch (surf)
         {
@@ -110,7 +151,12 @@ namespace woodworks::domain::types {
         S4S
     };
 
-    // Allowed transition between lumber surfacing
+    /**
+     * @brief Returns the allowed transitions for a given lumber surfacing state.
+     * @param surf The current lumber surfacing state.
+     * @return A vector of allowed lumber surfacing states.
+     */
+
     inline std::vector<LumberSurfacing> allowedTransitions(LumberSurfacing surf) {
         switch (surf)
         {
@@ -128,7 +174,12 @@ namespace woodworks::domain::types {
         throw std::invalid_argument("Invalid surfacing state");
     }
 
-    // Convert from live-edge to lumber surfacing
+    /**
+     * @brief Converts a slab surfacing state to a lumber surfacing state.
+     * @param surf The slab surfacing state.
+     * @return The corresponding lumber surfacing state.
+     */
+
     inline LumberSurfacing toLumberSurfacing(SlabSurfacing surf)
     {
         switch (surf)
@@ -140,7 +191,12 @@ namespace woodworks::domain::types {
         throw std::invalid_argument("Invalid surfacing state");
     }
 
-    // Formatting for drying
+    /**
+     * @brief Converts a drying state to a string representation.
+     * @param drying The drying state.
+     * @return A string representation of the drying state.
+     */
+
     inline std::string toString(Drying drying)
     {
         switch (drying)
@@ -153,7 +209,12 @@ namespace woodworks::domain::types {
         throw std::invalid_argument("Invalid drying state");
     }
 
-    // Formatting for slab surfacing
+    /**
+     * @brief Converts a slab surfacing state to a string representation.
+     * @param surf The slab surfacing state.
+     * @return A string representation of the slab surfacing state.
+     */
+
     inline std::string toString(SlabSurfacing surf)
     {
         switch (surf)
@@ -165,7 +226,12 @@ namespace woodworks::domain::types {
         throw std::invalid_argument("Invalid surfacing state");
     }
 
-    // Formatting for lumber surfacing
+    /**
+     * @brief Converts a lumber surfacing state to a string representation.
+     * @param surf The lumber surfacing state.
+     * @return A string representation of the lumber surfacing state.
+     */
+
     inline std::string toString(LumberSurfacing surf)
     {
         switch (surf)

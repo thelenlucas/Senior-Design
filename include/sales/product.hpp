@@ -1,3 +1,8 @@
+/**
+ * @file product.hpp
+ * @brief Defines the Product struct and ProductType enum for representing and managing sales products.
+ */
+
 #pragma once
 
 #include <string>
@@ -10,14 +15,24 @@
 
 namespace woodworks::sales
 {
+    /**
+     * @enum ProductType
+     * @brief Enumerates the types of products available for sale.
+     */
     enum ProductType
     {
-        COOKIE,
-        SLAB,
-        LUMBER,
-        FIREWOOD,
+        COOKIE, ///< Represents a cookie product.
+        SLAB,   ///< Represents a slab product.
+        LUMBER, ///< Represents a lumber product.
+        FIREWOOD ///< Represents a firewood product.
     };
 
+    /**
+     * @brief Converts a ProductType enum value to its string representation.
+     * 
+     * @param type The ProductType value to convert.
+     * @return A string representation of the ProductType.
+     */
     inline static std::string toString(ProductType type)
     {
         switch (type)
@@ -35,24 +50,40 @@ namespace woodworks::sales
         }
     }
 
+    /**
+     * @struct Product
+     * @brief Represents a product with attributes such as type, species, details, price, and image.
+     */
     struct Product
     {
-        ProductType type;
-        std::string species;
-        std::vector<std::string> detailsLines;
-        float price;
-        std::string pricingUnits;
-        QByteArray imageBase64;
+        ProductType type; ///< The type of the product.
+        std::string species; ///< The species of the product.
+        std::vector<std::string> detailsLines; ///< Additional details about the product.
+        float price; ///< The price of the product.
+        std::string pricingUnits; ///< The units for pricing (e.g., per piece, per pound).
+        QByteArray imageBase64; ///< Base64-encoded image data for the product.
 
-        // Empty constructor
+        /**
+         * @brief Default constructor initializing a product with default values.
+         */
         Product() : type(COOKIE), species(""), price(0.0), pricingUnits("") {}
 
+        /**
+         * @brief Adds a detail line to the product.
+         * 
+         * @param detail The detail line to add.
+         */
         void addDetails(const std::string &detail)
         {
             detailsLines.push_back(detail);
         }
 
-        // Creates the html article for the product
+        /**
+         * @brief Converts the product to an HTML representation.
+         * 
+         * @param number The product number to include in the HTML.
+         * @return A string containing the HTML representation of the product.
+         */
         inline std::string toHtml(int number) const
         {
             std::string html = "<article class=\"product-card\">\n";
@@ -77,7 +108,11 @@ namespace woodworks::sales
             return html;
         }
 
-        // Provides pipe-separated list display for UI
+        /**
+         * @brief Converts the product to a pipe-separated string for UI display.
+         * 
+         * @return A string containing the pipe-separated representation of the product.
+         */
         inline std::string toListString() const
         {
             std::vector<std::string> parts;
@@ -98,6 +133,6 @@ namespace woodworks::sales
     };
 }
 
-// Makes ProductType and Product usable
+// Makes ProductType and Product usable in Qt's meta-object system.
 Q_DECLARE_METATYPE(woodworks::sales::ProductType)
 Q_DECLARE_METATYPE(woodworks::sales::Product)

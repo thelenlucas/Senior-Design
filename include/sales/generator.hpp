@@ -7,14 +7,36 @@
 namespace woodworks::sales
 {
 
+    /**
+     * @struct SalesPageGenerator
+     * @brief Generates an HTML sales page for various product categories.
+     */
     struct SalesPageGenerator
     {
+        /**
+         * @brief List of cookie products.
+         */
         std::vector<Product> cookies;
+
+        /**
+         * @brief List of lumber products.
+         */
         std::vector<Product> lumber;
+
+        /**
+         * @brief List of live-edge slab products.
+         */
         std::vector<Product> slabs;
+
+        /**
+         * @brief List of firewood products.
+         */
         std::vector<Product> firewood;
 
-        // Adds a product to the appropriate section based on its type
+        /**
+         * @brief Adds a product to the appropriate section based on its type.
+         * @param p The product to add.
+         */
         void addProduct(const Product &p)
         {
             switch (p.type)
@@ -36,7 +58,10 @@ namespace woodworks::sales
             }
         }
 
-        // Generates the complete HTML page
+        /**
+         * @brief Generates the complete HTML page.
+         * @return A string containing the HTML content.
+         */
         std::string generate() const
         {
             std::string html = head;
@@ -68,6 +93,9 @@ namespace woodworks::sales
         }
 
     private:
+        /**
+         * @brief The HTML head section, including styles and metadata.
+         */
         static inline const std::string head = R"(<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -117,6 +145,9 @@ namespace woodworks::sales
 <main>
 )";
 
+        /**
+         * @brief The HTML footer section.
+         */
         static inline const std::string footer = R"(
 </main>
 <footer>

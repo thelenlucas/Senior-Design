@@ -1,3 +1,8 @@
+/**
+ * @file slab_cutter.hpp
+ * @brief Defines the SlabCutter class and related structures for processing logs into slabs.
+ */
+
 #include "log.hpp"
 #include "domain/live_edge_slab.hpp"
 #include "domain/units.hpp"
@@ -19,15 +24,40 @@ struct InProgressSlab
     Length width;
 };
 
+/**
+ * @namespace woodworks::domain::slabs
+ * @brief Contains classes and structures related to slab processing.
+ */
 namespace woodworks::domain::slabs
 {
+    /**
+     * @struct SlabCutter
+     * @brief Handles the process of cutting a log into slabs.
+     */
     struct SlabCutter
     {
-        Log log;                            // Source log for the cuts
-        vector<InProgressSlab> plannedCuts; // Cuts that are planned but not yet made
+        /**
+         * @var SlabCutter::log
+         * @brief The source log for the cuts.
+         */
+        Log log;
+
+        /**
+         * @var SlabCutter::plannedCuts
+         * @brief A list of slabs that are planned but not yet cut.
+         */
+        vector<InProgressSlab> plannedCuts;
+
+        /**
+         * @var SlabCutter::logDiameterUsed
+         * @brief The amount of the log's diameter that has been used.
+         */
         Length logDiameterUsed;
 
-        // Create a new cutter from a log
+        /**
+         * @brief Constructs a SlabCutter with the given log.
+         * @param sourceLog The log to be processed.
+         */
         explicit SlabCutter(const Log &sourceLog) : log(sourceLog), logDiameterUsed(Length::fromTicks(0)) {}
 
         // Remaining diameter of the log
@@ -36,7 +66,11 @@ namespace woodworks::domain::slabs
             return log.diameter - logDiameterUsed;
         }
 
-        // Waste a portion of the log - mostly to cap the ends
+        /**
+         * @brief Wastes a portion of the log, typically to cap the ends.
+         * @param amount The amount of the log to waste.
+         * @throws std::invalid_argument if the waste amount exceeds the log diameter.
+         */
         void waste(Length amount)
         {
             if (amount > log.diameter)
@@ -46,7 +80,11 @@ namespace woodworks::domain::slabs
             logDiameterUsed = logDiameterUsed + amount;
         }
 
-        // How wide a slab of a given thickness will be if cut right now
+        /**
+         * @brief Calculates the width of a slab at a given thickness.
+         * @param thickness The thickness of the slab.
+         * @return The width of the slab at the given thickness.
+         */
         Length slabWidthAtThickness(Length thickness) const
         {
             if (thickness + logDiameterUsed > log.diameter)
@@ -60,7 +98,10 @@ namespace woodworks::domain::slabs
             return (widthAtCurrent + widthAtCurrentPlusThickness) / 2;
         }
 
-        // Add a slab to the planned cuts
+        /**
+         * @brief Adds a slab to the planned cuts.
+         * @param thickness The thickness of the slab to add.
+         */
         void addSlab(Length thickness)
         {
             if (thickness + logDiameterUsed > log.diameter)
@@ -77,7 +118,9 @@ namespace woodworks::domain::slabs
             logDiameterUsed = logDiameterUsed + thickness;
         }
 
-        // Undo a planned cut
+        /**
+         * @brief Undoes the last planned cut.
+         */
         void undoCut()
         {
             if (plannedCuts.empty())
@@ -89,14 +132,19 @@ namespace woodworks::domain::slabs
             plannedCuts.pop_back();
         }
 
-        // Clear all planned cuts
+        /**
+         * @brief Clears all planned cuts.
+         */
         void clearPlannedCuts()
         {
             plannedCuts.clear();
             logDiameterUsed = Length::fromTicks(0);
         }
 
-        // Creates a list of qstrings for use in a list view from the planned cuts
+        /**
+         * @brief Retrieves a list of planned cuts as strings for display.
+         * @return A vector of QStrings describing the planned cuts.
+         */
         vector<QString> getPlannedCuts() const
         {
             vector<QString> cuts;
@@ -107,7 +155,13 @@ namespace woodworks::domain::slabs
             return cuts;
         }
 
-        // Complete the planned cuts at a given length
+        /**
+         * @brief Completes the planned cuts at a given length.
+         * @param cutLength The length of the cuts.
+         * @param location Optional location for the slabs.
+         * @param notes Optional notes for the slabs.
+         * @return A vector of finalized LiveEdgeSlab objects.
+         */
         vector<LiveEdgeSlab> completeCuts(Length cutLength, optional<string> location, optional<string> notes)
         {
             // First, calculate the total volume of all slabs cut (approx)
@@ -158,7 +212,11 @@ namespace woodworks::domain::slabs
         }
 
     private:
-        // Gives the width of any cut paralell to the log centerline at a given offset
+        /**
+         * @brief Calculates the width of a cut parallel to the log centerline at a given offset.
+         * @param offset The offset from the log centerline.
+         * @return The width of the cut at the given offset.
+         */
         Length getWidthAtOffset(Length offset) const
         {
             if (offset > log.length)
